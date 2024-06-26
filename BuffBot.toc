@@ -1,0 +1,9 @@
+## Interface: 11502
+## Version: 0.0.1
+## Title: BuffBot |cff00ccff0.0.1|r
+## Author: Smiil
+## Notes: Maintenance buffs for |cff00ccffBuffBots|r made simple.
+## DefaultState: enabled
+
+ClassBuffList.lua
+BuffBot.lua

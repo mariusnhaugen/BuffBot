@@ -1,0 +1,4 @@
+<Bindings>
+ <Binding name="CLICK BUFFBOT_MacroButton:LeftButton" runOnUp="true" category = "AddOns">
+ </Binding>
+</Bindings>
