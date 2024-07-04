@@ -2,13 +2,12 @@ local _, BuffBot = ...
 local ParentFrame;
 local macroBtn;
 local events = CreateFrame("Frame")
-local groupHasChanged = false
 
 BuffBot.playername = GetUnitName("player")
 BuffBot.playerlevel = UnitLevel("player")
 BuffBot.playerclass = (select(2, UnitClass("player")))
 
-local classBuffs = BuffBot.classBuffs 
+local classBuffs = {}
 local assignedBuff = "" 
 
     SLASH_BUFFBOTSETTINGS1 = "/bb";
@@ -36,7 +35,10 @@ local assignedBuff = ""
 
     function UpdateMacro(buffString,unit)
         if InCombatLockdown() then return end
-        macroBtn:SetNormalTexture(GetSpellTexture(buffString))
+        local texture = GetSpellTexture(buffString)
+        if texture then
+            macroBtn:SetNormalTexture(texture)
+        end
         macroBtn:SetAttribute("macrotext1", "/cast [target="..unit.."]" .. buffString) -- text for macro on left click
         macroBtn:Show()
     end
@@ -44,26 +46,34 @@ local assignedBuff = ""
 --------------- MAIN FUNCTIONS ----------------
 
 function SetInitialClassBuff()
-    assignedBuff = classBuffs[BuffBot.playerclass][1]
-    if not CheckUnitHasAssignedBuff("player", assignedBuff) then
-        UpdateMacro(assignedBuff,"player")
-    end
+    -- assignedBuff = classBuffs[BuffBot.playerclass][1]
+    -- if not CheckUnitHasAssignedBuff("player", assignedBuff) then
+    --     UpdateMacro(assignedBuff,"player")
+    -- end
+    FilterInitialList()
+    classBuffs = BuffBot.ClassBuffList 
+    CheckPlayerBuffs()
 end
 
 function FindNextBuffInList()
     if InCombatLockdown() then return "done" end
-    for i = 1, #classBuffs[BuffBot.playerclass], 1 do
-    if not CheckUnitHasAssignedBuff("player", classBuffs[BuffBot.playerclass][i]) then
-            return classBuffs[BuffBot.playerclass][i]
+    if not classBuffs then return "done" end
+
+    for i = 1, #classBuffs, 1 do
+    if not CheckUnitHasAssignedBuff("player", classBuffs[i]) then
+            return classBuffs[i]
             end
         end
-    macroBtn:Hide()
     return "done" 
 end
 
 function CheckPlayerBuffs() 
         local buff = FindNextBuffInList()
-        if buff == "done" then return end
+        if buff == "done" then 
+            if InCombatLockdown() then return end
+            macroBtn:Hide()
+            return 
+        end
         assignedBuff = buff
         UpdateMacro(assignedBuff, "player")
 end
@@ -161,9 +171,5 @@ events:RegisterEvent("PLAYER_REGEN_ENABLED")
 events:RegisterEvent("PLAYER_REGEN_DISABLED")
 events:RegisterEvent("PLAYER_ENTERING_WORLD")
 
-print("BuffBot v0.0.1 Loaded.")
+print("BuffBot v0.0.2 Loaded.")
 print(BuffBot.playername .." "..  BuffBot.playerlevel .." ".. BuffBot.playerclass)
-
-function CastCurrentButtonBuff()
-    
-end
