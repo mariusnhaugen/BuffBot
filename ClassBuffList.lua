@@ -53,6 +53,9 @@ local spellIDTable = { -- Rank 1 for checking.
 function CheckSpellAvailable(spellString)
     if spellString == "" then return end
     local spellID = spellIDTable[spellString]
+    if #tostring(spellID) == 6 then
+        return IsSpellKnownOrOverridesKnown(spellID)
+    end
     if spellID then
         return IsPlayerSpell(spellID)
     end
