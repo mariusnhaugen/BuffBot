@@ -153,7 +153,6 @@ function events:PLAYER_REGEN_ENABLED()
     CheckPlayerBuffs()
 end
 
-
 function events:PLAYER_REGEN_DISABLED()
     macroBtn:Hide()
 end
@@ -163,9 +162,11 @@ events:SetScript("OnEvent", function(self, event, ...)
 end)
 
 events:RegisterEvent("UNIT_AURA")
+
 events:RegisterEvent("GROUP_JOINED")
 events:RegisterEvent("GROUP_ROSTER_UPDATE")
 events:RegisterEvent("GROUP_LEFT")
+
 events:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
 events:RegisterEvent("PLAYER_REGEN_ENABLED")
 events:RegisterEvent("PLAYER_REGEN_DISABLED")
