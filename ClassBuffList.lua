@@ -97,6 +97,7 @@ function FindBestUniqueBuff()
         if CheckSpellAvailable("Sanctity Aura") then
             return "Sanctity Aura"
         end
+        --test
         if CheckSpellAvailable("Devotion Aura") and UnitInRaid("player") then
             return "Devotion Aura"
         end
