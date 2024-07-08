@@ -1,11 +1,11 @@
 local _, BuffBot = ...
 local ParentFrame;
 local macroBtn;
-local events = CreateFrame("Frame")
 
 BuffBot.playername = GetUnitName("player")
 BuffBot.playerlevel = UnitLevel("player")
 BuffBot.playerclass = (select(2, UnitClass("player")))
+local class = BuffBot.playerclass
 
 local classBuffs = {}
 local assignedBuff = "" 
@@ -46,29 +46,44 @@ local assignedBuff = ""
 --------------- MAIN FUNCTIONS ----------------
 
 function SetInitialClassBuff()
-    -- assignedBuff = classBuffs[BuffBot.playerclass][1]
-    -- if not CheckUnitHasAssignedBuff("player", assignedBuff) then
-    --     UpdateMacro(assignedBuff,"player")
-    -- end
     FilterInitialList()
     classBuffs = BuffBot.ClassBuffList 
     CheckPlayerBuffs()
+end
+
+function HasUniqueClassBuff()
+    local isBuffFound = false
+    for i = 1, #BuffBot.UniqueBuffs[class], 1 do 
+        if UnitHasAssignedBuff("player", BuffBot.UniqueBuffs[class][i]) then
+            isBuffFound = true 
+            break
+        end
+    end
+    return isBuffFound
 end
 
 function FindNextBuffInList()
     if InCombatLockdown() then return "done" end
     if not classBuffs then return "done" end
 
-    for i = 1, #classBuffs, 1 do
-    if not CheckUnitHasAssignedBuff("player", classBuffs[i]) then
-            return classBuffs[i]
+    for i = 1, #classBuffs do -- For all buffs in filtered buff list. 
+        local skipCheck = false;
+        if class == "MAGE" or class == "WARLOCK" or class == "PALADIN" then
+            if StringIsPartOfTable(classBuffs[i], BuffBot.UniqueBuffs[class]) then
+                if HasUniqueClassBuff() then skipCheck = true end -- check auras and armor
             end
         end
+
+        if (not UnitHasAssignedBuff("player", classBuffs[i])) and (not skipCheck) then
+            return classBuffs[i]
+        end
+    end
     return "done" 
 end
 
 function CheckPlayerBuffs() 
         local buff = FindNextBuffInList()
+        print("assignedBuff: ",assignedBuff,"FindNextBuffInList: ", buff)
         if buff == "done" then 
             if InCombatLockdown() then return end
             macroBtn:Hide()
@@ -78,9 +93,9 @@ function CheckPlayerBuffs()
         UpdateMacro(assignedBuff, "player")
 end
 
-function CheckUnitHasAssignedBuff(unit, assignedBuff)
+function UnitHasAssignedBuff(unit, assignedBuff)
     if assignedBuff == "" then return end
-    
+
     local aura = C_UnitAuras.GetAuraDataBySpellName(unit, assignedBuff)
     if aura then 
         return true
@@ -88,89 +103,22 @@ function CheckUnitHasAssignedBuff(unit, assignedBuff)
         return false
     end
 end
-
-
-------------- EVENT FUNCTIONS -------------
-
-function events:UNIT_AURA(unit, info)  
-    if info.isFullUpdate then -- triggers when new group memebers join
-        -- if groupHasChanged then
-        --     CheckUnitHasAssignedBuff("party1", assignedBuff)
-        --     groupHasChanged = false
-        -- end
-		return
-	end
-    if info.removedAuraInstanceIDs then
-        if (unit == "player") then
-           CheckPlayerBuffs() 
-        end
-        return
+--- Helper Functions ---
+function StringIsPartOfTable(string, table) 
+    local StringMatchFound = false
+    for _, value in pairs(table) do
+        if (string == value) then 
+            StringMatchFound = true
+            break
+         end
     end
-        
-    if (unit == "player") then
-        CheckPlayerBuffs() 
-        return
-    end
-
-    local substr = string.sub(unit, 1,4)
-    if (substr == "raid") or (substr == "part")  then
-        -- print(unit)    
-    end
-    -- 
+    return StringMatchFound;
 end
 
-function events:GROUP_JOINED()
-end
+--- Namespacing  ---
+BuffBot.macroBtn = macroBtn;
 
-function events:GROUP_ROSTER_UPDATE()
-    -- CheckUnitHasAssignedBuff("player", assignedBuff)
-    -- if UnitExists("party1")  then
-    --     groupHasChanged = true
-    --     return
-    -- end
-    -- if UnitExists("raid1") then
-    --     groupHasChanged = true
-    --     return
-    -- end
-    return
-end
 
-function events:GROUP_LEFT()
-	print("Group left")
-    -- scan friends :)
-end
-
-function events:PLAYER_ENTERING_WORLD()
-    SetInitialClassBuff()
-end
-
-function events:UNIT_SPELLCAST_SUCCEEDED(unit)
-    if not (unit == "player") then return end 
-        CheckPlayerBuffs() 
-end
-
-function events:PLAYER_REGEN_ENABLED()
-    CheckPlayerBuffs()
-end
-
-function events:PLAYER_REGEN_DISABLED()
-    macroBtn:Hide()
-end
-
-events:SetScript("OnEvent", function(self, event, ...)
-	self[event](self, ...)
-end)
-
-events:RegisterEvent("UNIT_AURA")
-
-events:RegisterEvent("GROUP_JOINED")
-events:RegisterEvent("GROUP_ROSTER_UPDATE")
-events:RegisterEvent("GROUP_LEFT")
-
-events:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
-events:RegisterEvent("PLAYER_REGEN_ENABLED")
-events:RegisterEvent("PLAYER_REGEN_DISABLED")
-events:RegisterEvent("PLAYER_ENTERING_WORLD")
 
 print("BuffBot v0.0.2 Loaded.")
 print(BuffBot.playername .." "..  BuffBot.playerlevel .." ".. BuffBot.playerclass)

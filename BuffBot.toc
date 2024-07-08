@@ -6,4 +6,5 @@
 ## DefaultState: enabled
 
 ClassBuffList.lua
+EventFunctions.lua
 BuffBot.lua

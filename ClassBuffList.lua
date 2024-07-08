@@ -12,6 +12,10 @@ InitalClassBuffLists.SHAMAN = {"Lightning Shield"}
 InitalClassBuffLists.WARLOCK= {"Armor" ,"Grimoire of Synergy",}
 InitalClassBuffLists.WARRIOR = { "Battle Shout","Commanding Shout"}
 
+BuffBot.UniqueBuffs = {}
+BuffBot.UniqueBuffs.MAGE = {"Mage Armor", "Frost Armor", "Molten Armor", "Ice Armor"}
+BuffBot.UniqueBuffs.WARLOCK = {"Mage Armor", "Frost Armor", "Molten Armor", "Ice Armor"}
+
 local spellIDTable = { -- Rank 1 for checking.
 --DRUID
     ["Omen of Clarity"] = 16864,
@@ -46,10 +50,10 @@ local spellIDTable = { -- Rank 1 for checking.
     ["Fel Armor"] = 403619,
     ["Grimoire of Synergy"] = 426301,
 -- WARRIOR
-    ["Battle Shout"] = 6673,
+    ["Battle Shout"] = 11550,
     ["Commanding Shout"] = 403215,
 }
-
+-- BS 6673, 
 function CheckSpellAvailable(spellString)
     if spellString == "" then return end
     local spellID = spellIDTable[spellString]
