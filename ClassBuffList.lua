@@ -14,7 +14,8 @@ InitalClassBuffLists.WARRIOR = { "Battle Shout","Commanding Shout"}
 
 BuffBot.UniqueBuffs = {}
 BuffBot.UniqueBuffs.MAGE = {"Mage Armor", "Frost Armor", "Molten Armor", "Ice Armor"}
-BuffBot.UniqueBuffs.WARLOCK = {"Mage Armor", "Frost Armor", "Molten Armor", "Ice Armor"}
+BuffBot.UniqueBuffs.WARLOCK = {"Demon Skin", "Demon Armor", "Fel Armor"}
+BuffBot.UniqueBuffs.PALADIN= {"Devotion Aura", "Sanctity Aura", "Concentration Aura", "Retribution Aura", "Frost Resistance Aura", "Shadow Resistance Aura", "Fire Resistance Aura"}
 
 local spellIDTable = { -- Rank 1 for checking.
 --DRUID
@@ -65,7 +66,7 @@ function CheckSpellAvailable(spellString)
     end
 end
 
-function FindBestArmor()
+function FindBestUniqueBuff()
     if BuffBot.playerclass == "MAGE" then
         if CheckSpellAvailable("Molten Armor") then
             return "Molten Armor"
@@ -91,7 +92,17 @@ function FindBestArmor()
         if CheckSpellAvailable("Demon Skin") then
             return "Demon Skin"
         end
-    
+    end
+    if BuffBot.playerclass == "PALADIN" then
+        if CheckSpellAvailable("Sanctity Aura") then
+            return "Sanctity Aura"
+        end
+        if CheckSpellAvailable("Devotion Aura") then
+            return "Devotion Aura"
+        end
+        if CheckSpellAvailable("Retribution Aura") then
+            return "Retribution Aura"
+        end
     end
 end
 
@@ -99,7 +110,7 @@ function FilterInitialList()
     for i = 1, #InitalClassBuffLists[BuffBot.playerclass], 1 do
         local spellString = InitalClassBuffLists[BuffBot.playerclass][i]
         if spellString == "Armor" then
-            spellString = FindBestArmor()
+            spellString = FindBestUniqueBuff()
         end
 
         if CheckSpellAvailable(spellString) then
