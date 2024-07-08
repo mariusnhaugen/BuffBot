@@ -70,7 +70,7 @@ function FindNextBuffInList()
         local skipCheck = false;
         if class == "MAGE" or class == "WARLOCK" or class == "PALADIN" then
             if StringIsPartOfTable(classBuffs[i], BuffBot.UniqueBuffs[class]) then
-                if HasUniqueClassBuff() then skipCheck = true end -- check auras and armor
+                if HasUniqueClassBuff() then skipCheck = true end -- check auras and armors
             end
         end
 
@@ -83,7 +83,6 @@ end
 
 function CheckPlayerBuffs() 
         local buff = FindNextBuffInList()
-        print("assignedBuff: ",assignedBuff,"FindNextBuffInList: ", buff)
         if buff == "done" then 
             if InCombatLockdown() then return end
             macroBtn:Hide()
