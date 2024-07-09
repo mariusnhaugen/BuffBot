@@ -69,8 +69,8 @@ end
 function events:PLAYER_REGEN_DISABLED()
     BuffBot.macroBtn:Hide()
 end
-function events:RUNE_UPDATED(t)
-    print(t[1],t[2],t[3],t[4])
+function events:RUNE_UPDATED()
+    print("RUNE UPDATED")
 end
 
 events:SetScript("OnEvent", function(self, event, ...)

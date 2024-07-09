@@ -76,6 +76,12 @@ function BuffBot:FindNextBuffInList()
                 if BuffBot:HasUniqueClassBuff() then skipCheck = true end -- check auras and armors
             end
         end
+        if class == "WARLOCK" then
+            if classBuffs[i] == "Grimoire of Synergy" then
+                if not IsPetActive() then skipCheck = true end
+            end
+            
+        end
 
         if (not BuffBot:UnitHasAssignedBuff("player", classBuffs[i])) and (not skipCheck) then
             return classBuffs[i]
