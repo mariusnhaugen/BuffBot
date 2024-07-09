@@ -1,28 +1,30 @@
 local _, BuffBot = ...
 local events = CreateFrame("Frame")
+local groupHasChanged = false
 
 function events:UNIT_AURA(unit, info)  
     if info.isFullUpdate then 
         -- triggers when people join party or player zones through instance
 
         if (unit == "player") then
-           CheckPlayerBuffs() 
+            if UnitInRaid("player") then BuffBot:UpdateClassBuffList() end
+            BuffBot:CheckPlayerBuffs() 
         end
-        -- if groupHasChanged then
-        --     CheckUnitHasAssignedBuff("party1", assignedBuff)
-        --     groupHasChanged = false
-        -- end
+        if groupHasChanged then
+            print("Group changed")
+            groupHasChanged = false
+        end
 		return
 	end
     if info.removedAuraInstanceIDs then
         if (unit == "player") then
-           CheckPlayerBuffs() 
+           BuffBot:CheckPlayerBuffs() 
         end
         return
     end
         
     if (unit == "player") then
-        CheckPlayerBuffs() 
+        BuffBot:CheckPlayerBuffs() 
         return
     end
 
@@ -34,18 +36,19 @@ function events:UNIT_AURA(unit, info)
 end
 
 function events:GROUP_JOINED()
+    print("group joined")
 end
 
 function events:GROUP_ROSTER_UPDATE()
-    -- CheckUnitHasAssignedBuff("player", assignedBuff)
-    -- if UnitExists("party1")  then
-    --     groupHasChanged = true
-    --     return
-    -- end
-    -- if UnitExists("raid1") then
-    --     groupHasChanged = true
-    --     return
-    -- end
+    
+    if UnitExists("party1")  then
+        groupHasChanged = true
+        return
+    end
+    if UnitExists("raid1") then
+        groupHasChanged = true
+        return
+    end
     return
 end
 
@@ -54,16 +57,16 @@ function events:GROUP_LEFT()
 end
 
 function events:PLAYER_ENTERING_WORLD()
-    SetInitialClassBuff()
+    BuffBot:UpdateClassBuffList()
 end
 
 function events:UNIT_SPELLCAST_SUCCEEDED(unit)
     if not (unit == "player") then return end 
-        CheckPlayerBuffs() 
+        BuffBot:CheckPlayerBuffs() 
 end
 
 function events:PLAYER_REGEN_ENABLED()
-    CheckPlayerBuffs()
+    BuffBot:CheckPlayerBuffs()
 end
 
 function events:PLAYER_REGEN_DISABLED()

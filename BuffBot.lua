@@ -33,7 +33,14 @@ local assignedBuff = ""
     macroBtn:SetSize(48,48)
     macroBtn:SetPoint("CENTER", ParentFrame, "CENTER", 100, 0)
 
-    function UpdateMacro(buffString,unit)
+
+--------------- MAIN FUNCTIONS ----------------
+    
+function BuffBotDump()
+ return BuffBot.RanklessSpells
+end
+
+function BuffBot:UpdateMacro(buffString,unit)
         if InCombatLockdown() then return end
         local texture = GetSpellTexture(buffString)
         if texture then
@@ -43,18 +50,17 @@ local assignedBuff = ""
         macroBtn:Show()
     end
 
---------------- MAIN FUNCTIONS ----------------
-
-function SetInitialClassBuff()
-    FilterInitialList()
+function BuffBot:UpdateClassBuffList()
+    print("Ran the thing")
+    BuffBot:FilterInitialList()
     classBuffs = BuffBot.ClassBuffList 
-    CheckPlayerBuffs()
+    BuffBot:CheckPlayerBuffs()
 end
 
-function HasUniqueClassBuff()
+function BuffBot:HasUniqueClassBuff()
     local isBuffFound = false
     for i = 1, #BuffBot.UniqueBuffs[class], 1 do 
-        if UnitHasAssignedBuff("player", BuffBot.UniqueBuffs[class][i]) then
+        if BuffBot:UnitHasAssignedBuff("player", BuffBot.UniqueBuffs[class][i]) then
             isBuffFound = true 
             break
         end
@@ -62,37 +68,37 @@ function HasUniqueClassBuff()
     return isBuffFound
 end
 
-function FindNextBuffInList()
+function BuffBot:FindNextBuffInList()
     if InCombatLockdown() then return "done" end
     if not classBuffs then return "done" end
 
     for i = 1, #classBuffs do -- For all buffs in filtered buff list. 
         local skipCheck = false;
         if class == "MAGE" or class == "WARLOCK" or class == "PALADIN" then
-            if StringIsPartOfTable(classBuffs[i], BuffBot.UniqueBuffs[class]) then
-                if HasUniqueClassBuff() then skipCheck = true end -- check auras and armors
+            if BuffBot:StringIsPartOfTable(classBuffs[i], BuffBot.UniqueBuffs[class]) then
+                if BuffBot:HasUniqueClassBuff() then skipCheck = true end -- check auras and armors
             end
         end
 
-        if (not UnitHasAssignedBuff("player", classBuffs[i])) and (not skipCheck) then
+        if (not BuffBot:UnitHasAssignedBuff("player", classBuffs[i])) and (not skipCheck) then
             return classBuffs[i]
         end
     end
     return "done" 
 end
 
-function CheckPlayerBuffs() 
-        local buff = FindNextBuffInList()
+function BuffBot:CheckPlayerBuffs() 
+        local buff = BuffBot:FindNextBuffInList()
         if buff == "done" then 
             if InCombatLockdown() then return end
             macroBtn:Hide()
             return 
         end
         assignedBuff = buff
-        UpdateMacro(assignedBuff, "player")
+        BuffBot:UpdateMacro(assignedBuff, "player")
 end
 
-function UnitHasAssignedBuff(unit, assignedBuff)
+function BuffBot:UnitHasAssignedBuff(unit, assignedBuff)
     if assignedBuff == "" then return end
 
     local aura = C_UnitAuras.GetAuraDataBySpellName(unit, assignedBuff)
@@ -103,7 +109,7 @@ function UnitHasAssignedBuff(unit, assignedBuff)
     end
 end
 --- Helper Functions ---
-function StringIsPartOfTable(string, table) 
+function BuffBot:StringIsPartOfTable(string, table) 
     local StringMatchFound = false
     for _, value in pairs(table) do
         if (string == value) then 

@@ -17,6 +17,11 @@ BuffBot.UniqueBuffs.MAGE = {"Mage Armor", "Frost Armor", "Molten Armor", "Ice Ar
 BuffBot.UniqueBuffs.WARLOCK = {"Demon Skin", "Demon Armor", "Fel Armor"}
 BuffBot.UniqueBuffs.PALADIN= {"Devotion Aura", "Sanctity Aura", "Concentration Aura", "Retribution Aura", "Frost Resistance Aura", "Shadow Resistance Aura", "Fire Resistance Aura"}
 
+BuffBot.RanklessSpells = {} -- Spells that prevent downranking and require special lookup calls
+BuffBot.RanklessSpells = BuffBot.UniqueBuffs.PALADIN
+table.insert(BuffBot.RanklessSpells,1 , "Battle Shout")
+
+
 local spellIDTable = { -- Rank 1 for checking.
 --DRUID
     ["Omen of Clarity"] = 16864,
@@ -34,7 +39,9 @@ local spellIDTable = { -- Rank 1 for checking.
     ["Arcane Intellect"] = 1459,
     ["Dampen Magic"] = 604,
 -- PALADIN
-    ["Devotion Aura"] = 10290,
+    ["Devotion Aura"] = 465,
+    ["Sanctity Aura"] = 20218,
+    ["Concentration Aura"] = 19746,
     ["Blessing of Might"] = 19740,
     ["Blessing of Wisdom"] = 19742,
 -- PRIEST 
@@ -46,16 +53,17 @@ local spellIDTable = { -- Rank 1 for checking.
 -- SHAMAN
     ["Lightning Shield"] = 324,
 -- WARLOCK
-    ["Demon Armor"] = 706,
     ["Demon Skin"] = 687, -- Low level
+    ["Demon Armor"] = 706,
     ["Fel Armor"] = 403619,
     ["Grimoire of Synergy"] = 426301,
 -- WARRIOR
-    ["Battle Shout"] = 11550,
+    ["Battle Shout"] = 6673,
     ["Commanding Shout"] = 403215,
 }
--- BS 6673, 
-function CheckSpellAvailable(spellString)
+
+
+function BuffBot:CheckSpellAvailable(spellString)
     if spellString == "" then return end
     local spellID = spellIDTable[spellString]
     if #tostring(spellID) == 6 then
@@ -66,55 +74,55 @@ function CheckSpellAvailable(spellString)
     end
 end
 
-function FindBestUniqueBuff()
+function BuffBot:FindBestUniqueBuff()
     if BuffBot.playerclass == "MAGE" then
-        if CheckSpellAvailable("Molten Armor") then
+        if BuffBot:CheckSpellAvailable("Molten Armor") then
             return "Molten Armor"
         end
-        if CheckSpellAvailable("Mage Armor") and UnitInRaid("player") then
+        if BuffBot:CheckSpellAvailable("Mage Armor") and UnitInRaid("player") then
             return "Mage Armor"
         end
-        if CheckSpellAvailable("Ice Armor") then
+        if BuffBot:CheckSpellAvailable("Ice Armor") then
             return "Ice Armor"
         end
-        if CheckSpellAvailable("Frost Armor") then
+        if BuffBot:CheckSpellAvailable("Frost Armor") then
             return "Frost Armor"
         end
     end
 
     if BuffBot.playerclass == "WARLOCK" then
-        if CheckSpellAvailable("Fel Armor") and UnitInRaid("player") then
+        if BuffBot:CheckSpellAvailable("Fel Armor") and UnitInRaid("player") then
             return "Fel Armor"
         end
-        if CheckSpellAvailable("Demon Armor") then
+        if BuffBot:CheckSpellAvailable("Demon Armor") then
             return "Demon Armor"
         end
-        if CheckSpellAvailable("Demon Skin") then
+        if BuffBot:CheckSpellAvailable("Demon Skin") then
             return "Demon Skin"
         end
     end
     if BuffBot.playerclass == "PALADIN" then
-        if CheckSpellAvailable("Sanctity Aura") then
+        if BuffBot:CheckSpellAvailable("Sanctity Aura") then
             return "Sanctity Aura"
         end
         --test
-        if CheckSpellAvailable("Devotion Aura") and UnitInRaid("player") then
+        if BuffBot:CheckSpellAvailable("Devotion Aura") and UnitInRaid("player") then
             return "Devotion Aura"
         end
-        if CheckSpellAvailable("Retribution Aura") then
+        if BuffBot:CheckSpellAvailable("Retribution Aura") then
             return "Retribution Aura"
         end
     end
 end
 
-function FilterInitialList()
+function BuffBot:FilterInitialList()
     for i = 1, #InitalClassBuffLists[BuffBot.playerclass], 1 do
         local spellString = InitalClassBuffLists[BuffBot.playerclass][i]
         if spellString == "Armor" then
-            spellString = FindBestUniqueBuff()
+            spellString = BuffBot:FindBestUniqueBuff()
         end
 
-        if CheckSpellAvailable(spellString) then
+        if BuffBot:CheckSpellAvailable(spellString) then
             table.insert(FilteredClassBuffList, spellString)
         else
             print(InitalClassBuffLists[BuffBot.playerclass][i] .. " not found. Skipped") 
