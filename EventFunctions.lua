@@ -5,7 +5,6 @@ local groupHasChanged = false
 function events:UNIT_AURA(unit, info)  
     if info.isFullUpdate then 
         -- triggers when people join party or player zones through instance
-
         if (unit == "player") then
             if UnitInRaid("player") then BuffBot:UpdateClassBuffList() end
             BuffBot:CheckPlayerBuffs() 
@@ -40,7 +39,6 @@ function events:GROUP_JOINED()
 end
 
 function events:GROUP_ROSTER_UPDATE()
-    
     if UnitExists("party1")  then
         groupHasChanged = true
         return
@@ -49,7 +47,6 @@ function events:GROUP_ROSTER_UPDATE()
         groupHasChanged = true
         return
     end
-    return
 end
 
 function events:GROUP_LEFT()
@@ -72,6 +69,9 @@ end
 function events:PLAYER_REGEN_DISABLED()
     BuffBot.macroBtn:Hide()
 end
+function events:RUNE_UPDATED(t)
+    print(t[1],t[2],t[3],t[4])
+end
 
 events:SetScript("OnEvent", function(self, event, ...)
 	self[event](self, ...)
@@ -84,6 +84,8 @@ events:RegisterEvent("GROUP_ROSTER_UPDATE")
 events:RegisterEvent("GROUP_LEFT")
 
 events:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
+events:RegisterEvent("RUNE_UPDATED")
+
 events:RegisterEvent("PLAYER_REGEN_ENABLED")
 events:RegisterEvent("PLAYER_REGEN_DISABLED")
 events:RegisterEvent("PLAYER_ENTERING_WORLD")

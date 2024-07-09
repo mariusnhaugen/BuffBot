@@ -1,4 +1,5 @@
 local _, BuffBot = ...
+local class = BuffBot.playerclass
 
 local FilteredClassBuffList = {}
 local InitalClassBuffLists = {}
@@ -66,6 +67,15 @@ local spellIDTable = { -- Rank 1 for checking.
 function BuffBot:CheckSpellAvailable(spellString)
     if spellString == "" then return end
     local spellID = spellIDTable[spellString]
+
+    if class == "PALADIN" or class == "WARRIOR" then
+        if BuffBot:StringIsPartOfTable(spellString, BuffBot.RanklessSpells) then
+            if  GetSpellInfo(GetSpellInfo(spellID)) then --get local name of R1, and find Spell id
+                return true
+            else return false end
+        end
+    end
+    
     if #tostring(spellID) == 6 then
         return IsSpellKnownOrOverridesKnown(spellID)
     end
@@ -106,7 +116,7 @@ function BuffBot:FindBestUniqueBuff()
             return "Sanctity Aura"
         end
         --test
-        if BuffBot:CheckSpellAvailable("Devotion Aura") and UnitInRaid("player") then
+        if BuffBot:CheckSpellAvailable("Devotion Aura") then
             return "Devotion Aura"
         end
         if BuffBot:CheckSpellAvailable("Retribution Aura") then

@@ -5,6 +5,7 @@
 ## Notes: Maintenance buffs for |cff00ccffBuffBots|r made simple.
 ## DefaultState: enabled
 
+HelperFunctions.lua
 ClassBuffList.lua
 EventFunctions.lua
 BuffBot.lua
