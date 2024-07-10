@@ -1,8 +1,8 @@
-## Interface: 11502
-## Version: 0.0.1
-## Title: BuffBot |cff00ccff0.0.1|r
+## Interface: 11503
+## Version: 0.0.3
+## Title: BuffBot |cff00ccff0.0.3|r
 ## Author: Smiil
-## Notes: Maintenance buffs for |cff00ccffBuffBots|r made simple.
+## Notes: |cff00ccffBuffBot|r - Maintenance buffs made easy.
 ## DefaultState: enabled
 
 HelperFunctions.lua
