@@ -64,8 +64,26 @@ function BuffBot:HasUniqueClassBuff()
             isBuffFound = true 
             break
         end
-    end
     return isBuffFound
+    end
+end
+
+function BuffBot:SkipCheck(i)
+        if class == "MAGE" or class == "WARLOCK" or class == "PALADIN" or class == "HUNTER" then
+            if BuffBot:StringIsPartOfTable(classBuffs[i], BuffBot.UniqueBuffs[class]) then
+                if BuffBot:HasUniqueClassBuff() then return true end -- check auras and armors
+            end
+        end
+        if class == "WARLOCK" then
+            if classBuffs[i] == "Grimoire of Synergy" then
+                if not IsPetActive() then return true end
+            end
+        end
+        if class == "WARRIOR" then
+            if classBuffs[i] == "Battle Shout" then
+                if not IsUsableSpell("Battle Shout") then return true end
+            end
+        end
 end
 
 function BuffBot:FindNextBuffInList()
@@ -73,19 +91,7 @@ function BuffBot:FindNextBuffInList()
     if not classBuffs then return "done" end
 
     for i = 1, #classBuffs do -- For all buffs in filtered buff list. 
-        local skipCheck = false;
-        if class == "MAGE" or class == "WARLOCK" or class == "PALADIN" then
-            if BuffBot:StringIsPartOfTable(classBuffs[i], BuffBot.UniqueBuffs[class]) then
-                if BuffBot:HasUniqueClassBuff() then skipCheck = true end -- check auras and armors
-            end
-        end
-        if class == "WARLOCK" then
-            if classBuffs[i] == "Grimoire of Synergy" then
-                if not IsPetActive() then skipCheck = true end
-            end
-            
-        end
-
+        local skipCheck = BuffBot:SkipCheck(i)
         if (not BuffBot:UnitHasAssignedBuff("player", classBuffs[i])) and (not skipCheck) then
             return classBuffs[i]
         end

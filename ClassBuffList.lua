@@ -13,6 +13,7 @@ InitalClassBuffLists.WARLOCK= {"Unique" ,"Grimoire of Synergy",}
 InitalClassBuffLists.WARRIOR = {"Commanding Shout", "Battle Shout"}
 
 BuffBot.UniqueBuffs = {}
+BuffBot.UniqueBuffs.HUNTER = {"Aspect of the Viper", "Aspect of the Hawk", "Aspect of the Pack", "Aspect of the Monkey", "Aspect of the Cheetah", "Aspect of the Wild", "Aspect of the Beast" }
 BuffBot.UniqueBuffs.MAGE = {"Mage Armor", "Frost Armor", "Molten Armor", "Ice Armor"}
 BuffBot.UniqueBuffs.WARLOCK = {"Demon Skin", "Demon Armor", "Fel Armor"}
 BuffBot.UniqueBuffs.PALADIN= {"Devotion Aura", "Sanctity Aura", "Concentration Aura", "Retribution Aura", "Frost Resistance Aura", "Shadow Resistance Aura", "Fire Resistance Aura"}

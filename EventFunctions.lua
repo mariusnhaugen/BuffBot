@@ -26,12 +26,6 @@ function events:UNIT_AURA(unit, info)
         BuffBot:CheckPlayerBuffs() 
         return
     end
-
-    local substr = string.sub(unit, 1,4)
-    if (substr == "raid") or (substr == "part")  then
-        -- print(unit)    
-    end
-    -- 
 end
 
 
@@ -41,7 +35,6 @@ function events:GROUP_ROSTER_UPDATE()
 end
 
 function events:GROUP_LEFT()
-
         BuffBot:UpdateClassBuffList()
 end
 
