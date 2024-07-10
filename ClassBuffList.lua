@@ -4,13 +4,13 @@ local class = BuffBot.playerclass
 local InitalClassBuffLists = {}
 InitalClassBuffLists.DRUID= {"Omen of Clarity","Mark of the Wild", "Thorns"}
 InitalClassBuffLists.HUNTER = {"Heart of the Lion","Trueshot Aura","Aspect of the Hawk"}
-InitalClassBuffLists.MAGE = {"Armor", "Arcane Intellect", "Dampen Magic"}
-InitalClassBuffLists.PALADIN = {"Devotion Aura" ,"Blessing of Might"}
+InitalClassBuffLists.MAGE = {"Unique", "Arcane Intellect", "Dampen Magic"}
+InitalClassBuffLists.PALADIN = {"Unique" ,"Blessing of Might"}
 InitalClassBuffLists.PRIEST = {"Power Word: Fortitude","Shadowform","Divine Spirit", "Inner Fire"}
 InitalClassBuffLists.ROGUE = {}
 InitalClassBuffLists.SHAMAN = {"Lightning Shield"}
-InitalClassBuffLists.WARLOCK= {"Armor" ,"Grimoire of Synergy",}
-InitalClassBuffLists.WARRIOR = { "Battle Shout","Commanding Shout"}
+InitalClassBuffLists.WARLOCK= {"Unique" ,"Grimoire of Synergy",}
+InitalClassBuffLists.WARRIOR = {"Commanding Shout", "Battle Shout"}
 
 BuffBot.UniqueBuffs = {}
 BuffBot.UniqueBuffs.MAGE = {"Mage Armor", "Frost Armor", "Molten Armor", "Ice Armor"}
@@ -83,7 +83,7 @@ function BuffBot:CheckSpellAvailable(spellString)
     end
 end
 
-function BuffBot:FindBestUniqueBuff()
+function BuffBot:RecommendUniqueBuff()
     if BuffBot.playerclass == "MAGE" then
         if BuffBot:CheckSpellAvailable("Molten Armor") then
             return "Molten Armor"
@@ -114,7 +114,6 @@ function BuffBot:FindBestUniqueBuff()
         if BuffBot:CheckSpellAvailable("Sanctity Aura") then
             return "Sanctity Aura"
         end
-        --test
         if BuffBot:CheckSpellAvailable("Devotion Aura") then
             return "Devotion Aura"
         end
@@ -128,8 +127,8 @@ function BuffBot:FilterInitialList()
     local FilteredClassBuffList = {}
     for i = 1, #InitalClassBuffLists[BuffBot.playerclass], 1 do
         local spellString = InitalClassBuffLists[BuffBot.playerclass][i]
-        if spellString == "Armor" then
-            spellString = BuffBot:FindBestUniqueBuff()
+        if spellString == "Unique" then
+            spellString = BuffBot:RecommendUniqueBuff()
         end
 
         if BuffBot:CheckSpellAvailable(spellString) then
