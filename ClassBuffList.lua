@@ -1,7 +1,6 @@
 local _, BuffBot = ...
 local class = BuffBot.playerclass
 
-local FilteredClassBuffList = {}
 local InitalClassBuffLists = {}
 InitalClassBuffLists.DRUID= {"Omen of Clarity","Mark of the Wild", "Thorns"}
 InitalClassBuffLists.HUNTER = {"Heart of the Lion","Trueshot Aura","Aspect of the Hawk"}
@@ -89,7 +88,7 @@ function BuffBot:FindBestUniqueBuff()
         if BuffBot:CheckSpellAvailable("Molten Armor") then
             return "Molten Armor"
         end
-        if BuffBot:CheckSpellAvailable("Mage Armor") and UnitInRaid("player") then
+        if BuffBot:CheckSpellAvailable("Mage Armor") and IsInRaid(LE_PARTY_CATEGORY_HOME) then
             return "Mage Armor"
         end
         if BuffBot:CheckSpellAvailable("Ice Armor") then
@@ -126,6 +125,7 @@ function BuffBot:FindBestUniqueBuff()
 end
 
 function BuffBot:FilterInitialList()
+    local FilteredClassBuffList = {}
     for i = 1, #InitalClassBuffLists[BuffBot.playerclass], 1 do
         local spellString = InitalClassBuffLists[BuffBot.playerclass][i]
         if spellString == "Armor" then

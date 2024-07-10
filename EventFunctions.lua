@@ -1,13 +1,13 @@
 local _, BuffBot = ...
 local events = CreateFrame("Frame")
 local groupHasChanged = false
+local class = BuffBot.playerclass
 
 function events:UNIT_AURA(unit, info)  
     if info.isFullUpdate then 
         -- triggers when people join party or player zones through instance
         if (unit == "player") then
             if UnitInRaid("player") then BuffBot:UpdateClassBuffList() end
-            BuffBot:CheckPlayerBuffs() 
         end
         if groupHasChanged then
             print("Group changed")
@@ -34,32 +34,24 @@ function events:UNIT_AURA(unit, info)
     -- 
 end
 
-function events:GROUP_JOINED()
-    print("group joined")
-end
 
 function events:GROUP_ROSTER_UPDATE()
-    if UnitExists("party1")  then
+        BuffBot:UpdateClassBuffList()
         groupHasChanged = true
-        return
-    end
-    if UnitExists("raid1") then
-        groupHasChanged = true
-        return
-    end
 end
 
 function events:GROUP_LEFT()
-	print("Group left")
+
+        BuffBot:UpdateClassBuffList()
 end
 
-function events:PLAYER_ENTERING_WORLD()
+function events:SPELLS_CHANGED()
     BuffBot:UpdateClassBuffList()
 end
 
 function events:UNIT_SPELLCAST_SUCCEEDED(unit)
     if not (unit == "player") then return end 
-        BuffBot:CheckPlayerBuffs() 
+    BuffBot:CheckPlayerBuffs() 
 end
 
 function events:PLAYER_REGEN_ENABLED()
@@ -69,9 +61,6 @@ end
 function events:PLAYER_REGEN_DISABLED()
     BuffBot.macroBtn:Hide()
 end
-function events:RUNE_UPDATED()
-    print("RUNE UPDATED")
-end
 
 events:SetScript("OnEvent", function(self, event, ...)
 	self[event](self, ...)
@@ -79,13 +68,12 @@ end)
 
 events:RegisterEvent("UNIT_AURA")
 
-events:RegisterEvent("GROUP_JOINED")
 events:RegisterEvent("GROUP_ROSTER_UPDATE")
 events:RegisterEvent("GROUP_LEFT")
 
 events:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
-events:RegisterEvent("RUNE_UPDATED")
 
 events:RegisterEvent("PLAYER_REGEN_ENABLED")
 events:RegisterEvent("PLAYER_REGEN_DISABLED")
-events:RegisterEvent("PLAYER_ENTERING_WORLD")
+
+events:RegisterEvent("SPELLS_CHANGED")

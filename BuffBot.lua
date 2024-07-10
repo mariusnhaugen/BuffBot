@@ -10,8 +10,12 @@ local assignedBuff = ""
     SLASH_BUFFBOTSETTINGS1 = "/bb";
     SLASH_BUFFBOTSETTINGS2 = "/buffbot";
     SlashCmdList.BUFFBOTSETTINGS = function(arg)
-        if arg == "" then arg = "player" end
-       
+        if arg == "" then return end
+      
+        if arg == "buffs" then
+            DevTools_Dump(classBuffs)
+            return
+        end
         print(assignedBuff)
         local aura = C_UnitAuras.GetAuraDataBySpellName(arg, assignedBuff)
         if aura then 
@@ -48,7 +52,6 @@ function BuffBot:UpdateMacro(buffString,unit)
     end
 
 function BuffBot:UpdateClassBuffList()
-    print("Ran the thing")
     BuffBot:FilterInitialList()
     classBuffs = BuffBot.ClassBuffList 
     BuffBot:CheckPlayerBuffs()
@@ -117,5 +120,4 @@ BuffBot.macroBtn = macroBtn;
 
 
 
-print("BuffBot v0.0.2 Loaded.")
-print(BuffBot.playername .." "..  BuffBot.playerlevel .." ".. BuffBot.playerclass)
+print("BuffBot v0.0.3 Loaded.")
