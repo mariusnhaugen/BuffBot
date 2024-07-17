@@ -64,8 +64,8 @@ function BuffBot:HasUniqueClassBuff()
             isBuffFound = true 
             break
         end
-    return isBuffFound
     end
+    return isBuffFound
 end
 
 function BuffBot:SkipCheck(i)
