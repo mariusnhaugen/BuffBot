@@ -27,7 +27,6 @@ function PaintSettingsFrame()
         btHideIcon.text:SetText("Hide Icon")
         btHideIcon:SetChecked(false)
         btHideIcon:SetScript("OnClick", function()
-            local icon = LibStub("LibDBIcon-1.0")
             if btHideIcon:GetChecked() then
             else
             end
@@ -59,7 +58,6 @@ function PaintSettingsFrame()
         btBloodrage.text:SetText("Include Bloodrage")
         btBloodrage:SetChecked(false)
         btBloodrage:SetScript("OnClick", function()
-            local icon = LibStub("LibDBIcon-1.0")
             if btBloodrage:GetChecked() then
             else
             end

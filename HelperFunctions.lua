@@ -1,10 +1,11 @@
 local _, BuffBot = ...
 
+BuffBot.DEBUG_MODE = false;
 BuffBot.playername = GetUnitName("player")
 BuffBot.playerlevel = UnitLevel("player")
 BuffBot.playerclass = (select(2, UnitClass("player")))
 --- Helper Functions ---
-function BuffBot:StringIsPartOfTable(string, table) 
+function BuffBot.StringIsPartOfTable(string, table) 
     local StringMatchFound = false
     -- print("StringIsPartOfTable: ", string)
     for _, value in pairs(table) do
@@ -14,4 +15,10 @@ function BuffBot:StringIsPartOfTable(string, table)
          end
     end
     return StringMatchFound;
+end
+
+function BuffBot.debug(...)
+    if BuffBot.DEBUG_MODE then
+        print(...)
+    end
 end

@@ -2,53 +2,55 @@ local _, BuffBot = ...
 local events = CreateFrame("Frame")
 local groupHasChanged = false
 local class = BuffBot.playerclass
+local function debug() end
+debug = BuffBot.debug
 
 function events:UNIT_AURA(unit, info)  
     if info.isFullUpdate then 
         -- triggers when people join party or player zones through instance
         if (unit == "player") then
-            if UnitInRaid("player") then BuffBot:UpdateClassBuffList() end
+            if UnitInRaid("player") then BuffBot.UpdateClassBuffList() end
         end
         if groupHasChanged then
-            print("Group changed")
+            debug("Group changed")
             groupHasChanged = false
         end
 		return
 	end
     if info.removedAuraInstanceIDs then
         if (unit == "player") then
-           BuffBot:CheckPlayerBuffs() 
+           BuffBot.CheckPlayerBuffs() 
         end
         return
     end
         
     if (unit == "player") then
-        BuffBot:CheckPlayerBuffs() 
+        BuffBot.CheckPlayerBuffs() 
         return
     end
 end
 
 
 function events:GROUP_ROSTER_UPDATE()
-        BuffBot:UpdateClassBuffList()
+        BuffBot.UpdateClassBuffList()
         groupHasChanged = true
 end
 
 function events:GROUP_LEFT()
-        BuffBot:UpdateClassBuffList()
+        BuffBot.UpdateClassBuffList()
 end
 
 function events:SPELLS_CHANGED()
-    BuffBot:UpdateClassBuffList()
+    BuffBot.UpdateClassBuffList()
 end
 
 function events:UNIT_SPELLCAST_SUCCEEDED(unit)
     if not (unit == "player") then return end 
-    BuffBot:CheckPlayerBuffs() 
+    BuffBot.CheckPlayerBuffs() 
 end
 
 function events:PLAYER_REGEN_ENABLED()
-    BuffBot:CheckPlayerBuffs()
+    BuffBot.CheckPlayerBuffs()
 end
 
 function events:PLAYER_REGEN_DISABLED()
@@ -69,4 +71,5 @@ events:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
 events:RegisterEvent("PLAYER_REGEN_ENABLED")
 events:RegisterEvent("PLAYER_REGEN_DISABLED")
 
+--Fired when Spellbook is populated. On login as well as overrides changing (runes)
 events:RegisterEvent("SPELLS_CHANGED")

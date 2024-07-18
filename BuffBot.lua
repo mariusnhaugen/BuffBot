@@ -16,14 +16,15 @@ local assignedBuff = ""
             DevTools_Dump(classBuffs)
             return
         end
-        print(assignedBuff)
-        local aura = C_UnitAuras.GetAuraDataBySpellName(arg, assignedBuff)
-        if aura then 
-            print(GetUnitName(arg).. " is buffed with " .. assignedBuff)
-            return true
-        else
-            print(GetUnitName(arg) .. " does not have " .. assignedBuff )
-            return false
+
+        if arg == "debug" then
+            BuffBot.DEBUG_MODE = not BuffBot.DEBUG_MODE
+            if BuffBot.DEBUG_MODE then
+                print("BuffBot Debug Mode - ON")
+            else 
+                print("BuffBot Debug Mode - OFF")
+            end
+            return
         end
      
     end
@@ -41,7 +42,7 @@ function BuffBotDump()
  return BuffBot.RanklessSpells
 end
 
-function BuffBot:UpdateMacro(buffString,unit)
+function BuffBot.UpdateMacro(buffString,unit)
         if InCombatLockdown() then return end
         local texture = GetSpellTexture(buffString)
         if texture then
@@ -51,16 +52,16 @@ function BuffBot:UpdateMacro(buffString,unit)
         macroBtn:Show()
     end
 
-function BuffBot:UpdateClassBuffList()
-    BuffBot:FilterInitialList()
+function BuffBot.UpdateClassBuffList()
+    BuffBot.FilterInitialList()
     classBuffs = BuffBot.ClassBuffList 
-    BuffBot:CheckPlayerBuffs()
+    BuffBot.CheckPlayerBuffs()
 end
 
-function BuffBot:HasUniqueClassBuff()
+function BuffBot.HasUniqueClassBuff()
     local isBuffFound = false
     for i = 1, #BuffBot.UniqueBuffs[class], 1 do 
-        if BuffBot:UnitHasAssignedBuff("player", BuffBot.UniqueBuffs[class][i]) then
+        if BuffBot.UnitHasAssignedBuff("player", BuffBot.UniqueBuffs[class][i]) then
             isBuffFound = true 
             break
         end
@@ -68,10 +69,10 @@ function BuffBot:HasUniqueClassBuff()
     return isBuffFound
 end
 
-function BuffBot:SkipCheck(i)
+function BuffBot.SkipCheck(i)
         if class == "MAGE" or class == "WARLOCK" or class == "PALADIN" or class == "HUNTER" then
-            if BuffBot:StringIsPartOfTable(classBuffs[i], BuffBot.UniqueBuffs[class]) then
-                if BuffBot:HasUniqueClassBuff() then return true end -- check auras and armors
+            if BuffBot.StringIsPartOfTable(classBuffs[i], BuffBot.UniqueBuffs[class]) then
+                if BuffBot.HasUniqueClassBuff() then return true end -- check auras and armors
             end
         end
         if class == "WARLOCK" then
@@ -86,31 +87,31 @@ function BuffBot:SkipCheck(i)
         end
 end
 
-function BuffBot:FindNextBuffInList()
+function BuffBot.FindNextBuffInList()
     if InCombatLockdown() then return "done" end
     if not classBuffs then return "done" end
 
     for i = 1, #classBuffs do -- For all buffs in filtered buff list. 
-        local skipCheck = BuffBot:SkipCheck(i)
-        if (not BuffBot:UnitHasAssignedBuff("player", classBuffs[i])) and (not skipCheck) then
+        local skipCheck = BuffBot.SkipCheck(i)
+        if (not BuffBot.UnitHasAssignedBuff("player", classBuffs[i])) and (not skipCheck) then
             return classBuffs[i]
         end
     end
     return "done" 
 end
 
-function BuffBot:CheckPlayerBuffs() 
-        local buff = BuffBot:FindNextBuffInList()
+function BuffBot.CheckPlayerBuffs() 
+        local buff = BuffBot.FindNextBuffInList()
         if buff == "done" then 
             if InCombatLockdown() then return end
             macroBtn:Hide()
             return 
         end
         assignedBuff = buff
-        BuffBot:UpdateMacro(assignedBuff, "player")
+        BuffBot.UpdateMacro(assignedBuff, "player")
 end
 
-function BuffBot:UnitHasAssignedBuff(unit, assignedBuff)
+function BuffBot.UnitHasAssignedBuff(unit, assignedBuff)
     if assignedBuff == "" then return end
 
     local aura = C_UnitAuras.GetAuraDataBySpellName(unit, assignedBuff)
