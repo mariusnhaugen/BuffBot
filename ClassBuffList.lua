@@ -1,4 +1,5 @@
 local _, BuffBot = ...
+BuffBot.config = {}
 local class = BuffBot.playerclass
 local function debug() end
 debug = BuffBot.debug
@@ -7,12 +8,12 @@ local InitalClassBuffLists = {}
 InitalClassBuffLists.DRUID= {"Omen of Clarity","Mark of the Wild", "Thorns"}
 InitalClassBuffLists.HUNTER = {"Heart of the Lion","Trueshot Aura","Aspect of the Hawk"}
 InitalClassBuffLists.MAGE = {"Unique", "Arcane Intellect", "Dampen Magic"}
-InitalClassBuffLists.PALADIN = {"Unique" ,"Blessing of Might"}
+InitalClassBuffLists.PALADIN = {"Unique" ,"Blessing"}
 InitalClassBuffLists.PRIEST = {"Power Word: Fortitude","Shadowform","Divine Spirit", "Inner Fire"}
 InitalClassBuffLists.ROGUE = {}
 InitalClassBuffLists.SHAMAN = {"Lightning Shield"}
 InitalClassBuffLists.WARLOCK= {"Unique" ,"Grimoire of Synergy",}
-InitalClassBuffLists.WARRIOR = {"Commanding Shout", "Battle Shout"}
+InitalClassBuffLists.WARRIOR = {"Valor of Azeroth","Commanding Shout", "Battle Shout"}
 
 BuffBot.UniqueBuffs = {}
 BuffBot.UniqueBuffs.HUNTER = {"Aspect of the Viper", "Aspect of the Hawk", "Aspect of the Pack", "Aspect of the Monkey", "Aspect of the Cheetah", "Aspect of the Wild", "Aspect of the Beast" }
@@ -63,6 +64,7 @@ local spellIDTable = { -- Rank 1 for checking.
 -- WARRIOR
     ["Battle Shout"] = 6673,
     ["Commanding Shout"] = 403215,
+    ["Valor of Azeroth"] = 461475,
 }
 
 
@@ -133,7 +135,13 @@ function BuffBot.FilterInitialList()
         if spellString == "Unique" then
             spellString = BuffBot.RecommendUniqueBuff()
         end
-
+        if spellString == "Blessing" then
+            if BuffBot.config.blessingOfWisdom then 
+                spellString = "Blessing of Wisdom"
+            else
+                spellString = "Blessing of Might"
+            end
+        end
         if BuffBot.CheckSpellAvailable(spellString) then
             table.insert(FilteredClassBuffList, spellString)
         else

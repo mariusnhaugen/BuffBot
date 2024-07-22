@@ -58,9 +58,19 @@ function PaintSettingsFrame()
         btBloodrage.text:SetText("Include Bloodrage")
         btBloodrage:SetChecked(false)
         btBloodrage:SetScript("OnClick", function()
-            if btBloodrage:GetChecked() then
-            else
-            end
+        end)
+		
+        local btnBlessingOfWisdom  = CreateFrame("CheckButton", nil, panel, "UICheckButtonTemplate")
+        btnBlessingOfWisdom :SetPoint("TOPLEFT", btBloodrage, 0, -35)
+
+        btnBlessingOfWisdom .text = btnBlessingOfWisdom :CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        btnBlessingOfWisdom .text:SetPoint("LEFT", btnBlessingOfWisdom , "RIGHT", 0, 1)
+        btnBlessingOfWisdom .text:SetText("Self buff Blessing of Wisdom")
+        btnBlessingOfWisdom :SetChecked(false)
+        btnBlessingOfWisdom :SetScript("OnClick", function()
+            BuffBot.debug("Wisdom changed - ", btnBlessingOfWisdom:GetChecked())
+            BuffBot.config.blessingOfWisdom = btnBlessingOfWisdom:GetChecked()
+            BuffBot.UpdateClassBuffList()
         end)
 end
 
