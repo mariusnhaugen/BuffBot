@@ -5,16 +5,13 @@ BuffBot.playername = GetUnitName("player")
 BuffBot.playerlevel = UnitLevel("player")
 BuffBot.playerclass = (select(2, UnitClass("player")))
 --- Helper Functions ---
-function BuffBot.StringIsPartOfTable(string, table) 
-    local StringMatchFound = false
-    -- print("StringIsPartOfTable: ", string)
-    for _, value in pairs(table) do
-        if (string == value) then 
-            StringMatchFound = true
-            break
-         end
+function BuffBot.IndexOf(value, table) 
+    for i, v in ipairs(table) do
+        if v == value then
+            return i
+        end
     end
-    return StringMatchFound;
+    return nil 
 end
 
 function BuffBot.debug(...)

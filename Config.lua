@@ -31,6 +31,19 @@ function PaintSettingsFrame()
             else
             end
         end)
+        local btnSuggestionList  = CreateFrame("CheckButton", nil, panel, "UICheckButtonTemplate")
+        btnSuggestionList:SetPoint("TOPLEFT", btHideIcon, 100, 0)
+
+        btnSuggestionList.text = btnSuggestionList:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        btnSuggestionList.text:SetPoint("LEFT", btnSuggestionList , "RIGHT", 0, 1)
+        btnSuggestionList.text:SetText("Show Suggestion List")
+        btnSuggestionList:SetChecked(true)
+        BuffBot.config.SUGGESTION_LIST = true 
+        btnSuggestionList:SetScript("OnClick", function()
+            BuffBot.debug("Suggestion List - ", btnSuggestionList:GetChecked())
+            BuffBot.config.SUGGESTION_LIST = btnSuggestionList:GetChecked()
+            BuffBot.UpdateSuggestionList()
+        end)
 
 		local classSettings = panel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
         classSettings:SetText("Class Settings")

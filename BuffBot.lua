@@ -2,9 +2,11 @@ local _, BuffBot = ...
 local ParentFrame;
 local macroBtn;
 
+
 local class = BuffBot.playerclass
 
 local classBuffs = {}
+BuffBot.futureBuffStrings = {}
 local assignedBuff = "" 
 
     SLASH_BUFFBOTSETTINGS1 = "/bb";
@@ -31,8 +33,44 @@ local assignedBuff = ""
     macroBtn:SetSize(48,48)
     macroBtn:SetPoint("CENTER", ParentFrame, "CENTER", 100, 0)
 
+    BuffBot.suggestionList = {}
+    function BuffBot.UpdateSuggestionList()
+        if #BuffBot.suggestionList then
+           for i = 1, #BuffBot.suggestionList, 1 do
+                BuffBot.suggestionList[i]:SetText("")
+                BuffBot.suggestionList[i]:Hide()
+           end 
+        end
 
---------------- MAIN FUNCTIONS ----------------
+        if not BuffBot.config.SUGGESTION_LIST then return end
+        if #classBuffs > 0 then
+            local nextIndex = BuffBot.IndexOf(BuffBot.FindNextBuffInList(), classBuffs)
+            BuffBot.futureBuffStrings = {unpack(classBuffs,nextIndex,#classBuffs)}
+            
+            FilterSuggestionList()
+   
+           for i = 1, #BuffBot.futureBuffStrings, 1 do
+            local offset = -35 + (i*-15)
+            if (not BuffBot.suggestionList[i]) and (i <= 5) then
+                BuffBot.suggestionList[i] = macroBtn:CreateFontString(nil, "OVERLAY", "GameTooltipText")
+                BuffBot.suggestionList[i]:SetPoint("TOPLEFT", macroBtn, 0, offset)
+            end
+                BuffBot.suggestionList[i]:SetText(BuffBot.futureBuffStrings[i])
+                BuffBot.suggestionList[i]:Show()
+           end 
+        end
+    end
+
+    function FilterSuggestionList()
+        local filteredTable = {}
+        for i = 1, #BuffBot.futureBuffStrings, 1 do
+            if not BuffBot.UnitHasAssignedBuff("player", BuffBot.futureBuffStrings[i]) then
+                table.insert(filteredTable, BuffBot.futureBuffStrings[i])
+            end
+        end 
+        BuffBot.futureBuffStrings = filteredTable
+    end
+    --------------- MAIN FUNCTIONS ----------------
     
 function BuffBotDump()
  return BuffBot.RanklessSpells
@@ -67,7 +105,7 @@ end
 
 function BuffBot.SkipCheck(i)
         if class == "MAGE" or class == "WARLOCK" or class == "PALADIN" or class == "HUNTER" then
-            if BuffBot.StringIsPartOfTable(classBuffs[i], BuffBot.UniqueBuffs[class]) then
+            if BuffBot.IndexOf(classBuffs[i], BuffBot.UniqueBuffs[class]) then
                 if BuffBot.HasUniqueClassBuff() then return true end -- check auras and armors
             end
         end
@@ -104,7 +142,7 @@ function BuffBot.FindNextBuffInList()
     if not classBuffs then return "done" end
 
     for i = 1, #classBuffs do -- For all buffs in filtered buff list. 
-        local skipCheck = BuffBot.SkipCheck(i)
+        local skipCheck = BuffBot.SkipCheck(i) -- check for exceptions
         if (not BuffBot.UnitHasAssignedBuff("player", classBuffs[i])) and (not skipCheck) then
             return classBuffs[i]
         end
@@ -121,6 +159,10 @@ function BuffBot.CheckPlayerBuffs()
         end
         assignedBuff = buff
         BuffBot.UpdateMacro(assignedBuff, "player")
+
+        if BuffBot.config.SUGGESTION_LIST then 
+            BuffBot.UpdateSuggestionList()
+        end
 end
 
 function BuffBot.UnitHasAssignedBuff(unit, assignedBuff)
