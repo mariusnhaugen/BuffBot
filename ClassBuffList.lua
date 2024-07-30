@@ -61,6 +61,7 @@ local spellIDTable = { -- Rank 1 for checking.
     ["Demon Armor"] = 706,
     ["Fel Armor"] = 403619,
     ["Grimoire of Synergy"] = 426301,
+    ["Blood Pact"] = 11767,
 -- WARRIOR
     ["Battle Shout"] = 6673,
     ["Commanding Shout"] = 403215,
