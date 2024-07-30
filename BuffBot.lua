@@ -19,11 +19,7 @@ local assignedBuff = ""
 
         if arg == "debug" then
             BuffBot.DEBUG_MODE = not BuffBot.DEBUG_MODE
-            if BuffBot.DEBUG_MODE then
-                print("BuffBot Debug Mode - ON")
-            else 
-                print("BuffBot Debug Mode - OFF")
-            end
+            print("BuffBot Debug Mode -", BuffBot.DEBUG_MODE)
             return
         end
      
@@ -75,6 +71,16 @@ function BuffBot.SkipCheck(i)
                 if BuffBot.HasUniqueClassBuff() then return true end -- check auras and armors
             end
         end
+        if class == "DRUID" then
+            if classBuffs[i] == "Mark of the Wild" then
+                return BuffBot.UnitHasAssignedBuff("player", "Gift of the Wild")
+            end
+        end
+        if class == "PRIEST" then
+            if classBuffs[i] == "Power Word: Fortitude" then
+                return BuffBot.UnitHasAssignedBuff("player", "Prayer of Fortitude")
+            end
+        end
         if class == "WARLOCK" then
             if classBuffs[i] == "Grimoire of Synergy" then
                 if not IsPetActive() then return true end
@@ -83,6 +89,12 @@ function BuffBot.SkipCheck(i)
         if class == "WARRIOR" then
             if classBuffs[i] == "Battle Shout" then
                 if not IsUsableSpell("Battle Shout") then return true end
+            end
+            if classBuffs[i] == "Commanding Shout" then
+                return BuffBot.UnitHasAssignedBuff("player", "Blood Pact")
+            end
+            if classBuffs[i] == "Valor of Azeroth" then
+                return BuffBot.UnitHasAssignedBuff("player", "Rallying Cry of the Dragonslayer")
             end
         end
 end
@@ -127,4 +139,4 @@ BuffBot.macroBtn = macroBtn;
 
 
 
-print("BuffBot v0.0.3 Loaded.")
+print("BuffBot v0.0.4 Loaded.")
