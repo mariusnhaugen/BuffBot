@@ -57,6 +57,17 @@ function events:PLAYER_REGEN_DISABLED()
     BuffBot.macroBtn:Hide()
 end
 
+function events:ADDON_LOADED()
+    if BuffBotConfig == nil then
+       BuffBotConfig = BuffBot.GetDefaultConfig() 
+    end
+    BuffBot.config = BuffBotConfig
+end
+
+function events:PLAYER_LOGOUT()
+    BuffBotConfig = BuffBot.config 
+end
+
 events:SetScript("OnEvent", function(self, event, ...)
 	self[event](self, ...)
 end)
@@ -73,3 +84,6 @@ events:RegisterEvent("PLAYER_REGEN_DISABLED")
 
 --Fired when Spellbook is populated. On login as well as overrides changing (runes)
 events:RegisterEvent("SPELLS_CHANGED")
+
+events:RegisterEvent("ADDON_LOADED")
+events:RegisterEvent("PLAYER_LOGOUT")

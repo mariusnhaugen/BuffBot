@@ -1,5 +1,4 @@
 local _, BuffBot = ...
-BuffBot.config = {}
 local class = BuffBot.playerclass
 local function debug() end
 debug = BuffBot.debug
@@ -137,7 +136,7 @@ function BuffBot.FilterInitialList()
             spellString = BuffBot.RecommendUniqueBuff()
         end
         if spellString == "Blessing" then
-            if BuffBot.config.blessingOfWisdom then 
+            if BuffBot.config.WISDOM_SELF then 
                 spellString = "Blessing of Wisdom"
             else
                 spellString = "Blessing of Might"

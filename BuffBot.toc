@@ -4,6 +4,7 @@
 ## Author: Smiil
 ## Notes: |cff00ccffBuffBot|r - Maintenance buffs made easy.
 ## DefaultState: enabled
+## SavedVariables: BuffBotConfig
 
 
 HelperFunctions.lua
