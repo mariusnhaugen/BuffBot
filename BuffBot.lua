@@ -20,8 +20,8 @@ local assignedBuff = ""
         end
 
         if arg == "debug" then
-            BuffBot.DEBUG_MODE = not BuffBot.DEBUG_MODE
-            print("BuffBot Debug Mode -", BuffBot.DEBUG_MODE)
+            BuffBot.config.DEBUG_MODE = not BuffBot.config.DEBUG_MODE
+            print("BuffBot Debug Mode -", BuffBot.config.DEBUG_MODE)
             return
         end
      
@@ -76,13 +76,13 @@ function BuffBotDump()
  return BuffBot.RanklessSpells
 end
 
-function BuffBot.UpdateMacro(buffString,unit)
+function BuffBot.UpdateMacro(spellName,unit)
         if InCombatLockdown() then return end
-        local texture = GetSpellTexture(buffString)
+        local texture = GetSpellTexture(spellName)
         if texture then
             macroBtn:SetNormalTexture(texture)
         end
-        macroBtn:SetAttribute("macrotext1", "/cast [target="..unit.."]" .. buffString) -- text for macro on left click
+        macroBtn:SetAttribute("macrotext1", "/cast [target="..unit.."]" .. spellName) -- text for macro on left click
         macroBtn:Show()
     end
 
@@ -126,7 +126,14 @@ function BuffBot.SkipCheck(i)
         end
         if class == "WARRIOR" then
             if classBuffs[i] == "Battle Shout" then
-                if not IsUsableSpell("Battle Shout") then return true end
+                if not IsUsableSpell("Battle Shout") and not BuffBot.config.BLOODRAGE then return true end
+                if not IsUsableSpell("Battle Shout") and BuffBot.config.BLOODRAGE and (not BuffBot.UnitHasAssignedBuff("player", "Battle Shout")) then
+                    if BuffBot.CheckSpellAvailable("Bloodrage") and (not BuffBot.IndexOf("Bloodrage", classBuffs)) and not BuffBot.BLOODRAGE_LOCKED then
+                        BuffBot.debug("Bloodrage Added")
+                        local bsIndex = BuffBot.IndexOf("Battle Shout", classBuffs)
+                        table.insert(classBuffs,bsIndex, "Bloodrage")
+                    end
+                end
             end
             if classBuffs[i] == "Commanding Shout" then
                 return BuffBot.UnitHasAssignedBuff("player", "Blood Pact")
@@ -176,9 +183,14 @@ function BuffBot.UnitHasAssignedBuff(unit, assignedBuff)
     end
 end
 
+function BuffBot.RemoveBloodrage()
+    local index = BuffBot.IndexOf("Bloodrage", classBuffs) 
+    if index then
+        table.remove(classBuffs, index)
+        return true
+    end
+    return false
+end
+
 --- Namespacing  ---
 BuffBot.macroBtn = macroBtn;
-
-
-
-print("BuffBot v0.0.4 Loaded.")

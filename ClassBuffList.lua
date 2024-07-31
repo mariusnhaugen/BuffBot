@@ -65,6 +65,7 @@ local spellIDTable = { -- Rank 1 for checking.
     ["Battle Shout"] = 6673,
     ["Commanding Shout"] = 403215,
     ["Valor of Azeroth"] = 461475,
+    ["Bloodrage"] = 2687,
 }
 
 
@@ -142,7 +143,9 @@ function BuffBot.FilterInitialList()
                 spellString = "Blessing of Might"
             end
         end
+
         if BuffBot.CheckSpellAvailable(spellString) then
+            BuffBot.debug(spellString, " Added to Filtered List")
             table.insert(FilteredClassBuffList, spellString)
         else
             debug(InitalClassBuffLists[BuffBot.playerclass][i] .. " not found. Skipped") 

@@ -8,7 +8,7 @@
 
 
 HelperFunctions.lua
-ClassBuffList.lua
 EventFunctions.lua
+ClassBuffList.lua
 BuffBot.lua
 Config.lua

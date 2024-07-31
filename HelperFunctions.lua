@@ -15,7 +15,7 @@ function BuffBot.IndexOf(value, table)
 end
 
 function BuffBot.debug(...)
-    if BuffBot.DEBUG_MODE then
+    if BuffBot.config.DEBUG_MODE then
         print(...)
     end
 end

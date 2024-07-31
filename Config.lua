@@ -8,6 +8,7 @@ function BuffBot.GetDefaultConfig()
     local defaultConfig = {}
     defaultConfig.HIDE_ICON = false
     defaultConfig.SUGGESTION_LIST = true
+    defaultConfig.DEBUG_MODE = false
 
     defaultConfig.BLOODRAGE = false
     defaultConfig.WISDOM_SELF = false
@@ -85,21 +86,22 @@ local function PaintSettingsFrame()
             end
         end)
 
-		local btBloodrage = CreateFrame("CheckButton", nil, panel, "UICheckButtonTemplate")
-        btBloodrage:SetPoint("TOPLEFT", btnIgnoreDampen, 0, -40)
+		local btnBloodrage = CreateFrame("CheckButton", nil, panel, "UICheckButtonTemplate")
+        btnBloodrage:SetPoint("TOPLEFT", btnIgnoreDampen, 0, -40)
 
-        btBloodrage.text = btBloodrage:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        btBloodrage.text:SetPoint("LEFT", btBloodrage, "RIGHT", 0, 1)
-        btBloodrage.text:SetText("Include Bloodrage [NYI]")
-        btBloodrage:SetChecked(BuffBot.config.BLOODRAGE)
-        btBloodrage:SetScript("OnClick", function()
-            if btBloodrage:GetChecked() then
-            else
-            end
+        btnBloodrage.text = btnBloodrage:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        btnBloodrage.text:SetPoint("LEFT", btnBloodrage, "RIGHT", 0, 1)
+        btnBloodrage.text:SetText("Include Bloodrage (its a little inconsistent:) )") 
+        btnBloodrage:SetChecked(BuffBot.config.BLOODRAGE)
+        btnBloodrage:SetScript("OnClick", function()
+            BuffBot.debug("Bloodrage - ", btnBloodrage:GetChecked())
+            BuffBot.config.BLOODRAGE = btnBloodrage:GetChecked()
+            BuffBot.UpdateClassBuffList()
+
         end)
 		
         local btnBlessingOfWisdom  = CreateFrame("CheckButton", nil, panel, "UICheckButtonTemplate")
-        btnBlessingOfWisdom :SetPoint("TOPLEFT", btBloodrage, 0, -40)
+        btnBlessingOfWisdom :SetPoint("TOPLEFT", btnBloodrage, 0, -40)
 
         btnBlessingOfWisdom .text = btnBlessingOfWisdom :CreateFontString(nil, "OVERLAY", "GameFontNormal")
         btnBlessingOfWisdom .text:SetPoint("LEFT", btnBlessingOfWisdom , "RIGHT", 0, 1)
