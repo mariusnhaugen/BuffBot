@@ -129,6 +129,23 @@ function BuffBot.RecommendUniqueBuff()
     end
 end
 
+local function GetSpellSkip(spellString)
+    
+    if class == "DRUID" then
+        if spellString == "Thorns"and BuffBot.config.IGNORE_THORNS then
+            return true
+        end
+    end
+
+    if class == "MAGE" then
+        if spellString == "Dampen Magic" and BuffBot.config.IGNORE_DAMPEN then
+            return true
+        end
+    end
+
+    return false
+end
+
 function BuffBot.FilterInitialList()
     local FilteredClassBuffList = {}
     for i = 1, #InitalClassBuffLists[BuffBot.playerclass], 1 do
@@ -144,8 +161,10 @@ function BuffBot.FilterInitialList()
             end
         end
 
-        if BuffBot.CheckSpellAvailable(spellString) then
-            BuffBot.debug(spellString, " Added to Filtered List")
+        local skipSpell = GetSpellSkip(spellString)
+
+        if BuffBot.CheckSpellAvailable(spellString) and not skipSpell then
+            debug(spellString, " Added to Filtered List")
             table.insert(FilteredClassBuffList, spellString)
         else
             debug(InitalClassBuffLists[BuffBot.playerclass][i] .. " not found. Skipped") 
