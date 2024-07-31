@@ -106,7 +106,8 @@ end
 function BuffBot.SkipCheck(i)
         if class == "MAGE" or class == "WARLOCK" or class == "PALADIN" or class == "HUNTER" then
             if BuffBot.IndexOf(classBuffs[i], BuffBot.UniqueBuffs[class]) then
-                if BuffBot.HasUniqueClassBuff() then return true end -- check auras and armors
+                local skip = (class == "MAGE") and BuffBot.config.STRICT_ARMOR
+                if BuffBot.HasUniqueClassBuff() and not skip then return true end -- check auras and armors
             end
         end
         if class == "DRUID" then

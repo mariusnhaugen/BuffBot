@@ -132,7 +132,8 @@ end
 local function GetSpellSkip(spellString)
     
     if class == "DRUID" then
-        if spellString == "Thorns"and BuffBot.config.IGNORE_THORNS then
+        if spellString == "Thorns" and BuffBot.config.IGNORE_THORNS then
+            debug("Skipping thorns")
             return true
         end
     end
@@ -167,7 +168,7 @@ function BuffBot.FilterInitialList()
             debug(spellString, " Added to Filtered List")
             table.insert(FilteredClassBuffList, spellString)
         else
-            debug(InitalClassBuffLists[BuffBot.playerclass][i] .. " not found. Skipped") 
+            debug(InitalClassBuffLists[BuffBot.playerclass][i] .. " not found or intentionally skipped") 
         end
     end
     BuffBot.ClassBuffList = FilteredClassBuffList 
