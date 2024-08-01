@@ -21,6 +21,19 @@ end
 
 
 local function PaintSettingsFrame()
+    
+    local function createCheckbox(label, description, onClick)
+        local check = CreateFrame("CheckButton", "BuffBotCheckbox" .. label, panel, "InterfaceOptionsCheckButtonTemplate")
+        check:SetScript("OnClick", function(self)
+            local tick = self:GetChecked()
+            onClick(self, tick and true or false)
+        end)
+        check.label = _G[check:GetName() .. "Text"]
+        check.label:SetText(label)
+        check.tooltipText = label
+        check.tooltipRequirement = description
+        return check
+	end
 
     -- TOP AREA 
         local t = panel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
@@ -28,103 +41,107 @@ local function PaintSettingsFrame()
         t:SetPoint("TOPLEFT", panel, 15, -15)
 
        
-
-        local btHideIcon = CreateFrame("CheckButton", nil, panel, "UICheckButtonTemplate")
-        btHideIcon:SetPoint("TOPLEFT", panel, 15, -60)
-        btHideIcon.text = btHideIcon:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        btHideIcon.text:SetPoint("LEFT", btHideIcon, "RIGHT", 0, 1)
-        btHideIcon.text:SetText("Hide Icon [NYI]")
-        btHideIcon:SetChecked(BuffBot.config.HIDE_ICON)
-        btHideIcon:SetScript("OnClick", function()
-            if btHideIcon:GetChecked() then
-            else
-            end
+        local checkboxHideIcon = createCheckbox(
+        "Hide Icon [NYI]",
+        "Hides Icon for text only/stealth mode buffing",
+        function(_, checkboxValue)
         end)
+        checkboxHideIcon:SetPoint("TOPLEFT", panel, 15, -60)
+        checkboxHideIcon:SetChecked(BuffBot.config.HIDE_ICON)
+        checkboxHideIcon:Disable()
 
-        local btnSuggestionList  = CreateFrame("CheckButton", nil, panel, "UICheckButtonTemplate")
-        btnSuggestionList:SetPoint("TOPLEFT", btHideIcon, 120, 0)
-        btnSuggestionList.text = btnSuggestionList:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        btnSuggestionList.text:SetPoint("LEFT", btnSuggestionList , "RIGHT", 0, 1)
-        btnSuggestionList.text:SetText("Show Suggestion List")
-        btnSuggestionList:SetChecked(BuffBot.config.SUGGESTION_LIST)
-        btnSuggestionList:SetScript("OnClick", function()
-            BuffBot.debug("Suggestion List - ", btnSuggestionList:GetChecked())
-            BuffBot.config.SUGGESTION_LIST = btnSuggestionList:GetChecked()
+        local checkboxSuggestionList  = createCheckbox(
+        "Show Suggestion List",
+        "Shows list of the buttons next suggested casts.",
+        function(_, checkboxValue)
+            BuffBot.debug("Suggestion List - ", checkboxValue)
+            BuffBot.config.SUGGESTION_LIST = checkboxValue 
             BuffBot.UpdateSuggestionList()
         end)
+        checkboxSuggestionList:SetPoint("TOPLEFT", checkboxHideIcon, 120, 0)
+        checkboxSuggestionList:SetChecked(BuffBot.config.SUGGESTION_LIST)
 
-        -- CLASS SETTINGS --
-        -- Gap between classes : -40
-        -- Gap within classes: -25
+        local buttonResetPosition  = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
+        buttonResetPosition:SetPoint("TOPLEFT", checkboxSuggestionList, 160, 0)
+        buttonResetPosition:SetText("Reset Button Position")
+        buttonResetPosition:SetWidth(140)
+        buttonResetPosition:SetHeight(28)
+        buttonResetPosition:SetScript("OnClick", function()
+            BuffBot.debug("Macro button position reset ")
+            BuffBot.SetMacroButtonDefaultPosition()
+        end)
+	    buttonResetPosition.tooltipText = "Resets Main Button Position"
+	    buttonResetPosition.newbieText = "You can move the button by holding Alt and dragging."
+
+        
+    -- CLASS SETTINGS --
+    -- Gap between classes : -40
+    -- Gap within classes: -25
 		local classSettings = panel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
         classSettings:SetText("Class Settings")
         classSettings:SetPoint("TOPLEFT", panel, 15, -115)
 
-        local btnStrictArmor = CreateFrame("CheckButton", nil, panel, "UICheckButtonTemplate")
-        btnStrictArmor:SetPoint("TOPLEFT", classSettings, 15, -25)
-        btnStrictArmor.text = btnStrictArmor:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        btnStrictArmor.text:SetPoint("LEFT", btnStrictArmor, "RIGHT", 0, 1)
-        btnStrictArmor.text:SetText("Strict Mage Armors")
-        btnStrictArmor:SetChecked(BuffBot.config.STRICT_ARMOR)
-        btnStrictArmor:SetScript("OnClick", function()
-            BuffBot.debug("Dampen changed - ", btnStrictArmor:GetChecked())
-            BuffBot.config.STRICT_ARMOR = btnStrictArmor:GetChecked()
+        local buttonStrictArmor = createCheckbox(
+        "Strict Mage Armors",
+        "Disallow any armor being valid when recommending a Mage armor buff. \n \n Open world:  Molten Armor > Ice Armor \n In Raid:        Molten Armor > Mage Armor",
+        function(_, checkboxValue)
+            BuffBot.debug("Dampen changed - ", checkboxValue)
+            BuffBot.config.STRICT_ARMOR = checkboxValue 
             BuffBot.UpdateClassBuffList()
         end)
+        buttonStrictArmor:SetPoint("TOPLEFT", classSettings, 15, -25)
+        buttonStrictArmor:SetChecked(BuffBot.config.STRICT_ARMOR)
 
-        local btnIgnoreDampen = CreateFrame("CheckButton", nil, panel, "UICheckButtonTemplate")
-        btnIgnoreDampen:SetPoint("TOPLEFT", btnStrictArmor, 0, -25)
-        btnIgnoreDampen.text = btnIgnoreDampen:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        btnIgnoreDampen.text:SetPoint("LEFT", btnIgnoreDampen, "RIGHT", 0, 1)
-        btnIgnoreDampen.text:SetText("Skip Dampen Magic")
-        btnIgnoreDampen:SetChecked(BuffBot.config.IGNORE_DAMPEN)
-        btnIgnoreDampen:SetScript("OnClick", function()
-            BuffBot.debug("Dampen changed - ", btnIgnoreDampen:GetChecked())
-            BuffBot.config.IGNORE_DAMPEN= btnIgnoreDampen:GetChecked()
+        local buttonIgnoreDampen = createCheckbox( 
+        "Skip Dampen Magic",
+        "Skip recommending Dampen Magic.",
+        function(_,checkboxValue)
+            BuffBot.debug("Dampen changed - ", checkboxValue)
+            BuffBot.config.IGNORE_DAMPEN=checkboxValue 
             BuffBot.UpdateClassBuffList()
         end)
+        buttonIgnoreDampen:SetPoint("TOPLEFT", buttonStrictArmor, 0, -25)
+        buttonIgnoreDampen:SetChecked(BuffBot.config.IGNORE_DAMPEN)
 
-		local btnBloodrage = CreateFrame("CheckButton", nil, panel, "UICheckButtonTemplate")
-        btnBloodrage:SetPoint("TOPLEFT", btnIgnoreDampen, 0, -40)
 
-        btnBloodrage.text = btnBloodrage:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        btnBloodrage.text:SetPoint("LEFT", btnBloodrage, "RIGHT", 0, 1)
-        btnBloodrage.text:SetText("Include Bloodrage (its a little inconsistent:) )") 
-        btnBloodrage:SetChecked(BuffBot.config.BLOODRAGE)
-        btnBloodrage:SetScript("OnClick", function()
-            BuffBot.debug("Bloodrage - ", btnBloodrage:GetChecked())
-            BuffBot.config.BLOODRAGE = btnBloodrage:GetChecked()
+		local buttonBloodrage = createCheckbox( 
+        "Include Bloodrage (Buggy)",
+        "Include Bloodrage if the warrior is missing enough rage to cast Battle Shout \n\n|cFFFF0000Absolutely disintegrates if Battle Shout drops off with Bloodrage on cooldown.|r",
+        function(_, checkboxValue)
+            BuffBot.debug("Bloodrage - ", checkboxValue)
+            BuffBot.config.BLOODRAGE = checkboxValue
             BuffBot.UpdateClassBuffList()
 
         end)
-		
-        local btnBlessingOfWisdom  = CreateFrame("CheckButton", nil, panel, "UICheckButtonTemplate")
-        btnBlessingOfWisdom :SetPoint("TOPLEFT", btnBloodrage, 0, -40)
-
-        btnBlessingOfWisdom .text = btnBlessingOfWisdom :CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        btnBlessingOfWisdom .text:SetPoint("LEFT", btnBlessingOfWisdom , "RIGHT", 0, 1)
-        btnBlessingOfWisdom .text:SetText("Selfbuff Blessing of Wisdom")
-        btnBlessingOfWisdom :SetChecked(BuffBot.config.WISDOM_SELF)
-        btnBlessingOfWisdom :SetScript("OnClick", function()
-            BuffBot.debug("Wisdom changed - ", btnBlessingOfWisdom:GetChecked())
-            BuffBot.config.WISDOM_SELF = btnBlessingOfWisdom:GetChecked()
-            BuffBot.UpdateClassBuffList()
-        end)
+        buttonBloodrage:SetPoint("TOPLEFT", buttonIgnoreDampen, 0, -40)
+        buttonBloodrage:SetChecked(BuffBot.config.BLOODRAGE)
         
-        local btnIgnoreThorns = CreateFrame("CheckButton", nil, panel, "UICheckButtonTemplate")
-        btnIgnoreThorns:SetPoint("TOPLEFT", btnBlessingOfWisdom, 0, -40)
-        btnIgnoreThorns.text = btnIgnoreThorns:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        btnIgnoreThorns.text:SetPoint("LEFT", btnIgnoreThorns, "RIGHT", 0, 1)
-        btnIgnoreThorns.text:SetText("Skip Thorns")
-        btnIgnoreThorns:SetChecked(BuffBot.config.IGNORE_THORNS)
-        btnIgnoreThorns:SetScript("OnClick", function()
-            BuffBot.debug("Thorns changed - ", btnIgnoreThorns:GetChecked())
-            BuffBot.config.IGNORE_THORNS= btnIgnoreThorns:GetChecked()
+
+        local buttonBlessingOfWisdom  = createCheckbox( 
+        "Recommend Blessing of Wisdom",
+        "Cast Blessing of Wisdom over Blessing of Might.",
+        function(_, checkBoxValue)
+            BuffBot.debug("Wisdom changed - ", checkBoxValue)
+            BuffBot.config.WISDOM_SELF = checkBoxValue 
             BuffBot.UpdateClassBuffList()
         end)
+        buttonBlessingOfWisdom:SetPoint("TOPLEFT", buttonBloodrage, 0, -40)
+        buttonBlessingOfWisdom:SetChecked(BuffBot.config.WISDOM_SELF)
+       
+        
+        local buttonIgnoreThorns = createCheckbox( 
+        "Skip Thorns",
+        "Skip recommending Thorns.",
+        function(_,checkBoxValue)
+            BuffBot.debug("Thorns changed - ", checkBoxValue)
+            BuffBot.config.IGNORE_THORNS= checkBoxValue 
+            BuffBot.UpdateClassBuffList()
+        end)
+        buttonIgnoreThorns:SetPoint("TOPLEFT", buttonBlessingOfWisdom, 0, -40)
+        buttonIgnoreThorns:SetChecked(BuffBot.config.IGNORE_THORNS)
 
         -- FOOTER -- 
-         local t = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+        local t = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
         t:SetText("Addon Author: Smiil-LivingFlame  -  Discord: smiil")
         t:SetPoint("BOTTOMLEFT", panel, 25, 30)
 end

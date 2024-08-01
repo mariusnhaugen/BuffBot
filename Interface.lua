@@ -1,14 +1,15 @@
-
 local _, BuffBot = ...
 local macroButton;
 
 local LEFTBUTTON = 'LeftButton';
 local MIDDLEBUTTON = 'MiddleButton';
+
 BuffBot.futureBuffStrings = {}
 
 -- Define blizzard Keybind
 _G["BINDING_NAME_" .. "CLICK BUFFBOT_MacroButton:LeftButton"] = "BuffBot Cast"
 
+--################### Public Functions ##########################
 function BuffBot.UpdateMacro(spellName,unit)
         if InCombatLockdown() then return end
         local texture = GetSpellTexture(spellName)
@@ -19,7 +20,12 @@ function BuffBot.UpdateMacro(spellName,unit)
         macroButton:Show()
     end
 
+function BuffBot.SetMacroButtonDefaultPosition ()
+  macroButton:ClearAllPoints();
+  macroButton:SetPoint("CENTER", UIParent, "CENTER", 100, 0);
+end
 
+--#################### UI Functions ##########################
 local function stopMovingMacroButton ()
   macroButton:SetScript('OnMouseUp', nil);
   macroButton:SetMovable(false);
@@ -39,11 +45,8 @@ end
 macroButton = CreateFrame("Button", "BUFFBOT_MacroButton", UIParent, "SecureActionButtonTemplate")
 macroButton:SetAttribute("type1", "macro") -- left click triggers macro
 macroButton:SetSize(48,48)
-macroButton:SetPoint("CENTER", nil, "CENTER", 100, 0)
 macroButton:SetClampedToScreen(true);
--- mainButton:SetFrameStrata(Constants.FRAME_STRATA);
--- mainButton:SetFrameLevel(Constants.FRAME_LEVEL);
--- setDefaultPosition();
+BuffBot.SetMacroButtonDefaultPosition()
 
 macroButton:SetScript('OnMouseDown', function (_, button)
     if (button == LEFTBUTTON and IsAltKeyDown()) then
@@ -97,6 +100,7 @@ function BuffBot.UpdateSuggestionList()
         end 
     end
 end
+
 
 --- Namespacing  ---
 BuffBot.macroButton = macroButton;
