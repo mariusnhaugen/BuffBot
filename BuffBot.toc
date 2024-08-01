@@ -10,5 +10,6 @@
 HelperFunctions.lua
 EventFunctions.lua
 ClassBuffList.lua
+Interface.lua
 BuffBot.lua
 Config.lua

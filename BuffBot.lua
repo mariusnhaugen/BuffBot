@@ -1,132 +1,37 @@
 local _, BuffBot = ...
-local ParentFrame;
-local macroButton;
-
-local LEFTBUTTON = 'LeftButton';
-local MIDDLEBUTTON = 'MiddleButton';
-
 
 local class = BuffBot.playerclass
-
 local classBuffs = {}
-BuffBot.futureBuffStrings = {}
 local assignedBuff = "" 
 
-    SLASH_BUFFBOTSETTINGS1 = "/bb";
-    SLASH_BUFFBOTSETTINGS2 = "/buffbot";
-    SlashCmdList.BUFFBOTSETTINGS = function(arg)
-        if arg == "" then return end
-      
-        if arg == "buffs" then
-            DevTools_Dump(classBuffs)
-            return
-        end
-
-        if arg == "debug" then
-            BuffBot.config.DEBUG_MODE = not BuffBot.config.DEBUG_MODE
-            print("BuffBot Debug Mode -", BuffBot.config.DEBUG_MODE)
-            return
-        end
-     
+SLASH_BUFFBOTSETTINGS1 = "/bb";
+SLASH_BUFFBOTSETTINGS2 = "/buffbot";
+SlashCmdList.BUFFBOTSETTINGS = function(arg)
+    if arg == "" then return end
+    
+    if arg == "buffs" then
+        DevTools_Dump(classBuffs)
+        return
     end
----------------- UI ---------------------------    
-    _G["BINDING_NAME_" .. "CLICK BUFFBOT_MacroButton:LeftButton"] = "BuffBot Cast"
 
-local function stopMovingMacroButton ()
-  macroButton:SetScript('OnMouseUp', nil);
-  macroButton:SetMovable(false);
-  macroButton:StopMovingOrSizing();
-  if not (macroButton.draggableOverlay == nil) then
-    macroButton.draggableOverlay:Hide()
-  end
-  BuffBot.config.buttonPosition = {macroButton:GetPoint()};
+    if arg == "debug" then
+        BuffBot.config.DEBUG_MODE = not BuffBot.config.DEBUG_MODE
+        print("BuffBot Debug Mode -", BuffBot.config.DEBUG_MODE)
+        return
+    end
+    
 end
 
-local function moveMacroButton ()
-  macroButton:SetScript('OnMouseUp', stopMovingMacroButton);
-  macroButton:SetMovable(true);
-  macroButton:StartMoving();
-end
-
-    macroButton = CreateFrame("Button", "BUFFBOT_MacroButton", UIParent, "SecureActionButtonTemplate")
-    macroButton:SetAttribute("type1", "macro") -- left click triggers macro
-    macroButton:SetSize(48,48)
-    macroButton:SetPoint("CENTER", ParentFrame, "CENTER", 100, 0)
-    -- mainButton:SetFrameStrata(Constants.FRAME_STRATA);
-    -- mainButton:SetFrameLevel(Constants.FRAME_LEVEL);
-    -- setDefaultPosition();
-    macroButton:SetClampedToScreen(true);
-
-    macroButton:SetScript('OnMouseDown', function (_, button)
-        if (button == LEFTBUTTON and IsAltKeyDown()) then
-            if(macroButton.draggableOverlay == nil) then
-                macroButton.draggableOverlay = macroButton:CreateTexture("t", "OVERLAY")
-                macroButton.draggableOverlay:SetAllPoints()
-                macroButton.draggableOverlay:SetColorTexture(0, 0.7, 0.7, 0.5)
-            else
-                macroButton.draggableOverlay:Show()
-            end
-            moveMacroButton()
-        end
-    end)
-
-
-    BuffBot.suggestionList = {}
-    function BuffBot.UpdateSuggestionList()
-        if #BuffBot.suggestionList then
-           for i = 1, #BuffBot.suggestionList, 1 do
-                BuffBot.suggestionList[i]:SetText("")
-                BuffBot.suggestionList[i]:Hide()
-           end 
-        end
-
-        if not BuffBot.config.SUGGESTION_LIST then return end
-        if #classBuffs > 0 then
-            local nextIndex = BuffBot.IndexOf(BuffBot.FindNextBuffInList(), classBuffs)
-            BuffBot.futureBuffStrings = {unpack(classBuffs,nextIndex,#classBuffs)}
-            
-            FilterSuggestionList()
-   
-           for i = 1, #BuffBot.futureBuffStrings, 1 do
-            local offset = -35 + (i*-15)
-            if (not BuffBot.suggestionList[i]) and (i <= 5) then
-                BuffBot.suggestionList[i] = macroButton:CreateFontString(nil, "OVERLAY", "GameTooltipText")
-                BuffBot.suggestionList[i]:SetPoint("TOPLEFT", macroButton, 0, offset)
-            end
-                BuffBot.suggestionList[i]:SetText(BuffBot.futureBuffStrings[i])
-                BuffBot.suggestionList[i]:Show()
-           end 
-        end
-    end
-
-    function FilterSuggestionList()
-        local filteredTable = {}
-        for i = 1, #BuffBot.futureBuffStrings, 1 do
-            if not BuffBot.UnitHasAssignedBuff("player", BuffBot.futureBuffStrings[i]) then
-                table.insert(filteredTable, BuffBot.futureBuffStrings[i])
-            end
-        end 
-        BuffBot.futureBuffStrings = filteredTable
-    end
     --------------- MAIN FUNCTIONS ----------------
     
 function BuffBotDump()
  return BuffBot.RanklessSpells
 end
 
-function BuffBot.UpdateMacro(spellName,unit)
-        if InCombatLockdown() then return end
-        local texture = GetSpellTexture(spellName)
-        if texture then
-            macroButton:SetNormalTexture(texture)
-        end
-        macroButton:SetAttribute("macrotext1", "/cast [target="..unit.."]" .. spellName) -- text for macro on left click
-        macroButton:Show()
-    end
 
 function BuffBot.UpdateClassBuffList()
     BuffBot.FilterInitialList()
-    classBuffs = BuffBot.ClassBuffList 
+    classBuffs = BuffBot.classBuffList 
     BuffBot.CheckPlayerBuffs()
 end
 
@@ -200,7 +105,7 @@ function BuffBot.CheckPlayerBuffs()
         local buff = BuffBot.FindNextBuffInList()
         if buff == "done" then 
             if InCombatLockdown() then return end
-            macroButton:Hide()
+            BuffBot.macroButton:Hide()
             return 
         end
         assignedBuff = buff
@@ -231,5 +136,3 @@ function BuffBot.RemoveBloodrage()
     return false
 end
 
---- Namespacing  ---
-BuffBot.macroButton = macroButton;

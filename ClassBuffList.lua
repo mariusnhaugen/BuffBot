@@ -171,6 +171,6 @@ function BuffBot.FilterInitialList()
             debug(InitalClassBuffLists[BuffBot.playerclass][i] .. " not found or intentionally skipped") 
         end
     end
-    BuffBot.ClassBuffList = FilteredClassBuffList 
+    BuffBot.classBuffList = FilteredClassBuffList 
 end
 
