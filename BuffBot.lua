@@ -1,6 +1,9 @@
 local _, BuffBot = ...
 local ParentFrame;
-local macroBtn;
+local macroButton;
+
+local LEFTBUTTON = 'LeftButton';
+local MIDDLEBUTTON = 'MiddleButton';
 
 
 local class = BuffBot.playerclass
@@ -27,11 +30,46 @@ local assignedBuff = ""
      
     end
 ---------------- UI ---------------------------    
-    macroBtn = CreateFrame("Button", "BUFFBOT_MacroButton", UIParent, "SecureActionButtonTemplate")
     _G["BINDING_NAME_" .. "CLICK BUFFBOT_MacroButton:LeftButton"] = "BuffBot Cast"
-    macroBtn:SetAttribute("type1", "macro") -- left click causes macro
-    macroBtn:SetSize(48,48)
-    macroBtn:SetPoint("CENTER", ParentFrame, "CENTER", 100, 0)
+
+local function stopMovingMacroButton ()
+  macroButton:SetScript('OnMouseUp', nil);
+  macroButton:SetMovable(false);
+  macroButton:StopMovingOrSizing();
+  if not (macroButton.draggableOverlay == nil) then
+    macroButton.draggableOverlay:Hide()
+  end
+  BuffBot.config.buttonPosition = {macroButton:GetPoint()};
+end
+
+local function moveMacroButton ()
+  macroButton:SetScript('OnMouseUp', stopMovingMacroButton);
+  macroButton:SetMovable(true);
+  macroButton:StartMoving();
+end
+
+    macroButton = CreateFrame("Button", "BUFFBOT_MacroButton", UIParent, "SecureActionButtonTemplate")
+    macroButton:SetAttribute("type1", "macro") -- left click triggers macro
+    macroButton:SetSize(48,48)
+    macroButton:SetPoint("CENTER", ParentFrame, "CENTER", 100, 0)
+    -- mainButton:SetFrameStrata(Constants.FRAME_STRATA);
+    -- mainButton:SetFrameLevel(Constants.FRAME_LEVEL);
+    -- setDefaultPosition();
+    macroButton:SetClampedToScreen(true);
+
+    macroButton:SetScript('OnMouseDown', function (_, button)
+        if (button == LEFTBUTTON and IsAltKeyDown()) then
+            if(macroButton.draggableOverlay == nil) then
+                macroButton.draggableOverlay = macroButton:CreateTexture("t", "OVERLAY")
+                macroButton.draggableOverlay:SetAllPoints()
+                macroButton.draggableOverlay:SetColorTexture(0, 0.7, 0.7, 0.5)
+            else
+                macroButton.draggableOverlay:Show()
+            end
+            moveMacroButton()
+        end
+    end)
+
 
     BuffBot.suggestionList = {}
     function BuffBot.UpdateSuggestionList()
@@ -52,8 +90,8 @@ local assignedBuff = ""
            for i = 1, #BuffBot.futureBuffStrings, 1 do
             local offset = -35 + (i*-15)
             if (not BuffBot.suggestionList[i]) and (i <= 5) then
-                BuffBot.suggestionList[i] = macroBtn:CreateFontString(nil, "OVERLAY", "GameTooltipText")
-                BuffBot.suggestionList[i]:SetPoint("TOPLEFT", macroBtn, 0, offset)
+                BuffBot.suggestionList[i] = macroButton:CreateFontString(nil, "OVERLAY", "GameTooltipText")
+                BuffBot.suggestionList[i]:SetPoint("TOPLEFT", macroButton, 0, offset)
             end
                 BuffBot.suggestionList[i]:SetText(BuffBot.futureBuffStrings[i])
                 BuffBot.suggestionList[i]:Show()
@@ -80,10 +118,10 @@ function BuffBot.UpdateMacro(spellName,unit)
         if InCombatLockdown() then return end
         local texture = GetSpellTexture(spellName)
         if texture then
-            macroBtn:SetNormalTexture(texture)
+            macroButton:SetNormalTexture(texture)
         end
-        macroBtn:SetAttribute("macrotext1", "/cast [target="..unit.."]" .. spellName) -- text for macro on left click
-        macroBtn:Show()
+        macroButton:SetAttribute("macrotext1", "/cast [target="..unit.."]" .. spellName) -- text for macro on left click
+        macroButton:Show()
     end
 
 function BuffBot.UpdateClassBuffList()
@@ -162,7 +200,7 @@ function BuffBot.CheckPlayerBuffs()
         local buff = BuffBot.FindNextBuffInList()
         if buff == "done" then 
             if InCombatLockdown() then return end
-            macroBtn:Hide()
+            macroButton:Hide()
             return 
         end
         assignedBuff = buff
@@ -194,4 +232,4 @@ function BuffBot.RemoveBloodrage()
 end
 
 --- Namespacing  ---
-BuffBot.macroBtn = macroBtn;
+BuffBot.macroButton = macroButton;

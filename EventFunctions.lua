@@ -66,7 +66,7 @@ function events:PLAYER_REGEN_ENABLED()
 end
 
 function events:PLAYER_REGEN_DISABLED()
-    BuffBot.macroBtn:Hide()
+    BuffBot.macroButton:Hide()
 end
 
 function events:ADDON_LOADED(arg1)
@@ -77,11 +77,19 @@ function events:ADDON_LOADED(arg1)
     end
     BuffBot.config = BuffBotConfig
 
+
     local debugString = ""
     if BuffBot.config.DEBUG_MODE then
         debugString = " - DEBUG MODE ON"
     end
     print("BuffBot v0.0.4 Loaded.", debugString)
+  
+  if (BuffBot.config.buttonPosition == nil) then
+    print("You can drag the BuffBot button by holding Alt.")
+  else
+    BuffBot.macroButton:ClearAllPoints();
+    BuffBot.macroButton:SetPoint(unpack(BuffBot.config.buttonPosition));
+  end
 end
 
 function events:PLAYER_LOGOUT()
