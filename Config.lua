@@ -106,7 +106,7 @@ local function PaintSettingsFrame()
 
 		local buttonBloodrage = createCheckbox( 
         "Include Bloodrage (Buggy)",
-        "Include Bloodrage if the warrior is missing enough rage to cast Battle Shout \n\n|cFFFF0000Absolutely disintegrates if Battle Shout drops off with Bloodrage on cooldown.|r",
+        "Include Bloodrage if the warrior is missing rage to cast Battle Shout \n\n|cFFFF0000Absolutely disintegrates if Battle Shout drops off with Bloodrage on cooldown.|r",
         function(_, checkboxValue)
             BuffBot.debug("Bloodrage - ", checkboxValue)
             BuffBot.config.BLOODRAGE = checkboxValue
