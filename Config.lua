@@ -15,6 +15,7 @@ function BuffBot.GetDefaultConfig()
     defaultConfig.STRICT_ARMOR = false
     defaultConfig.IGNORE_THORNS = false
     defaultConfig.IGNORE_DAMPEN = false
+    defaultConfig.CHEETAH_REMINDER = true
 
     return defaultConfig
 end
@@ -139,6 +140,17 @@ local function PaintSettingsFrame()
         end)
         buttonIgnoreThorns:SetPoint("TOPLEFT", buttonBlessingOfWisdom, 0, -40)
         buttonIgnoreThorns:SetChecked(BuffBot.config.IGNORE_THORNS)
+        
+        local buttonCheetahReminder = createCheckbox(
+        "Reminder to leave Cheetah",
+        "Shows Aspect of the Hawk if you are in Aspect of the Cheetah/Pack",
+        function(_, checkboxValue)
+            BuffBot.debug("Cheetah reminder changed - ", checkboxValue)
+            BuffBot.config.CHEETAH_REMINDER = checkboxValue 
+            BuffBot.UpdateClassBuffList()
+        end)
+        buttonCheetahReminder:SetPoint("TOPLEFT", buttonIgnoreThorns, 0, -40)
+        buttonCheetahReminder:SetChecked(BuffBot.config.CHEETAH_REMINDER)
 
         -- FOOTER -- 
         local t = configPanel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")

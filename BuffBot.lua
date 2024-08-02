@@ -39,21 +39,18 @@ function BuffBot.UpdateClassBuffList()
 end
 
 function BuffBot.HasUniqueClassBuff()
-    local isBuffFound = false
     for i = 1, #BuffBot.UniqueBuffs[class], 1 do 
         if BuffBot.UnitHasAssignedBuff("player", BuffBot.UniqueBuffs[class][i]) then
-            isBuffFound = true 
-            break
+            return true 
         end
     end
-    return isBuffFound
+    return false
 end
 
 function BuffBot.SkipCheck(i)
-        if class == "MAGE" or class == "WARLOCK" or class == "PALADIN" or class == "HUNTER" then
+        if not (BuffBot.UniqueBuffs[class] == nil) then
             if BuffBot.IndexOf(classBuffs[i], BuffBot.UniqueBuffs[class]) then
-                local skip = (class == "MAGE") and BuffBot.config.STRICT_ARMOR
-                if BuffBot.HasUniqueClassBuff() and not skip then return true end -- check auras and armors
+                if BuffBot.HasUniqueClassBuff() then return true end -- check auras and armors
             end
         end
         if class == "DRUID" then

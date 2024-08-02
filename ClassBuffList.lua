@@ -14,14 +14,15 @@ InitalClassBuffLists.SHAMAN = {"Lightning Shield"}
 InitalClassBuffLists.WARLOCK= {"Unique" ,"Grimoire of Synergy",}
 InitalClassBuffLists.WARRIOR = {"Valor of Azeroth","Commanding Shout", "Battle Shout"}
 
+local UniqueBuffs = {}
 BuffBot.UniqueBuffs = {}
-BuffBot.UniqueBuffs.HUNTER = {"Aspect of the Viper", "Aspect of the Hawk", "Aspect of the Pack", "Aspect of the Monkey", "Aspect of the Cheetah", "Aspect of the Wild", "Aspect of the Beast" }
-BuffBot.UniqueBuffs.MAGE = {"Mage Armor", "Frost Armor", "Molten Armor", "Ice Armor"}
-BuffBot.UniqueBuffs.WARLOCK = {"Demon Skin", "Demon Armor", "Fel Armor"}
-BuffBot.UniqueBuffs.PALADIN= {"Devotion Aura", "Sanctity Aura", "Concentration Aura", "Retribution Aura", "Frost Resistance Aura", "Shadow Resistance Aura", "Fire Resistance Aura"}
+UniqueBuffs.HUNTER = {"Aspect of the Viper", "Aspect of the Hawk", "Aspect of the Monkey", "Aspect of the Wild", "Aspect of the Beast" }
+UniqueBuffs.MAGE = {"Mage Armor", "Frost Armor", "Molten Armor", "Ice Armor"}
+UniqueBuffs.WARLOCK = {"Demon Skin", "Demon Armor", "Fel Armor"}
+UniqueBuffs.PALADIN= {"Devotion Aura", "Sanctity Aura", "Concentration Aura", "Retribution Aura", "Frost Resistance Aura", "Shadow Resistance Aura", "Fire Resistance Aura"}
 
 BuffBot.RanklessSpells = {} -- Spells that prevent downranking and require special lookup calls
-BuffBot.RanklessSpells = BuffBot.UniqueBuffs.PALADIN
+BuffBot.RanklessSpells = UniqueBuffs.PALADIN
 table.insert(BuffBot.RanklessSpells,1 , "Battle Shout")
 
 
@@ -89,7 +90,34 @@ function BuffBot.CheckSpellAvailable(spellString)
     end
 end
 
-function BuffBot.RecommendUniqueBuff()
+local function FilterUniqueBuffs()
+    if class == "WARLOCK" then
+        BuffBot.UniqueBuffs.WARLOCK = UniqueBuffs.WARLOCK 
+    end
+    if class == "PALADIN" then
+        BuffBot.UniqueBuffs.PALADIN = UniqueBuffs.PALADIN
+    end
+    
+    if class == "HUNTER" then
+        if BuffBot.config.CHEETAH_REMINDER then
+            BuffBot.UniqueBuffs.HUNTER = UniqueBuffs.HUNTER
+        else 
+            BuffBot.UniqueBuffs.HUNTER = UniqueBuffs.HUNTER
+            table.insert(BuffBot.UniqueBuffs.HUNTER, "Aspect of the Cheetah")
+            table.insert(BuffBot.UniqueBuffs.HUNTER, "Aspect of the Pack")
+        end
+    end
+
+    if class == "MAGE" then 
+        if BuffBot.config.STRICT_ARMOR  then
+            BuffBot.UniqueBuffs.MAGE = nil 
+        else    
+            BuffBot.UniqueBuffs.MAGE = UniqueBuffs.MAGE 
+        end
+    end 
+end
+
+local function RecommendUniqueBuff()
     if BuffBot.playerclass == "MAGE" then
         if BuffBot.CheckSpellAvailable("Molten Armor") then
             return "Molten Armor"
@@ -148,11 +176,12 @@ local function GetSpellSkip(spellString)
 end
 
 function BuffBot.FilterInitialList()
+    FilterUniqueBuffs()
     local FilteredClassBuffList = {}
     for i = 1, #InitalClassBuffLists[BuffBot.playerclass], 1 do
         local spellString = InitalClassBuffLists[BuffBot.playerclass][i]
         if spellString == "Unique" then
-            spellString = BuffBot.RecommendUniqueBuff()
+            spellString = RecommendUniqueBuff()
         end
         if spellString == "Blessing" then
             if BuffBot.config.WISDOM_SELF then 
