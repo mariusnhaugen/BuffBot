@@ -83,7 +83,7 @@ local function PaintSettingsFrame()
 
         local buttonStrictArmor = createCheckbox(
         "Strict Mage Armors",
-        "Disallow any armor being valid when recommending a Mage armor buff. \n \n Open world:  Molten Armor > Ice Armor \n In Raid:        Molten Armor > Mage Armor",
+        "Disallow any armor being valid when recommending a Mage armor buff. \n \n Open World:  Molten Armor > Ice Armor \n In Raid:         Molten Armor > Mage Armor",
         function(_, checkboxValue)
             BuffBot.debug("Dampen changed - ", checkboxValue)
             BuffBot.config.STRICT_ARMOR = checkboxValue 
