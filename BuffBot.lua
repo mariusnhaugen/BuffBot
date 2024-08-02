@@ -48,7 +48,7 @@ function BuffBot.HasUniqueClassBuff()
 end
 
 function BuffBot.SkipCheck(i)
-        if not (BuffBot.UniqueBuffs[class] == nil) then
+        if (BuffBot.UniqueBuffs[class] ~= nil) then
             if BuffBot.IndexOf(classBuffs[i], BuffBot.UniqueBuffs[class]) then
                 if BuffBot.HasUniqueClassBuff() then return true end -- check auras and armors
             end
@@ -90,7 +90,7 @@ end
 
 function BuffBot.FindNextBuffInList()
     if InCombatLockdown() then return "done" end
-    if not classBuffs then return "done" end
+    if classBuffs == nil then return "done" end
 
     for i = 1, #classBuffs do -- For all buffs in filtered buff list. 
         local skipCheck = BuffBot.SkipCheck(i) -- check for exceptions

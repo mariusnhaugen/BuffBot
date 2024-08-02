@@ -30,7 +30,7 @@ local function stopMovingMacroButton ()
   macroButton:SetScript('OnMouseUp', nil);
   macroButton:SetMovable(false);
   macroButton:StopMovingOrSizing();
-  if not (macroButton.draggableOverlay == nil) then
+  if (macroButton.draggableOverlay ~= nil) then
     macroButton.draggableOverlay:Hide()
   end
   BuffBot.config.buttonPosition = {macroButton:GetPoint()};
@@ -90,6 +90,7 @@ function BuffBot.UpdateSuggestionList()
         FilterSuggestionList()
 
         for i = 1, #BuffBot.futureBuffStrings, 1 do
+        if i == 6 then break end
         local offset = -35 + (i*-15)
         if (not BuffBot.suggestionList[i]) and (i <= 5) then
             BuffBot.suggestionList[i] = macroButton:CreateFontString(nil, "OVERLAY", "GameTooltipText")

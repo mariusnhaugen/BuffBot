@@ -45,7 +45,7 @@ function events:SPELLS_CHANGED()
 end
 
 function events:UNIT_SPELLCAST_SUCCEEDED(unit, _ , spellID)
-    if not (unit == "player") then return end 
+    if (unit ~= "player") then return end 
     if spellID == 2687 then --Bloodrage
         BuffBot.BLOODRAGE_LOCKED = true
         if BuffBot.RemoveBloodrage() then
@@ -70,7 +70,7 @@ function events:PLAYER_REGEN_DISABLED()
 end
 
 function events:ADDON_LOADED(arg1)
-    if not (arg1 == addonName) then return end
+    if (arg1 ~= addonName) then return end
     
     if BuffBotConfig == nil then
        BuffBotConfig = BuffBot.GetDefaultConfig() 
