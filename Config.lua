@@ -1,8 +1,8 @@
 local _, BuffBot = ...
 
-local panel = CreateFrame("Frame")
-panel.name = "BuffBot"
-InterfaceOptions_AddCategory(panel)
+local configPanel = CreateFrame("Frame")
+configPanel.name = "BuffBot"
+InterfaceOptions_AddCategory(configPanel)
 
 function BuffBot.GetDefaultConfig() 
     local defaultConfig = {}
@@ -23,7 +23,7 @@ end
 local function PaintSettingsFrame()
     
     local function createCheckbox(label, description, onClick)
-        local check = CreateFrame("CheckButton", "BuffBotCheckbox" .. label, panel, "InterfaceOptionsCheckButtonTemplate")
+        local check = CreateFrame("CheckButton", "BuffBotCheckbox" .. label, configPanel, "InterfaceOptionsCheckButtonTemplate")
         check:SetScript("OnClick", function(self)
             local tick = self:GetChecked()
             onClick(self, tick and true or false)
@@ -36,9 +36,9 @@ local function PaintSettingsFrame()
 	end
 
     -- TOP AREA 
-        local t = panel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
-        t:SetText(panel.name .. " Settings")
-        t:SetPoint("TOPLEFT", panel, 15, -15)
+        local t = configPanel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+        t:SetText(configPanel.name .. " Settings")
+        t:SetPoint("TOPLEFT", configPanel, 15, -15)
 
        
         local checkboxHideIcon = createCheckbox(
@@ -46,7 +46,7 @@ local function PaintSettingsFrame()
         "Hides Icon for text only/stealth mode buffing",
         function(_, checkboxValue)
         end)
-        checkboxHideIcon:SetPoint("TOPLEFT", panel, 15, -60)
+        checkboxHideIcon:SetPoint("TOPLEFT", configPanel, 15, -60)
         checkboxHideIcon:SetChecked(BuffBot.config.HIDE_ICON)
         checkboxHideIcon:Disable()
 
@@ -61,7 +61,7 @@ local function PaintSettingsFrame()
         checkboxSuggestionList:SetPoint("TOPLEFT", checkboxHideIcon, 120, 0)
         checkboxSuggestionList:SetChecked(BuffBot.config.SUGGESTION_LIST)
 
-        local buttonResetPosition  = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
+        local buttonResetPosition  = CreateFrame("Button", nil, configPanel, "UIPanelButtonTemplate")
         buttonResetPosition:SetPoint("TOPLEFT", checkboxSuggestionList, 160, 0)
         buttonResetPosition:SetText("Reset Button Position")
         buttonResetPosition:SetWidth(140)
@@ -77,9 +77,9 @@ local function PaintSettingsFrame()
     -- CLASS SETTINGS --
     -- Gap between classes : -40
     -- Gap within classes: -25
-		local classSettings = panel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+		local classSettings = configPanel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
         classSettings:SetText("Class Settings")
-        classSettings:SetPoint("TOPLEFT", panel, 15, -115)
+        classSettings:SetPoint("TOPLEFT", configPanel, 15, -115)
 
         local buttonStrictArmor = createCheckbox(
         "Strict Mage Armors",
@@ -141,11 +141,12 @@ local function PaintSettingsFrame()
         buttonIgnoreThorns:SetChecked(BuffBot.config.IGNORE_THORNS)
 
         -- FOOTER -- 
-        local t = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+        local t = configPanel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
         t:SetText("Addon Author: Smiil-LivingFlame  -  Discord: smiil")
-        t:SetPoint("BOTTOMLEFT", panel, 25, 30)
+        t:SetPoint("BOTTOMLEFT", configPanel, 25, 30)
 end
 
-panel:SetScript("OnShow", function ()
+configPanel:SetScript("OnShow", function ()
     PaintSettingsFrame()
+    configPanel:SetScript("OnShow", nil)
 end)
