@@ -5,13 +5,13 @@ BuffBot.playername = GetUnitName("player")
 BuffBot.playerlevel = UnitLevel("player")
 BuffBot.playerclass = (select(2, UnitClass("player")))
 --- Helper Functions ---
-function BuffBot.IndexOf(value, table) 
+function BuffBot.IndexOf(value, table)
     for i, v in ipairs(table) do
         if v == value then
             return i
         end
     end
-    return nil 
+    return nil
 end
 
 function BuffBot.debug(...)

@@ -1,12 +1,12 @@
-local addonName , BuffBot = ...
+local addonName, BuffBot = ...
 local events = CreateFrame("Frame")
 local groupHasChanged = false
 local class = BuffBot.playerclass
 local function debug() end
 debug = BuffBot.debug
 
-function events:UNIT_AURA(unit, info)  
-    if info.isFullUpdate then 
+function events:UNIT_AURA(unit, info)
+    if info.isFullUpdate then
         -- triggers when people join party or player zones through instance
         if (unit == "player") then
             if UnitInRaid("player") then BuffBot.UpdateClassBuffList() end
@@ -15,37 +15,36 @@ function events:UNIT_AURA(unit, info)
             debug("Group changed")
             groupHasChanged = false
         end
-		return
-	end
+        return
+    end
     if info.removedAuraInstanceIDs then
         if (unit == "player") then
-           BuffBot.CheckPlayerBuffs() 
+            BuffBot.CheckPlayerBuffs()
         end
         return
     end
-        
+
     if (unit == "player") then
-        BuffBot.CheckPlayerBuffs() 
+        BuffBot.CheckPlayerBuffs()
         return
     end
 end
 
-
 function events:GROUP_ROSTER_UPDATE()
-        BuffBot.UpdateClassBuffList()
-        groupHasChanged = true
+    BuffBot.UpdateClassBuffList()
+    groupHasChanged = true
 end
 
 function events:GROUP_LEFT()
-        BuffBot.UpdateClassBuffList()
+    BuffBot.UpdateClassBuffList()
 end
 
 function events:SPELLS_CHANGED()
     BuffBot.UpdateClassBuffList()
 end
 
-function events:UNIT_SPELLCAST_SUCCEEDED(unit, _ , spellID)
-    if (unit ~= "player") then return end 
+function events:UNIT_SPELLCAST_SUCCEEDED(unit, _, spellID)
+    if (unit ~= "player") then return end
     if spellID == 2687 then --Bloodrage
         BuffBot.BLOODRAGE_LOCKED = true
         if BuffBot.RemoveBloodrage() then
@@ -58,7 +57,7 @@ function events:UNIT_SPELLCAST_SUCCEEDED(unit, _ , spellID)
             BuffBot.BLOODRAGE_LOCKED = false
         end
     end
-    BuffBot.CheckPlayerBuffs() 
+    BuffBot.CheckPlayerBuffs()
 end
 
 function events:PLAYER_REGEN_ENABLED()
@@ -71,9 +70,9 @@ end
 
 function events:ADDON_LOADED(arg1)
     if (arg1 ~= addonName) then return end
-    
+
     if BuffBotConfig == nil then
-       BuffBotConfig = BuffBot.GetDefaultConfig() 
+        BuffBotConfig = BuffBot.GetDefaultConfig()
     end
     BuffBot.config = BuffBotConfig
 
@@ -83,21 +82,21 @@ function events:ADDON_LOADED(arg1)
         debugString = " - DEBUG MODE ON"
     end
     print("BuffBot v0.0.4 Loaded.", debugString)
-  
-  if (BuffBot.config.buttonPosition == nil) then
-    print("You can drag the BuffBot button by holding Alt.")
-  else
-    BuffBot.macroButton:ClearAllPoints();
-    BuffBot.macroButton:SetPoint(unpack(BuffBot.config.buttonPosition));
-  end
+
+    if (BuffBot.config.buttonPosition == nil) then
+        print("You can drag the BuffBot button by holding Alt.")
+    else
+        BuffBot.macroButton:ClearAllPoints();
+        BuffBot.macroButton:SetPoint(unpack(BuffBot.config.buttonPosition));
+    end
 end
 
 function events:PLAYER_LOGOUT()
-    BuffBotConfig = BuffBot.config 
+    BuffBotConfig = BuffBot.config
 end
 
 events:SetScript("OnEvent", function(self, event, ...)
-	self[event](self, ...)
+    self[event](self, ...)
 end)
 
 events:RegisterEvent("UNIT_AURA")

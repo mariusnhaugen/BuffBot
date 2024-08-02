@@ -4,65 +4,67 @@ local function debug() end
 debug = BuffBot.debug
 
 local InitalClassBuffLists = {}
-InitalClassBuffLists.DRUID= {"Omen of Clarity","Mark of the Wild", "Thorns"}
-InitalClassBuffLists.HUNTER = {"Heart of the Lion","Trueshot Aura","Aspect of the Hawk"}
-InitalClassBuffLists.MAGE = {"Unique", "Arcane Intellect", "Dampen Magic"}
-InitalClassBuffLists.PALADIN = {"Unique" ,"Blessing"}
-InitalClassBuffLists.PRIEST = {"Power Word: Fortitude","Shadowform","Divine Spirit", "Inner Fire"}
+InitalClassBuffLists.DRUID = { "Omen of Clarity", "Mark of the Wild", "Thorns" }
+InitalClassBuffLists.HUNTER = { "Heart of the Lion", "Trueshot Aura", "Aspect of the Hawk" }
+InitalClassBuffLists.MAGE = { "Unique", "Arcane Intellect", "Dampen Magic" }
+InitalClassBuffLists.PALADIN = { "Unique", "Blessing" }
+InitalClassBuffLists.PRIEST = { "Power Word: Fortitude", "Shadowform", "Divine Spirit", "Inner Fire" }
 InitalClassBuffLists.ROGUE = {}
-InitalClassBuffLists.SHAMAN = {"Lightning Shield"}
-InitalClassBuffLists.WARLOCK= {"Unique" ,"Grimoire of Synergy",}
-InitalClassBuffLists.WARRIOR = {"Valor of Azeroth","Commanding Shout", "Battle Shout"}
+InitalClassBuffLists.SHAMAN = { "Lightning Shield" }
+InitalClassBuffLists.WARLOCK = { "Unique", "Grimoire of Synergy", }
+InitalClassBuffLists.WARRIOR = { "Valor of Azeroth", "Commanding Shout", "Battle Shout" }
 
 local UniqueBuffs = {}
 BuffBot.UniqueBuffs = {}
-UniqueBuffs.HUNTER = {"Aspect of the Viper", "Aspect of the Hawk", "Aspect of the Monkey", "Aspect of the Wild", "Aspect of the Beast" }
-UniqueBuffs.MAGE = {"Mage Armor", "Frost Armor", "Molten Armor", "Ice Armor"}
-UniqueBuffs.WARLOCK = {"Demon Skin", "Demon Armor", "Fel Armor"}
-UniqueBuffs.PALADIN= {"Devotion Aura", "Sanctity Aura", "Concentration Aura", "Retribution Aura", "Frost Resistance Aura", "Shadow Resistance Aura", "Fire Resistance Aura"}
+UniqueBuffs.HUNTER = { "Aspect of the Viper", "Aspect of the Hawk", "Aspect of the Monkey", "Aspect of the Wild",
+    "Aspect of the Beast" }
+UniqueBuffs.MAGE = { "Mage Armor", "Frost Armor", "Molten Armor", "Ice Armor" }
+UniqueBuffs.WARLOCK = { "Demon Skin", "Demon Armor", "Fel Armor" }
+UniqueBuffs.PALADIN = { "Devotion Aura", "Sanctity Aura", "Concentration Aura", "Retribution Aura",
+    "Frost Resistance Aura", "Shadow Resistance Aura", "Fire Resistance Aura" }
 
 BuffBot.RanklessSpells = {} -- Spells that prevent downranking and require special lookup calls
 BuffBot.RanklessSpells = UniqueBuffs.PALADIN
-table.insert(BuffBot.RanklessSpells,1 , "Battle Shout")
+table.insert(BuffBot.RanklessSpells, 1, "Battle Shout")
 
 
 local spellIDTable = { -- Rank 1 for checking.
---DRUID
+    --DRUID
     ["Omen of Clarity"] = 16864,
     ["Mark of the Wild"] = 5232,
     ["Thorns"] = 782,
---HUNTER
+    --HUNTER
     ["Heart of the Lion"] = 409580,
     ["Trueshot Aura"] = 19506,
     ["Aspect of the Hawk"] = 13165,
---MAGE
+    --MAGE
     ["Frost Armor"] = 168, -- Low level
     ["Ice Armor"] = 7302,
     ["Mage Armor"] = 6117,
     ["Molten Armor"] = 428741,
     ["Arcane Intellect"] = 1459,
     ["Dampen Magic"] = 604,
--- PALADIN
+    -- PALADIN
     ["Devotion Aura"] = 465,
     ["Sanctity Aura"] = 20218,
     ["Concentration Aura"] = 19746,
     ["Blessing of Might"] = 19740,
     ["Blessing of Wisdom"] = 19742,
--- PRIEST 
+    -- PRIEST
     ["Power Word: Fortitude"] = 1243,
     ["Shadowform"] = 15473,
     ["Divine Spirit"] = 14752,
     ["Inner Fire"] = 588,
--- ROGUE
--- SHAMAN
+    -- ROGUE
+    -- SHAMAN
     ["Lightning Shield"] = 324,
--- WARLOCK
+    -- WARLOCK
     ["Demon Skin"] = 687, -- Low level
     ["Demon Armor"] = 706,
     ["Fel Armor"] = 403619,
     ["Grimoire of Synergy"] = 426301,
     ["Blood Pact"] = 11767,
--- WARRIOR
+    -- WARRIOR
     ["Battle Shout"] = 6673,
     ["Commanding Shout"] = 403215,
     ["Valor of Azeroth"] = 461475,
@@ -76,12 +78,14 @@ function BuffBot.CheckSpellAvailable(spellString)
 
     if class == "PALADIN" or class == "WARRIOR" then
         if BuffBot.IndexOf(spellString, BuffBot.RanklessSpells) then
-            if  GetSpellInfo(GetSpellInfo(spellID)) then --get local name of R1, and find Spell id
+            if GetSpellInfo(GetSpellInfo(spellID)) then --get local name of R1, and find Spell id
                 return true
-            else return false end
+            else
+                return false
+            end
         end
     end
-    
+
     if #tostring(spellID) == 6 then
         return IsSpellKnownOrOverridesKnown(spellID)
     end
@@ -92,29 +96,29 @@ end
 
 local function FilterUniqueBuffs()
     if class == "WARLOCK" then
-        BuffBot.UniqueBuffs.WARLOCK = UniqueBuffs.WARLOCK 
+        BuffBot.UniqueBuffs.WARLOCK = UniqueBuffs.WARLOCK
     end
     if class == "PALADIN" then
         BuffBot.UniqueBuffs.PALADIN = UniqueBuffs.PALADIN
     end
-    
+
     if class == "HUNTER" then
         if BuffBot.config.CHEETAH_REMINDER then
             BuffBot.UniqueBuffs.HUNTER = UniqueBuffs.HUNTER
-        else 
+        else
             BuffBot.UniqueBuffs.HUNTER = UniqueBuffs.HUNTER
             table.insert(BuffBot.UniqueBuffs.HUNTER, "Aspect of the Cheetah")
             table.insert(BuffBot.UniqueBuffs.HUNTER, "Aspect of the Pack")
         end
     end
 
-    if class == "MAGE" then 
-        if BuffBot.config.STRICT_ARMOR  then
-            BuffBot.UniqueBuffs.MAGE = nil 
-        else    
-            BuffBot.UniqueBuffs.MAGE = UniqueBuffs.MAGE 
+    if class == "MAGE" then
+        if BuffBot.config.STRICT_ARMOR then
+            BuffBot.UniqueBuffs.MAGE = nil
+        else
+            BuffBot.UniqueBuffs.MAGE = UniqueBuffs.MAGE
         end
-    end 
+    end
 end
 
 local function RecommendUniqueBuff()
@@ -158,7 +162,6 @@ local function RecommendUniqueBuff()
 end
 
 local function GetSpellSkip(spellString)
-    
     if class == "DRUID" then
         if spellString == "Thorns" and BuffBot.config.IGNORE_THORNS then
             debug("Skipping thorns")
@@ -184,7 +187,7 @@ function BuffBot.FilterInitialList()
             spellString = RecommendUniqueBuff()
         end
         if spellString == "Blessing" then
-            if BuffBot.config.WISDOM_SELF then 
+            if BuffBot.config.WISDOM_SELF then
                 spellString = "Blessing of Wisdom"
             else
                 spellString = "Blessing of Might"
@@ -197,9 +200,8 @@ function BuffBot.FilterInitialList()
             debug(spellString, " Added to Filtered List")
             table.insert(FilteredClassBuffList, spellString)
         else
-            debug(InitalClassBuffLists[BuffBot.playerclass][i] .. " not found or intentionally skipped") 
+            debug(InitalClassBuffLists[BuffBot.playerclass][i] .. " not found or intentionally skipped")
         end
     end
-    BuffBot.classBuffList = FilteredClassBuffList 
+    BuffBot.classBuffList = FilteredClassBuffList
 end
-

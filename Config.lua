@@ -4,7 +4,7 @@ local configPanel = CreateFrame("Frame")
 configPanel.name = "BuffBot"
 InterfaceOptions_AddCategory(configPanel)
 
-function BuffBot.GetDefaultConfig() 
+function BuffBot.GetDefaultConfig()
     local defaultConfig = {}
     defaultConfig.HIDE_ICON = false
     defaultConfig.SUGGESTION_LIST = true
@@ -20,11 +20,10 @@ function BuffBot.GetDefaultConfig()
     return defaultConfig
 end
 
-
 local function PaintSettingsFrame()
-    
     local function createCheckbox(label, description, onClick)
-        local check = CreateFrame("CheckButton", "BuffBotCheckbox" .. label, configPanel, "InterfaceOptionsCheckButtonTemplate")
+        local check = CreateFrame("CheckButton", "BuffBotCheckbox" .. label, configPanel,
+            "InterfaceOptionsCheckButtonTemplate")
         check:SetScript("OnClick", function(self)
             local tick = self:GetChecked()
             onClick(self, tick and true or false)
@@ -34,131 +33,130 @@ local function PaintSettingsFrame()
         check.tooltipText = label
         check.tooltipRequirement = description
         return check
-	end
+    end
 
-    -- TOP AREA 
-        local t = configPanel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
-        t:SetText(configPanel.name .. " Settings")
-        t:SetPoint("TOPLEFT", configPanel, 15, -15)
+    -- TOP AREA
+    local t = configPanel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+    t:SetText(configPanel.name .. " Settings")
+    t:SetPoint("TOPLEFT", configPanel, 15, -15)
 
-       
-        local checkboxHideIcon = createCheckbox(
+
+    local checkboxHideIcon = createCheckbox(
         "Hide Icon [NYI]",
         "Hides Icon for text only/stealth mode buffing",
         function(_, checkboxValue)
         end)
-        checkboxHideIcon:SetPoint("TOPLEFT", configPanel, 15, -60)
-        checkboxHideIcon:SetChecked(BuffBot.config.HIDE_ICON)
-        checkboxHideIcon:Disable()
+    checkboxHideIcon:SetPoint("TOPLEFT", configPanel, 15, -60)
+    checkboxHideIcon:SetChecked(BuffBot.config.HIDE_ICON)
+    checkboxHideIcon:Disable()
 
-        local checkboxSuggestionList  = createCheckbox(
+    local checkboxSuggestionList = createCheckbox(
         "Show Suggestion List",
         "Shows list of the buttons next suggested casts.",
         function(_, checkboxValue)
             BuffBot.debug("Suggestion List - ", checkboxValue)
-            BuffBot.config.SUGGESTION_LIST = checkboxValue 
+            BuffBot.config.SUGGESTION_LIST = checkboxValue
             BuffBot.UpdateSuggestionList()
         end)
-        checkboxSuggestionList:SetPoint("TOPLEFT", checkboxHideIcon, 120, 0)
-        checkboxSuggestionList:SetChecked(BuffBot.config.SUGGESTION_LIST)
+    checkboxSuggestionList:SetPoint("TOPLEFT", checkboxHideIcon, 120, 0)
+    checkboxSuggestionList:SetChecked(BuffBot.config.SUGGESTION_LIST)
 
-        local buttonResetPosition  = CreateFrame("Button", nil, configPanel, "UIPanelButtonTemplate")
-        buttonResetPosition:SetPoint("TOPLEFT", checkboxSuggestionList, 160, 0)
-        buttonResetPosition:SetText("Reset Button Position")
-        buttonResetPosition:SetWidth(140)
-        buttonResetPosition:SetHeight(28)
-        buttonResetPosition:SetScript("OnClick", function()
-            BuffBot.debug("Macro button position reset ")
-            BuffBot.SetMacroButtonDefaultPosition()
-        end)
-	    buttonResetPosition.tooltipText = "Resets Main Button Position"
-	    buttonResetPosition.newbieText = "You can move the button by holding Alt and dragging."
+    local buttonResetPosition = CreateFrame("Button", nil, configPanel, "UIPanelButtonTemplate")
+    buttonResetPosition:SetPoint("TOPLEFT", checkboxSuggestionList, 160, 0)
+    buttonResetPosition:SetText("Reset Button Position")
+    buttonResetPosition:SetWidth(140)
+    buttonResetPosition:SetHeight(28)
+    buttonResetPosition:SetScript("OnClick", function()
+        BuffBot.debug("Macro button position reset ")
+        BuffBot.SetMacroButtonDefaultPosition()
+    end)
+    buttonResetPosition.tooltipText = "Resets Main Button Position"
+    buttonResetPosition.newbieText = "You can move the button by holding Alt and dragging."
 
-        
+
     -- CLASS SETTINGS --
     -- Gap between classes : -40
     -- Gap within classes: -25
-		local classSettings = configPanel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
-        classSettings:SetText("Class Settings")
-        classSettings:SetPoint("TOPLEFT", configPanel, 15, -115)
+    local classSettings = configPanel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+    classSettings:SetText("Class Settings")
+    classSettings:SetPoint("TOPLEFT", configPanel, 15, -115)
 
-        local buttonStrictArmor = createCheckbox(
+    local buttonStrictArmor = createCheckbox(
         "Strict Mage Armors",
         "Disallow any armor being valid when recommending a Mage armor buff. \n \n Open World:  Molten Armor > Ice Armor \n In Raid:         Molten Armor > Mage Armor",
         function(_, checkboxValue)
             BuffBot.debug("Dampen changed - ", checkboxValue)
-            BuffBot.config.STRICT_ARMOR = checkboxValue 
+            BuffBot.config.STRICT_ARMOR = checkboxValue
             BuffBot.UpdateClassBuffList()
         end)
-        buttonStrictArmor:SetPoint("TOPLEFT", classSettings, 15, -25)
-        buttonStrictArmor:SetChecked(BuffBot.config.STRICT_ARMOR)
+    buttonStrictArmor:SetPoint("TOPLEFT", classSettings, 15, -25)
+    buttonStrictArmor:SetChecked(BuffBot.config.STRICT_ARMOR)
 
-        local buttonIgnoreDampen = createCheckbox( 
+    local buttonIgnoreDampen = createCheckbox(
         "Skip Dampen Magic",
         "Skip recommending Dampen Magic.",
-        function(_,checkboxValue)
+        function(_, checkboxValue)
             BuffBot.debug("Dampen changed - ", checkboxValue)
-            BuffBot.config.IGNORE_DAMPEN=checkboxValue 
+            BuffBot.config.IGNORE_DAMPEN = checkboxValue
             BuffBot.UpdateClassBuffList()
         end)
-        buttonIgnoreDampen:SetPoint("TOPLEFT", buttonStrictArmor, 0, -25)
-        buttonIgnoreDampen:SetChecked(BuffBot.config.IGNORE_DAMPEN)
+    buttonIgnoreDampen:SetPoint("TOPLEFT", buttonStrictArmor, 0, -25)
+    buttonIgnoreDampen:SetChecked(BuffBot.config.IGNORE_DAMPEN)
 
 
-		local buttonBloodrage = createCheckbox( 
+    local buttonBloodrage = createCheckbox(
         "Include Bloodrage (Buggy)",
         "Include Bloodrage if the warrior is missing rage to cast Battle Shout \n\n|cFFFF0000Absolutely disintegrates if Battle Shout drops off with Bloodrage on cooldown.|r",
         function(_, checkboxValue)
             BuffBot.debug("Bloodrage - ", checkboxValue)
             BuffBot.config.BLOODRAGE = checkboxValue
             BuffBot.UpdateClassBuffList()
-
         end)
-        buttonBloodrage:SetPoint("TOPLEFT", buttonIgnoreDampen, 0, -40)
-        buttonBloodrage:SetChecked(BuffBot.config.BLOODRAGE)
-        
+    buttonBloodrage:SetPoint("TOPLEFT", buttonIgnoreDampen, 0, -40)
+    buttonBloodrage:SetChecked(BuffBot.config.BLOODRAGE)
 
-        local buttonBlessingOfWisdom  = createCheckbox( 
+
+    local buttonBlessingOfWisdom = createCheckbox(
         "Recommend Blessing of Wisdom",
         "Cast Blessing of Wisdom over Blessing of Might.",
         function(_, checkBoxValue)
             BuffBot.debug("Wisdom changed - ", checkBoxValue)
-            BuffBot.config.WISDOM_SELF = checkBoxValue 
+            BuffBot.config.WISDOM_SELF = checkBoxValue
             BuffBot.UpdateClassBuffList()
         end)
-        buttonBlessingOfWisdom:SetPoint("TOPLEFT", buttonBloodrage, 0, -40)
-        buttonBlessingOfWisdom:SetChecked(BuffBot.config.WISDOM_SELF)
-       
-        
-        local buttonIgnoreThorns = createCheckbox( 
+    buttonBlessingOfWisdom:SetPoint("TOPLEFT", buttonBloodrage, 0, -40)
+    buttonBlessingOfWisdom:SetChecked(BuffBot.config.WISDOM_SELF)
+
+
+    local buttonIgnoreThorns = createCheckbox(
         "Skip Thorns",
         "Skip recommending Thorns.",
-        function(_,checkBoxValue)
+        function(_, checkBoxValue)
             BuffBot.debug("Thorns changed - ", checkBoxValue)
-            BuffBot.config.IGNORE_THORNS= checkBoxValue 
+            BuffBot.config.IGNORE_THORNS = checkBoxValue
             BuffBot.UpdateClassBuffList()
         end)
-        buttonIgnoreThorns:SetPoint("TOPLEFT", buttonBlessingOfWisdom, 0, -40)
-        buttonIgnoreThorns:SetChecked(BuffBot.config.IGNORE_THORNS)
-        
-        local buttonCheetahReminder = createCheckbox(
+    buttonIgnoreThorns:SetPoint("TOPLEFT", buttonBlessingOfWisdom, 0, -40)
+    buttonIgnoreThorns:SetChecked(BuffBot.config.IGNORE_THORNS)
+
+    local buttonCheetahReminder = createCheckbox(
         "Reminder to leave Cheetah",
         "Shows Aspect of the Hawk if you are in Aspect of the Cheetah/Pack",
         function(_, checkboxValue)
             BuffBot.debug("Cheetah reminder changed - ", checkboxValue)
-            BuffBot.config.CHEETAH_REMINDER = checkboxValue 
+            BuffBot.config.CHEETAH_REMINDER = checkboxValue
             BuffBot.UpdateClassBuffList()
         end)
-        buttonCheetahReminder:SetPoint("TOPLEFT", buttonIgnoreThorns, 0, -40)
-        buttonCheetahReminder:SetChecked(BuffBot.config.CHEETAH_REMINDER)
+    buttonCheetahReminder:SetPoint("TOPLEFT", buttonIgnoreThorns, 0, -40)
+    buttonCheetahReminder:SetChecked(BuffBot.config.CHEETAH_REMINDER)
 
-        -- FOOTER -- 
-        local t = configPanel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
-        t:SetText("Addon Author: Smiil-LivingFlame  -  Discord: smiil")
-        t:SetPoint("BOTTOMLEFT", configPanel, 25, 30)
+    -- FOOTER --
+    local t = configPanel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+    t:SetText("Addon Author: Smiil-LivingFlame  -  Discord: smiil")
+    t:SetPoint("BOTTOMLEFT", configPanel, 25, 30)
 end
 
-configPanel:SetScript("OnShow", function ()
+configPanel:SetScript("OnShow", function()
     PaintSettingsFrame()
     configPanel:SetScript("OnShow", nil)
 end)
