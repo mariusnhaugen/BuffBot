@@ -1,4 +1,4 @@
-local _, BuffBot = ...
+local addonName, BuffBot = ...
 
 local class = BuffBot.playerclass
 local classBuffs = {}
@@ -7,8 +7,11 @@ local assignedBuff = ""
 SLASH_BUFFBOTSETTINGS1 = "/bb";
 SLASH_BUFFBOTSETTINGS2 = "/buffbot";
 SlashCmdList.BUFFBOTSETTINGS = function(arg)
-    if arg == "" then return end
-    
+    if arg == "" then
+        if InterfaceOptionsFrame_OpenToCategory then
+                InterfaceOptionsFrame_OpenToCategory(addonName)
+        end
+    end
     if arg == "buffs" then
         DevTools_Dump(classBuffs)
         return
