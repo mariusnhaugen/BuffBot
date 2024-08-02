@@ -3,6 +3,7 @@ local addonName, BuffBot = ...
 local class = BuffBot.playerclass
 local classBuffs = {}
 local assignedBuff = ""
+local FIVE_MINUTES = 300
 
 SLASH_BUFFBOTSETTINGS1 = "/bb";
 SLASH_BUFFBOTSETTINGS2 = "/buffbot";
@@ -45,7 +46,7 @@ function BuffBot.HasUniqueClassBuff()
     return false
 end
 
-function BuffBot.SkipCheck(i)
+local function ShouldSkipBuff(i)
     if (BuffBot.UniqueBuffs[class] ~= nil) then
         if BuffBot.IndexOf(classBuffs[i], BuffBot.UniqueBuffs[class]) then
             if BuffBot.HasUniqueClassBuff() then return true end -- check auras and armors
@@ -90,11 +91,13 @@ function BuffBot.FindNextBuffInList()
     if InCombatLockdown() then return "done" end
     if classBuffs == nil then return "done" end
 
-    for i = 1, #classBuffs do                  -- For all buffs in filtered buff list.
-        local skipCheck = BuffBot.SkipCheck(i) -- check for exceptions
-        if (not BuffBot.UnitHasAssignedBuff("player", classBuffs[i])) and (not skipCheck) then
-            return classBuffs[i]
+    for i = 1, #classBuffs do                     -- For all buffs in filtered buff list.
+        if not ShouldSkipBuff(classBuffs[i]) then -- check for exceptions
+            if (not BuffBot.UnitHasAssignedBuff("player", classBuffs[i])) then
+                return classBuffs[i]
+            end
         end
+        ---IF TIME ()
     end
     return "done"
 end
@@ -118,7 +121,12 @@ function BuffBot.UnitHasAssignedBuff(unit, assignedBuff)
     if assignedBuff == "" then return end
 
     local aura = C_UnitAuras.GetAuraDataBySpellName(unit, assignedBuff)
-    if aura then
+    if aura ~= nil then
+        print(aura.expirationTime - GetTime())
+        if (aura.expirationTime - GetTime() < FIVE_MINUTES) then
+            return false
+        end
+        -- end
         return true
     else
         return false

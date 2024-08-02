@@ -35,20 +35,35 @@ local function PaintSettingsFrame()
         return check
     end
 
-    -- TOP AREA
-    local t = configPanel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
-    t:SetText(configPanel.name .. " Settings")
-    t:SetPoint("TOPLEFT", configPanel, 15, -15)
+    -- ############### Title
+    local title = configPanel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+    title:SetPoint("TOPLEFT", configPanel, 15, -15)
+    title:SetText(configPanel.name .. " Settings")
+
+    -- ############### Description
+
+    local slashCommandDescription = configPanel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+    slashCommandDescription:SetPoint("TOPLEFT", title, 10, -25)
+    slashCommandDescription:SetText("/bb, /buffbot to open this page.")
+
+    local mainDescription = configPanel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+    mainDescription:SetPoint("TOPLEFT", slashCommandDescription, 0, -20)
+    mainDescription:SetText(
+        "For best experience, Set a keybind in Blizzard Keybindings>AddOns to configure a spammable macro button")
 
 
-    local checkboxHideIcon = createCheckbox(
-        "Hide Icon [NYI]",
-        "Hides Icon for text only/stealth mode buffing",
-        function(_, checkboxValue)
-        end)
-    checkboxHideIcon:SetPoint("TOPLEFT", configPanel, 15, -60)
-    checkboxHideIcon:SetChecked(BuffBot.config.HIDE_ICON)
-    checkboxHideIcon:Disable()
+    -- ############### Top Checkboxes
+    -- local checkboxHideIcon = createCheckbox(
+    --     "Hide Icon [NYI]",
+    --     "Hides Icon for text only/stealth mode buffing",
+    --     function(_, checkboxValue)
+    --         BuffBot.debug("Suggestion List - ", checkboxValue)
+    --         BuffBot.config.HIDE_ICON= checkboxValue
+    --         BuffBot.UpdateSuggestionList()
+    --     end)
+    -- checkboxHideIcon:SetPoint("TOPLEFT", slashCommandDescription, 0, -20)
+    -- checkboxHideIcon:SetChecked(BuffBot.config.HIDE_ICON)
+    -- checkboxHideIcon:Disable()
 
     local checkboxSuggestionList = createCheckbox(
         "Show Suggestion List",
@@ -58,11 +73,12 @@ local function PaintSettingsFrame()
             BuffBot.config.SUGGESTION_LIST = checkboxValue
             BuffBot.UpdateSuggestionList()
         end)
-    checkboxSuggestionList:SetPoint("TOPLEFT", checkboxHideIcon, 120, 0)
+    checkboxSuggestionList:SetPoint("TOPLEFT", slashCommandDescription, 0, -50)
+    -- checkboxSuggestionList:SetPoint("TOPLEFT", checkboxHideIcon, 120, 0) --### when hideicon is back
     checkboxSuggestionList:SetChecked(BuffBot.config.SUGGESTION_LIST)
 
     local buttonResetPosition = CreateFrame("Button", nil, configPanel, "UIPanelButtonTemplate")
-    buttonResetPosition:SetPoint("TOPLEFT", checkboxSuggestionList, 160, 0)
+    buttonResetPosition:SetPoint("TOPLEFT", checkboxSuggestionList, 320, 0)
     buttonResetPosition:SetText("Reset Button Position")
     buttonResetPosition:SetWidth(140)
     buttonResetPosition:SetHeight(28)
@@ -74,12 +90,12 @@ local function PaintSettingsFrame()
     buttonResetPosition.newbieText = "You can move the button by holding Alt and dragging."
 
 
-    -- CLASS SETTINGS --
+    -- ############### CLASS SETTINGS
     -- Gap between classes : -40
     -- Gap within classes: -25
     local classSettings = configPanel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
     classSettings:SetText("Class Settings")
-    classSettings:SetPoint("TOPLEFT", configPanel, 15, -115)
+    classSettings:SetPoint("TOPLEFT", configPanel, 15, -135)
 
     local buttonStrictArmor = createCheckbox(
         "Strict Mage Armors",
