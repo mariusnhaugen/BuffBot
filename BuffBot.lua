@@ -3,7 +3,7 @@ local addonName, BuffBot = ...
 local class = BuffBot.playerclass
 local classBuffs = {}
 local assignedBuff = ""
-local FIVE_MINUTES = 300
+local MULTIPLIER = 0.2 -- aura.Duration * MULTIPLIER to get reminder duration
 
 SLASH_BUFFBOTSETTINGS1 = "/bb";
 SLASH_BUFFBOTSETTINGS2 = "/buffbot";
@@ -123,7 +123,7 @@ function BuffBot.UnitHasAssignedBuff(unit, assignedBuff)
     local aura = C_UnitAuras.GetAuraDataBySpellName(unit, assignedBuff)
     if aura ~= nil then
         print(aura.expirationTime - GetTime())
-        if (aura.expirationTime - GetTime() < FIVE_MINUTES) then
+        if (aura.expirationTime - GetTime() < aura.duration * MULTIPLIER) then
             return false
         end
         -- end
