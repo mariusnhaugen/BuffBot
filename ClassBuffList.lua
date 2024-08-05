@@ -138,7 +138,7 @@ local function RecommendUniqueBuff()
     end
 
     if BuffBot.playerclass == "WARLOCK" then
-        if BuffBot.CheckSpellAvailable("Fel Armor") and UnitInRaid("player") then
+        if BuffBot.CheckSpellAvailable("Fel Armor") and IsInRaid(LE_PARTY_CATEGORY_HOME) then
             return "Fel Armor"
         end
         if BuffBot.CheckSpellAvailable("Demon Armor") then

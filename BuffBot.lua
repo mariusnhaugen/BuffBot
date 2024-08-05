@@ -46,6 +46,24 @@ function BuffBot.HasUniqueClassBuff()
     return false
 end
 
+local function RecommendOtherPaladinBuff(buffString)
+    if buffString == "" then return end
+
+    --when this function is called, the existence of one of the buff has already been checked
+    -- Check if the origin is player, and suggest alternate buff.
+    if not BuffBot.BuffIsFromPlayer(buffString) then
+        if IsInGroup() then
+            return "Blessing of Salvation"
+        else
+            if buffString == "Blessing of Wisdom" then
+                return "Blessing of Might"
+            else
+                return "Blessing of Wisdom"
+            end
+        end
+    end
+end
+
 local function ShouldSkipBuff(i)
     if (BuffBot.UniqueBuffs[class] ~= nil) then
         if BuffBot.IndexOf(classBuffs[i], BuffBot.UniqueBuffs[class]) then
@@ -95,6 +113,15 @@ function BuffBot.FindNextBuffInList()
         if not ShouldSkipBuff(classBuffs[i]) then -- check for exceptions
             if (not BuffBot.UnitHasAssignedBuff("player", classBuffs[i])) then
                 return classBuffs[i]
+            else
+                if class == "PALADIN" then
+                    if classBuffs[i] == "Blessing of Wisdom" or classBuffs[i] == "Blessing of Might" then
+                        local newBuff = RecommendOtherPaladinBuff(classBuffs[i])
+                        if newBuff then
+                            return newBuff
+                        end
+                    end
+                end
             end
         end
         ---IF TIME ()
@@ -117,17 +144,26 @@ function BuffBot.CheckPlayerBuffs()
     end
 end
 
-function BuffBot.UnitHasAssignedBuff(unit, assignedBuff)
-    if assignedBuff == "" then return end
+function BuffBot.UnitHasAssignedBuff(unit, buffString)
+    if buffString == "" then return end
 
-    local aura = C_UnitAuras.GetAuraDataBySpellName(unit, assignedBuff)
+    local aura = C_UnitAuras.GetAuraDataBySpellName(unit, buffString)
     if aura ~= nil then
-        print(aura.expirationTime - GetTime())
         if (aura.expirationTime - GetTime() < aura.duration * MULTIPLIER) then
             return false
         end
-        -- end
         return true
+    else
+        return false
+    end
+end
+
+function BuffBot.BuffIsFromPlayer(buffString)
+    if buffString == "" then return end
+
+    local aura = C_UnitAuras.GetAuraDataBySpellName("player", buffString)
+    if aura ~= nil then
+        return aura.isFromPlayerOrPlayerPet
     else
         return false
     end
