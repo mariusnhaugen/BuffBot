@@ -115,6 +115,7 @@ function BuffBot.FindNextBuffInList()
         local currentBuff = classBuffs[i]
         if not ShouldSkipBuff(currentBuff) then -- check for exceptions
             if (not BuffBot.UnitHasAssignedBuff("player", currentBuff)) then
+                BuffBot.debug(currentBuff, " Missing.")
                 return currentBuff
             else
                 if class == "PALADIN" then
@@ -151,8 +152,11 @@ function BuffBot.UnitHasAssignedBuff(unit, buffString)
 
     local aura = C_UnitAuras.GetAuraDataBySpellName(unit, buffString)
     if aura ~= nil then
-        if (aura.expirationTime - GetTime() < aura.duration * MULTIPLIER) then
-            return false
+        if (aura.duration > 0) and (aura.expirationTime > 0) then
+            local timeLeft = aura.expirationTime - GetTime()
+            if (timeLeft < aura.duration * MULTIPLIER) and (timeLeft < 300) then
+                return false
+            end
         end
         return true
     else
