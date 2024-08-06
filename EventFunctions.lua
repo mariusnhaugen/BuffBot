@@ -79,9 +79,9 @@ function events:ADDON_LOADED(arg1)
 
     local debugString = ""
     if BuffBot.config.DEBUG_MODE then
-        debugString = " - DEBUG MODE ON"
+        debugString = "- DEBUG MODE ON"
     end
-    print("BuffBot v0.0.4 Loaded.", debugString)
+    print("BuffBot|cff00ccff v1.0.0|r Loaded. /bb", debugString)
 
     if (BuffBot.config.buttonPosition == nil) then
         print("You can drag the BuffBot button by holding Alt.")

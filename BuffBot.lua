@@ -50,9 +50,11 @@ end
 local function RecommendOtherPaladinBuff(buffString)
     if buffString == "" then return end
 
+    -- for aura: GetShapeshiftForm() returns 0 for no aura, 1 for Devotion
     --when this function is called, the existence of one of the buff has already been checked
     -- Check if the origin is player, and suggest alternate buff.
-    if not BuffBot.BuffIsFromPlayer(buffString) then
+    if BuffBot.BuffIsFromPlayer(buffString) then
+        --TODO: CheckSpellAvailable
         if IsInGroup() then
             return "Blessing of Salvation"
         else
@@ -117,15 +119,15 @@ function BuffBot.FindNextBuffInList()
             if (not BuffBot.UnitHasAssignedBuff("player", currentBuff)) then
                 BuffBot.debug(currentBuff, " Missing.")
                 return currentBuff
-            else
-                if class == "PALADIN" then
-                    if currentBuff == "Blessing of Wisdom" or currentBuff == "Blessing of Might" then
-                        local newBuff = RecommendOtherPaladinBuff(currentBuff)
-                        if newBuff then
-                            return newBuff
-                        end
-                    end
-                end
+                -- else
+                --     if class == "PALADIN" then
+                --         if currentBuff == "Blessing of Wisdom" or currentBuff == "Blessing of Might" then
+                --             local newBuff = RecommendOtherPaladinBuff(currentBuff)
+                --             if newBuff then
+                --                 return newBuff
+                --             end
+                --         end
+                --     end
             end
         end
     end

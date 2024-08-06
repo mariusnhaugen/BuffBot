@@ -105,6 +105,10 @@ local function FilterUniqueBuffs()
     if class == "HUNTER" then
         if BuffBot.config.CHEETAH_REMINDER then
             BuffBot.UniqueBuffs.HUNTER = UniqueBuffs.HUNTER
+            if BuffBot.UniqueBuffs.HUNTER[6] and BuffBot.UniqueBuffs.HUNTER[7] then
+                table.remove(BuffBot.UniqueBuffs.HUNTER, 7)
+                table.remove(BuffBot.UniqueBuffs.HUNTER, 6)
+            end
         else
             BuffBot.UniqueBuffs.HUNTER = UniqueBuffs.HUNTER
             table.insert(BuffBot.UniqueBuffs.HUNTER, "Aspect of the Cheetah")

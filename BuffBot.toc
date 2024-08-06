@@ -1,6 +1,6 @@
 ## Interface: 11502, 11503
-## Version: 0.0.3
-## Title: BuffBot |cff00ccff0.0.3|r
+## Version: 1.0.0
+## Title: BuffBot |cff00ccff1.0.0|r
 ## Author: Smiil
 ## Notes: |cff00ccffBuffBot|r - Maintenance buffs made easy.
 ## DefaultState: enabled
