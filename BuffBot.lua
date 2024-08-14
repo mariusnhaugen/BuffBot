@@ -9,6 +9,7 @@ SLASH_BUFFBOTSETTINGS1 = "/bb";
 SLASH_BUFFBOTSETTINGS2 = "/buffbot";
 SlashCmdList.BUFFBOTSETTINGS = function(arg)
     if arg == "" then
+        ---@diagnostic disable-next-line: undefined-global
         if InterfaceOptionsFrame_OpenToCategory then
             InterfaceOptionsFrame_OpenToCategory(addonName)
         end
