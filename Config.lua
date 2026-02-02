@@ -2,7 +2,29 @@ local _, BuffBot = ...
 
 local configPanel = CreateFrame("Frame")
 configPanel.name = "BuffBot"
-InterfaceOptions_AddCategory(configPanel)
+
+local category = Settings.RegisterCanvasLayoutCategory(configPanel,"BuffBot")
+Settings.RegisterAddOnCategory(category)
+
+SLASH_BUFFBOTSETTINGS1 = "/bb";
+SLASH_BUFFBOTSETTINGS2 = "/buffbot";
+SlashCmdList.BUFFBOTSETTINGS = function(arg)
+    
+    if arg == "" then
+        Settings.OpenToCategory(category:GetID())
+    end
+
+    if arg == "buffs" then
+        DevTools_Dump(classBuffs)
+        return
+    end
+
+    if arg == "debug" then
+        BuffBot.config.DEBUG_MODE = not BuffBot.config.DEBUG_MODE
+        print("BuffBot Debug Mode -", BuffBot.config.DEBUG_MODE)
+        return
+    end
+end
 
 function BuffBot.GetDefaultConfig()
     local defaultConfig = {}
@@ -42,15 +64,15 @@ local function PaintSettingsFrame()
 
     -- ############### Description
 
-    local slashCommandDescription = configPanel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
-    slashCommandDescription:SetPoint("TOPLEFT", title, 10, -25)
-    slashCommandDescription:SetText("/bb, /buffbot to open this page.")
 
     local mainDescription = configPanel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
-    mainDescription:SetPoint("TOPLEFT", slashCommandDescription, 0, -20)
+    mainDescription:SetPoint("TOPLEFT", title, 10, -30)
     mainDescription:SetText(
-        "For best experience, Set a keybind in Blizzard Keybindings>AddOns to configure a spammable macro button")
-
+        "For best experience, Set a keybind in Blizzard Keybindings>AddOns to configure a spammable macro button.")
+    
+    local slashCommandDescription = configPanel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+    slashCommandDescription:SetPoint("TOPLEFT", mainDescription, 0, -20)
+    slashCommandDescription:SetText("/bb, /buffbot to open this page. Alt+Drag to move the main button.")
 
     -- ############### Top Checkboxes
     -- local checkboxHideIcon = createCheckbox(
@@ -73,7 +95,7 @@ local function PaintSettingsFrame()
             BuffBot.config.SUGGESTION_LIST = checkboxValue
             BuffBot.UpdateSuggestionList()
         end)
-    checkboxSuggestionList:SetPoint("TOPLEFT", slashCommandDescription, 0, -50)
+    checkboxSuggestionList:SetPoint("TOPLEFT", mainDescription, 0, -50)
     -- checkboxSuggestionList:SetPoint("TOPLEFT", checkboxHideIcon, 120, 0) --### when hideicon is back
     checkboxSuggestionList:SetChecked(BuffBot.config.SUGGESTION_LIST)
 

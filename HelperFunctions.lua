@@ -1,5 +1,6 @@
 local _, BuffBot = ...
 
+
 BuffBot.DEBUG_MODE = false;
 BuffBot.playername = GetUnitName("player")
 BuffBot.playerlevel = UnitLevel("player")
