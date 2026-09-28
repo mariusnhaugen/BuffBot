@@ -1,30 +1,9 @@
-local addonName, BuffBot = ...
+local _, BuffBot = ...
 
 local class = BuffBot.playerclass
 local classBuffs = {}
 local assignedBuff = ""
 local MULTIPLIER = 0.2 -- aura.Duration * MULTIPLIER to get reminder duration
-
-SLASH_BUFFBOTSETTINGS1 = "/bb";
-SLASH_BUFFBOTSETTINGS2 = "/buffbot";
-SlashCmdList.BUFFBOTSETTINGS = function(arg)
-    if arg == "" then
-        ---@diagnostic disable-next-line: undefined-global
-        if InterfaceOptionsFrame_OpenToCategory then
-            InterfaceOptionsFrame_OpenToCategory(addonName)
-        end
-    end
-    if arg == "buffs" then
-        DevTools_Dump(classBuffs)
-        return
-    end
-
-    if arg == "debug" then
-        BuffBot.config.DEBUG_MODE = not BuffBot.config.DEBUG_MODE
-        print("BuffBot Debug Mode -", BuffBot.config.DEBUG_MODE)
-        return
-    end
-end
 
 --------------- MAIN FUNCTIONS ----------------
 

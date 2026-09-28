@@ -24,9 +24,8 @@ UniqueBuffs.WARLOCK = { "Demon Skin", "Demon Armor", "Fel Armor" }
 UniqueBuffs.PALADIN = { "Devotion Aura", "Sanctity Aura", "Concentration Aura", "Retribution Aura",
     "Frost Resistance Aura", "Shadow Resistance Aura", "Fire Resistance Aura" }
 
-BuffBot.RanklessSpells = {} -- Spells that prevent downranking and require special lookup calls
-BuffBot.RanklessSpells = UniqueBuffs.PALADIN
-table.insert(BuffBot.RanklessSpells, 1, "Battle Shout")
+-- Spells that prevent downranking and require special lookup calls
+BuffBot.RanklessSpells = { "Battle Shout", unpack(UniqueBuffs.PALADIN) }
 
 
 local spellIDTable = { -- Rank 1 for checking.
@@ -104,17 +103,13 @@ local function FilterUniqueBuffs()
     end
 
     if class == "HUNTER" then
-        if BuffBot.config.CHEETAH_REMINDER then
-            BuffBot.UniqueBuffs.HUNTER = UniqueBuffs.HUNTER
-            if BuffBot.UniqueBuffs.HUNTER[6] and BuffBot.UniqueBuffs.HUNTER[7] then
-                table.remove(BuffBot.UniqueBuffs.HUNTER, 7)
-                table.remove(BuffBot.UniqueBuffs.HUNTER, 6)
-            end
-        else
-            BuffBot.UniqueBuffs.HUNTER = UniqueBuffs.HUNTER
-            table.insert(BuffBot.UniqueBuffs.HUNTER, "Aspect of the Cheetah")
-            table.insert(BuffBot.UniqueBuffs.HUNTER, "Aspect of the Pack")
+        -- Copy so the base list is never mutated between rebuilds
+        local aspects = { unpack(UniqueBuffs.HUNTER) }
+        if not BuffBot.config.CHEETAH_REMINDER then
+            table.insert(aspects, "Aspect of the Cheetah")
+            table.insert(aspects, "Aspect of the Pack")
         end
+        BuffBot.UniqueBuffs.HUNTER = aspects
     end
 
     if class == "MAGE" then

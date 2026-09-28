@@ -9,13 +9,13 @@ Settings.RegisterAddOnCategory(category)
 SLASH_BUFFBOTSETTINGS1 = "/bb";
 SLASH_BUFFBOTSETTINGS2 = "/buffbot";
 SlashCmdList.BUFFBOTSETTINGS = function(arg)
-    
     if arg == "" then
         Settings.OpenToCategory(category:GetID())
+        return
     end
 
     if arg == "buffs" then
-        DevTools_Dump(classBuffs)
+        DevTools_Dump(BuffBot.classBuffList)
         return
     end
 
