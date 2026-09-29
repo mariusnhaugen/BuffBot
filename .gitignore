@@ -1,2 +1,5 @@
 uinotes.lua
 .vscode/*
+# Local luarocks tree
+.luarocks/
+lua_modules/
