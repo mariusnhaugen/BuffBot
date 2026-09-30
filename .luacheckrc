@@ -14,8 +14,10 @@ globals = {
     "BuffBotDump",
 }
 
--- WoW API available on every client the addon targets.
-local wow_common = {
+-- WoW API available on the Forever client. GetSpellInfo, GetSpellTexture and
+-- IsUsableSpell are removed there, so they are deliberately not listed.
+read_globals = {
+    "C_Spell",
     "C_UnitAuras",
     "CreateFrame",
     "DevTools_Dump",
@@ -35,17 +37,5 @@ local wow_common = {
     "UnitInRaid",
     "UnitLevel",
 }
-
--- Globals removed on the retail client (and so on Forever).
-local wow_classic_only = {
-    "GetSpellInfo",
-    "GetSpellTexture",
-    "IsUsableSpell",
-}
-
-local read = {}
-for _, name in ipairs(wow_common) do table.insert(read, name) end
-for _, name in ipairs(wow_classic_only) do table.insert(read, name) end
-read_globals = read
 
 files["tests/"] = { std = "+busted" }

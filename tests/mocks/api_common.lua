@@ -1,6 +1,6 @@
 -- WoW API surface shared by every client flavor: units, auras, group state,
--- frames and the Settings panel. Flavor files (api_classic, api_forever) add
--- the spell functions and frame templates that differ between clients.
+-- frames and the Settings panel. api_forever adds the C_Spell functions and
+-- frame templates.
 local Spells = require("mocks.spells")
 
 -- Frame methods that the addon calls but that have no observable effect in

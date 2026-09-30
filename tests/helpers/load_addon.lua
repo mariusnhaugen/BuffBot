@@ -3,10 +3,6 @@
 local State = require("mocks.state")
 local Spells = require("mocks.spells")
 
--- Which client API the addon is loaded against. Override per run with
--- BUFFBOT_API=classic|forever.
-local DEFAULT_API = "classic"
-
 local ADDON_NAME = "BuffBot"
 
 local function tocFiles(path)
@@ -127,7 +123,6 @@ local M = {}
 --   saved   BuffBotConfig SavedVariables value before load (default nil)
 --   config  config overrides applied after ADDON_LOADED
 --   raid    start in a raid
---   api     client API flavor (default BUFFBOT_API env var, then DEFAULT_API)
 function M.load(opts)
     opts = opts or {}
     local state = State.new(opts.class)
@@ -137,7 +132,7 @@ function M.load(opts)
     local env = setmetatable({}, { __index = _G })
     env._G = env
     require("mocks.api_common")(state, env)
-    require("mocks.api_" .. (opts.api or os.getenv("BUFFBOT_API") or DEFAULT_API))(state, env)
+    require("mocks.api_forever")(state, env)
     env.BuffBotConfig = opts.saved
 
     local ns = {}

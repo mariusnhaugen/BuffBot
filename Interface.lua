@@ -12,7 +12,7 @@ _G["BINDING_NAME_" .. "CLICK BUFFBOT_MacroButton:LeftButton"] = "BuffBot Cast"
 --################### Public Functions ##########################
 function BuffBot.UpdateMacro(spellName, unit)
     if InCombatLockdown() then return end
-    local texture = GetSpellTexture(spellName)
+    local texture = C_Spell.GetSpellTexture(spellName)
     if texture then
         macroButton:SetNormalTexture(texture)
     end

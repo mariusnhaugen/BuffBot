@@ -1,4 +1,4 @@
-## Interface: 11502, 11503
+## Interface: 16001
 ## Version: 2.0.1
 ## Title: BuffBot |cff00ccff2.0.1|r
 ## Author: Smiil

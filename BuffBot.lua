@@ -77,8 +77,8 @@ local function ShouldSkipBuff(buffString)
             return BuffBot.UnitHasAssignedBuff("player", "Rallying Cry of the Dragonslayer")
         end
         if buffString == "Battle Shout" then
-            if not IsUsableSpell("Battle Shout") and not BuffBot.config.BLOODRAGE then return true end
-            if not IsUsableSpell("Battle Shout") and BuffBot.config.BLOODRAGE and (not BuffBot.UnitHasAssignedBuff("player", "Battle Shout")) then
+            if not C_Spell.IsSpellUsable("Battle Shout") and not BuffBot.config.BLOODRAGE then return true end
+            if not C_Spell.IsSpellUsable("Battle Shout") and BuffBot.config.BLOODRAGE and (not BuffBot.UnitHasAssignedBuff("player", "Battle Shout")) then
                 if BuffBot.CheckSpellAvailable("Bloodrage") and (not BuffBot.IndexOf("Bloodrage", classBuffs)) and not BuffBot.BLOODRAGE_LOCKED then
                     BuffBot.debug("Bloodrage Added")
                     local bsIndex = BuffBot.IndexOf("Battle Shout", classBuffs)

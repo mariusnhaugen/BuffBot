@@ -78,11 +78,9 @@ function BuffBot.CheckSpellAvailable(spellString)
 
     if class == "PALADIN" or class == "WARRIOR" then
         if BuffBot.IndexOf(spellString, BuffBot.RanklessSpells) then
-            if GetSpellInfo(GetSpellInfo(spellID)) then --get local name of R1, and find Spell id
-                return true
-            else
-                return false
-            end
+            --get local name of R1, and find it in the spellbook
+            local info = C_Spell.GetSpellInfo(spellID)
+            return info ~= nil and C_Spell.GetSpellInfo(info.name) ~= nil
         end
     end
 

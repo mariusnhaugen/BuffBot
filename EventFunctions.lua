@@ -51,7 +51,8 @@ function events:UNIT_SPELLCAST_SUCCEEDED(unit, _, spellID)
             BuffBot.UpdateMacro("Battle Shout", "player")
         end
     end
-    if spellID == select(7, GetSpellInfo(GetSpellInfo(6673))) then --Battle shout
+    local battleShout = C_Spell.GetSpellInfo(C_Spell.GetSpellInfo(6673).name) --Battle shout, highest known rank
+    if battleShout and spellID == battleShout.spellID then
         debug("Battle Shout Cast")
         if BuffBot.BLOODRAGE_LOCKED then
             BuffBot.BLOODRAGE_LOCKED = false
