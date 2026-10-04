@@ -73,7 +73,10 @@ describe("per-class buff priority (vanilla spells)", function()
             assert.same({ "Blessing of Wisdom" }, h:buffUp())
         end)
 
-        pending("recommends Retribution Aura when it is the only aura known (known bug: missing from spellIDTable)")
+        it("recommends Retribution Aura when it is the only aura known", function()
+            local h = Addon.load({ class = "PALADIN", known = { "Retribution Aura" } })
+            assert.equal("Retribution Aura", h:shown())
+        end)
     end)
 
     it("PRIEST: Fortitude, Shadowform, Divine Spirit, Inner Fire", function()

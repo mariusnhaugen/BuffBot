@@ -37,3 +37,9 @@ Results decided how the port handles spell ranks. Run on the Forever beta with
 | Usable with no rage | `/dump C_Spell.IsSpellUsable("Battle Shout")` | `false, true`: not usable, and the reason is insufficient power (same as Classic `IsUsableSpell`) |
 | Removed globals | `/dump GetSpellInfo, IsUsableSpell, GetSpellTexture` | All three are `nil` |
 | Old checkbox template | `/run local ok, f = pcall(CreateFrame, "CheckButton", nil, UIParent, "InterfaceOptionsCheckButtonTemplate") print(ok, ok and f.Text)` | `true`, table: the template exists and has a `.Text` label |
+| Retribution Aura by ID | `/dump C_Spell.GetSpellInfo(7294)` | |
+| Aura lookup with the buff on: needs `duration`, `expirationTime` and `isFromPlayerOrPlayerPet` | `/dump C_UnitAuras.GetAuraDataBySpellName("player", "<buff name>")` | |
+| Aura lookup without the buff: should be `nil` | `/dump C_UnitAuras.GetAuraDataBySpellName("player", "<buff you don't have>")` | |
+| `UNIT_AURA` payload | `/run local f = CreateFrame("Frame") f:RegisterUnitEvent("UNIT_AURA", "player") f:SetScript("OnEvent", function(_, _, u, info) print(u, info and info.isFullUpdate, info and info.removedAuraInstanceIDs ~= nil) end)`, then gain and lose a buff | |
+| Settings panel | `/bb` with BuffBot loaded | |
+| Keybind | Bind "BuffBot Cast" under Key Bindings > AddOns and press it once with a buff missing | |

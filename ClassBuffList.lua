@@ -45,6 +45,7 @@ local spellIDTable = { -- Rank 1 for checking.
     ["Devotion Aura"] = 465,
     ["Sanctity Aura"] = 20218,
     ["Concentration Aura"] = 19746,
+    ["Retribution Aura"] = 7294,
     ["Blessing of Might"] = 19740,
     ["Blessing of Wisdom"] = 19742,
     -- PRIEST
