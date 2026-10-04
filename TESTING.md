@@ -22,6 +22,10 @@ behaves the same.
 
 ## Forever client probe
 
+From WSL, `./deploy.sh` copies the addon into the `_classic_beta_` (Forever)
+AddOns folder. Run it after each change and `/reload`; restart the client
+for new files or TOC changes.
+
 Results decided how the port handles spell ranks. Run on the Forever beta with
 `/console scriptErrors 1`, and fill in the results.
 
