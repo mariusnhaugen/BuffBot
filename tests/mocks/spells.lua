@@ -3,9 +3,9 @@
 local byName = {
     -- DRUID
     ["Omen of Clarity"] = 16864,
-    ["Mark of the Wild"] = 5232,
+    ["Mark of the Wild"] = 1126,
     ["Gift of the Wild"] = 21849,
-    ["Thorns"] = 782,
+    ["Thorns"] = 467,
     -- HUNTER
     ["Trueshot Aura"] = 19506,
     ["Aspect of the Hawk"] = 13165,

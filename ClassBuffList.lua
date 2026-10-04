@@ -30,8 +30,8 @@ BuffBot.RanklessSpells = { "Battle Shout", unpack(UniqueBuffs.PALADIN) }
 local spellIDTable = { -- Rank 1 for checking.
     --DRUID
     ["Omen of Clarity"] = 16864,
-    ["Mark of the Wild"] = 5232,
-    ["Thorns"] = 782,
+    ["Mark of the Wild"] = 1126,
+    ["Thorns"] = 467,
     --HUNTER
     ["Trueshot Aura"] = 19506,
     ["Aspect of the Hawk"] = 13165,
