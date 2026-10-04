@@ -43,6 +43,8 @@ local function moveMacroButton()
 end
 
 macroButton = CreateFrame("Button", "BUFFBOT_MacroButton", UIParent, "SecureActionButtonTemplate")
+-- The secure handler only acts on the down or the up click, depending on ActionButtonUseKeyDown
+macroButton:RegisterForClicks("AnyUp", "AnyDown")
 macroButton:SetAttribute("type1", "macro") -- left click triggers macro
 macroButton:SetSize(48, 48)
 macroButton:SetClampedToScreen(true);
