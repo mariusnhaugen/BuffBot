@@ -6,21 +6,20 @@ debug = BuffBot.debug
 
 local InitalClassBuffLists = {}
 InitalClassBuffLists.DRUID = { "Omen of Clarity", "Mark of the Wild", "Thorns" }
-InitalClassBuffLists.HUNTER = { "Heart of the Lion", "Trueshot Aura", "Aspect of the Hawk" }
+InitalClassBuffLists.HUNTER = { "Trueshot Aura", "Aspect of the Hawk" }
 InitalClassBuffLists.MAGE = { "Unique", "Arcane Intellect", "Dampen Magic" }
 InitalClassBuffLists.PALADIN = { "Unique", "Blessing" }
 InitalClassBuffLists.PRIEST = { "Power Word: Fortitude", "Shadowform", "Divine Spirit", "Inner Fire" }
 InitalClassBuffLists.ROGUE = {}
 InitalClassBuffLists.SHAMAN = { "Lightning Shield" }
-InitalClassBuffLists.WARLOCK = { "Unique", "Grimoire of Synergy", }
-InitalClassBuffLists.WARRIOR = { "Valor of Azeroth", "Commanding Shout", "Battle Shout" }
+InitalClassBuffLists.WARLOCK = { "Unique" }
+InitalClassBuffLists.WARRIOR = { "Battle Shout" }
 
 local UniqueBuffs = {}
 BuffBot.UniqueBuffs = {}
-UniqueBuffs.HUNTER = { "Aspect of the Viper", "Aspect of the Hawk", "Aspect of the Monkey", "Aspect of the Wild",
-    "Aspect of the Beast" }
-UniqueBuffs.MAGE = { "Mage Armor", "Frost Armor", "Molten Armor", "Ice Armor" }
-UniqueBuffs.WARLOCK = { "Demon Skin", "Demon Armor", "Fel Armor" }
+UniqueBuffs.HUNTER = { "Aspect of the Hawk", "Aspect of the Monkey", "Aspect of the Wild", "Aspect of the Beast" }
+UniqueBuffs.MAGE = { "Mage Armor", "Frost Armor", "Ice Armor" }
+UniqueBuffs.WARLOCK = { "Demon Skin", "Demon Armor" }
 UniqueBuffs.PALADIN = { "Devotion Aura", "Sanctity Aura", "Concentration Aura", "Retribution Aura",
     "Frost Resistance Aura", "Shadow Resistance Aura", "Fire Resistance Aura" }
 
@@ -34,14 +33,12 @@ local spellIDTable = { -- Rank 1 for checking.
     ["Mark of the Wild"] = 5232,
     ["Thorns"] = 782,
     --HUNTER
-    ["Heart of the Lion"] = 409580,
     ["Trueshot Aura"] = 19506,
     ["Aspect of the Hawk"] = 13165,
     --MAGE
     ["Frost Armor"] = 168, -- Low level
     ["Ice Armor"] = 7302,
     ["Mage Armor"] = 6117,
-    ["Molten Armor"] = 428741,
     ["Arcane Intellect"] = 1459,
     ["Dampen Magic"] = 604,
     -- PALADIN
@@ -61,13 +58,8 @@ local spellIDTable = { -- Rank 1 for checking.
     -- WARLOCK
     ["Demon Skin"] = 687, -- Low level
     ["Demon Armor"] = 706,
-    ["Fel Armor"] = 403619,
-    ["Grimoire of Synergy"] = 426301,
-    ["Blood Pact"] = 11767,
     -- WARRIOR
     ["Battle Shout"] = 6673,
-    ["Commanding Shout"] = 403215,
-    ["Valor of Azeroth"] = 461475,
     ["Bloodrage"] = 2687,
 }
 
@@ -84,9 +76,6 @@ function BuffBot.CheckSpellAvailable(spellString)
         end
     end
 
-    if #tostring(spellID) == 6 then
-        return IsSpellKnownOrOverridesKnown(spellID)
-    end
     if spellID then
         return IsPlayerSpell(spellID)
     end
@@ -121,9 +110,6 @@ end
 
 local function RecommendUniqueBuff()
     if BuffBot.playerclass == "MAGE" then
-        if BuffBot.CheckSpellAvailable("Molten Armor") then
-            return "Molten Armor"
-        end
         if BuffBot.CheckSpellAvailable("Mage Armor") and IsInRaid(LE_PARTY_CATEGORY_HOME) then
             return "Mage Armor"
         end
@@ -136,9 +122,6 @@ local function RecommendUniqueBuff()
     end
 
     if BuffBot.playerclass == "WARLOCK" then
-        if BuffBot.CheckSpellAvailable("Fel Armor") and IsInRaid(LE_PARTY_CATEGORY_HOME) then
-            return "Fel Armor"
-        end
         if BuffBot.CheckSpellAvailable("Demon Armor") then
             return "Demon Armor"
         end

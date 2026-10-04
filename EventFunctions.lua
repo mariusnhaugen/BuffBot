@@ -110,7 +110,7 @@ events:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
 events:RegisterEvent("PLAYER_REGEN_ENABLED")
 events:RegisterEvent("PLAYER_REGEN_DISABLED")
 
---Fired when Spellbook is populated. On login as well as overrides changing (runes)
+--Fired when Spellbook is populated. On login as well as when spells are learned
 events:RegisterEvent("SPELLS_CHANGED")
 
 events:RegisterEvent("ADDON_LOADED")

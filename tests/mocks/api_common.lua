@@ -148,8 +148,6 @@ return function(state, env)
         return nil
     end
 
-    function env.IsPetActive() return state.pet end
-
     function env.IsAltKeyDown() return false end
 
     function env.GetTime() return state.time end
@@ -170,11 +168,6 @@ return function(state, env)
 
     -- Spellbook lookups that exist on every client
     function env.IsPlayerSpell(id)
-        local name = Spells.nameOf(id)
-        return name ~= nil and state:knows(name)
-    end
-
-    function env.IsSpellKnownOrOverridesKnown(id)
         local name = Spells.nameOf(id)
         return name ~= nil and state:knows(name)
     end

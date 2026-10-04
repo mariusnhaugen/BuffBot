@@ -63,19 +63,7 @@ local function ShouldSkipBuff(buffString)
             return BuffBot.UnitHasAssignedBuff("player", "Prayer of Fortitude")
         end
     end
-    if class == "WARLOCK" then
-        if buffString == "Grimoire of Synergy" then
-            if not IsPetActive() then return true end
-        end
-    end
     if class == "WARRIOR" then
-        if buffString == "Commanding Shout" then
-            return BuffBot.UnitHasAssignedBuff("player", "Blood Pact")
-        end
-        if buffString == "Valor of Azeroth" then
-            BuffBot.debug("ShouldSkipBuff - Valor of Azeroth")
-            return BuffBot.UnitHasAssignedBuff("player", "Rallying Cry of the Dragonslayer")
-        end
         if buffString == "Battle Shout" then
             if not C_Spell.IsSpellUsable("Battle Shout") and not BuffBot.config.BLOODRAGE then return true end
             if not C_Spell.IsSpellUsable("Battle Shout") and BuffBot.config.BLOODRAGE and (not BuffBot.UnitHasAssignedBuff("player", "Battle Shout")) then

@@ -14,7 +14,6 @@ function State.new(class)
         combat = false,
         group = false,
         raid = false,
-        pet = false,
         time = 1000,
         printed = {},
         frames = {},
