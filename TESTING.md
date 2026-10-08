@@ -47,7 +47,11 @@ Results decided how the port handles spell ranks. Run on the Forever beta with
 | `UNIT_AURA` payload | `/run local f = CreateFrame("Frame") f:RegisterUnitEvent("UNIT_AURA", "player") f:SetScript("OnEvent", function(_, _, u, info) print(u, info and info.isFullUpdate, info and info.removedAuraInstanceIDs ~= nil) end)`, then gain and lose a buff | |
 | Settings panel | `/bb` with BuffBot loaded | |
 | Keybind | Bind "BuffBot Cast" under Key Bindings > AddOns and press it once with a buff missing | |
+| Holy buff in Shadowform: `false, false` means blocked by the form, not mana, so BuffBot should skip it | `/dump C_Spell.IsSpellUsable("Power Word: Fortitude")` while in Shadowform | |
+| Caster buff in a Druid form: same check | `/dump C_Spell.IsSpellUsable("Mark of the Wild")` while in Cat or Bear Form | |
 | Own-aura filter: should return the aura with your own aura on, and `nil` with only another Paladin's | `/dump C_UnitAuras.GetAuraDataBySpellName("player", "Devotion Aura", "HELPFUL\|PLAYER")` | |
+| Button anchor after a drag | Alt-drag the BuffBot button, then `/dump BUFFBOT_MacroButton:GetPoint()` | |
+| Saved button position | After the drag above, `/reload`, then `/dump BuffBotConfig.buttonPosition`, and check the button is where you left it | |
 | Range event, for group coverage (in a party) | `/run local f = CreateFrame("Frame") local ok, err = pcall(f.RegisterEvent, f, "UNIT_IN_RANGE_UPDATE") print("registered:", ok, err) if ok then f:SetScript("OnEvent", function(_, _, u, r) print(u, r) end) end`, then walk out of and back into range of a party member | |
 | Group range check (in a party) | `/dump UnitInRange("party1")` near a party member, then again far away | |
 | Spell range check (in a party) | `/dump C_Spell.IsSpellInRange("<buff spell>", "party1")` near a party member, then again far away | |
