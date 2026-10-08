@@ -91,8 +91,7 @@ function events:ADDON_LOADED(arg1)
     if (BuffBot.config.buttonPosition == nil) then
         print("You can drag the BuffBot button by holding Alt.")
     else
-        BuffBot.macroButton:ClearAllPoints();
-        BuffBot.macroButton:SetPoint(unpack(BuffBot.config.buttonPosition));
+        BuffBot.RestoreMacroButtonPosition()
     end
 end
 

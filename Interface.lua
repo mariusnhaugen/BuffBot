@@ -25,6 +25,23 @@ function BuffBot.SetMacroButtonDefaultPosition()
     macroButton:SetPoint("CENTER", UIParent, "CENTER", 100, 0);
 end
 
+function BuffBot.RestoreMacroButtonPosition()
+    local saved = BuffBot.config.buttonPosition
+    -- Older versions saved the GetPoint() list, including the anchor frame
+    local point = saved.point or saved[1]
+    if not point then
+        BuffBot.config.buttonPosition = nil
+        return
+    end
+    local relativePoint = saved.relativePoint or saved[3] or point
+    local x = saved.x or saved[4] or 0
+    local y = saved.y or saved[5] or 0
+    BuffBot.config.buttonPosition = { point = point, relativePoint = relativePoint, x = x, y = y }
+
+    macroButton:ClearAllPoints()
+    macroButton:SetPoint(point, UIParent, relativePoint, x, y)
+end
+
 --#################### UI Functions ##########################
 local function stopMovingMacroButton()
     macroButton:SetScript('OnMouseUp', nil);
@@ -33,7 +50,9 @@ local function stopMovingMacroButton()
     if (macroButton.draggableOverlay ~= nil) then
         macroButton.draggableOverlay:Hide()
     end
-    BuffBot.config.buttonPosition = { macroButton:GetPoint() };
+    -- Save plain values only; the anchor frame can't be stored in saved variables
+    local point, _, relativePoint, x, y = macroButton:GetPoint()
+    BuffBot.config.buttonPosition = { point = point, relativePoint = relativePoint, x = x, y = y }
 end
 
 local function moveMacroButton()

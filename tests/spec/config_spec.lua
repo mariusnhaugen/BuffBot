@@ -51,9 +51,35 @@ describe("saved config", function()
     end)
 
     it("restores a saved button position", function()
-        local h = Addon.load({ saved = { buttonPosition = { "TOPLEFT", "UIParent", "TOPLEFT", 10, -20 } } })
-        assert.same({ "TOPLEFT", "UIParent", "TOPLEFT", 10, -20 }, { h.button:GetPoint() })
+        local h = Addon.load({ saved = { buttonPosition = { point = "TOPLEFT", relativePoint = "TOPLEFT", x = 10, y = -20 } } })
+        assert.same({ "TOPLEFT", h.env.UIParent, "TOPLEFT", 10, -20 }, { h.button:GetPoint() })
         assert.is_false(h:printed("You can drag"))
+    end)
+
+    it("restores a position saved in the old list format", function()
+        local h = Addon.load({ saved = { buttonPosition = { "TOPLEFT", {}, "TOPLEFT", 10, -20 } } })
+        assert.same({ "TOPLEFT", h.env.UIParent, "TOPLEFT", 10, -20 }, { h.button:GetPoint() })
+        assert.same({ point = "TOPLEFT", relativePoint = "TOPLEFT", x = 10, y = -20 }, h.ns.config.buttonPosition)
+    end)
+
+    it("restores an old-format position whose anchor frame was lost", function()
+        local h = Addon.load({ saved = { buttonPosition = { [1] = "CENTER", [3] = "CENTER", [4] = 30, [5] = 40 } } })
+        assert.same({ "CENTER", h.env.UIParent, "CENTER", 30, 40 }, { h.button:GetPoint() })
+    end)
+
+    it("falls back to the default position for an unreadable saved position", function()
+        local h = Addon.load({ saved = { buttonPosition = {} } })
+        assert.same({ "CENTER", h.env.UIParent, "CENTER", 100, 0 }, { h.button:GetPoint() })
+        assert.is_nil(h.ns.config.buttonPosition)
+    end)
+
+    it("saves the dragged position without the anchor frame", function()
+        local h = Addon.load()
+        h.state.altDown = true
+        h.button:GetScript("OnMouseDown")(h.button, "LeftButton")
+        h.button:SetPoint("TOPLEFT", h.env.UIParent, "TOPLEFT", 50, -60)
+        h.button:GetScript("OnMouseUp")(h.button, "LeftButton")
+        assert.same({ point = "TOPLEFT", relativePoint = "TOPLEFT", x = 50, y = -60 }, h.ns.config.buttonPosition)
     end)
 
     it("writes the config back on logout", function()

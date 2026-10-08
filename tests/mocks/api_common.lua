@@ -148,7 +148,7 @@ return function(state, env)
         return nil
     end
 
-    function env.IsAltKeyDown() return false end
+    function env.IsAltKeyDown() return state.altDown == true end
 
     function env.GetTime() return state.time end
 
