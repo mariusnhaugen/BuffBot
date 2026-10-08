@@ -9,7 +9,11 @@ function events:UNIT_AURA(unit, info)
     if info.isFullUpdate then
         -- triggers when people join party or player zones through instance
         if (unit == "player") then
-            if UnitInRaid("player") then BuffBot.UpdateClassBuffList() end
+            if UnitInRaid("player") then
+                BuffBot.UpdateClassBuffList()
+            else
+                BuffBot.CheckPlayerBuffs()
+            end
         end
         if groupHasChanged then
             debug("Group changed")

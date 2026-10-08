@@ -37,13 +37,13 @@ describe("event handling", function()
         assert.are_not.equal(before, h.ns.classBuffList)
     end)
 
-    it("UNIT_AURA full update outside a raid does nothing", function()
+    it("UNIT_AURA full update outside a raid re-checks without rebuilding", function()
         local h = mage()
         local before = h.ns.classBuffList
         h.state:giveAura("Arcane Intellect")
         h:fire("UNIT_AURA", "player", { isFullUpdate = true })
         assert.equal(before, h.ns.classBuffList)
-        assert.equal("Arcane Intellect", h:shown())
+        assert.equal("Dampen Magic", h:shown())
     end)
 
     for _, event in ipairs({ "GROUP_ROSTER_UPDATE", "GROUP_LEFT", "SPELLS_CHANGED" }) do
