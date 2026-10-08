@@ -23,6 +23,12 @@ UniqueBuffs.WARLOCK = { "Demon Skin", "Demon Armor" }
 UniqueBuffs.PALADIN = { "Devotion Aura", "Sanctity Aura", "Concentration Aura", "Retribution Aura",
     "Frost Resistance Aura", "Shadow Resistance Aura", "Fire Resistance Aura" }
 
+-- Auras every Paladin in the group can provide; only the player's own count
+BuffBot.OwnOnlyBuffs = {}
+for _, aura in ipairs(UniqueBuffs.PALADIN) do
+    BuffBot.OwnOnlyBuffs[aura] = true
+end
+
 -- Spells that prevent downranking and require special lookup calls
 BuffBot.RanklessSpells = { "Battle Shout", unpack(UniqueBuffs.PALADIN) }
 

@@ -156,10 +156,12 @@ return function(state, env)
 
     -- Auras (only the player is tracked)
     env.C_UnitAuras = {
-        GetAuraDataBySpellName = function(unit, name)
+        GetAuraDataBySpellName = function(unit, name, filter)
             if unit ~= "player" then return nil end
             local aura = state.auras[name]
             if not aura then return nil end
+            -- The PLAYER filter only returns auras the player cast
+            if filter and filter:find("PLAYER") and not aura.isFromPlayerOrPlayerPet then return nil end
             local copy = {}
             for k, v in pairs(aura) do copy[k] = v end
             return copy

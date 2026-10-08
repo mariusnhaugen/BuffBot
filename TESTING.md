@@ -47,6 +47,7 @@ Results decided how the port handles spell ranks. Run on the Forever beta with
 | `UNIT_AURA` payload | `/run local f = CreateFrame("Frame") f:RegisterUnitEvent("UNIT_AURA", "player") f:SetScript("OnEvent", function(_, _, u, info) print(u, info and info.isFullUpdate, info and info.removedAuraInstanceIDs ~= nil) end)`, then gain and lose a buff | |
 | Settings panel | `/bb` with BuffBot loaded | |
 | Keybind | Bind "BuffBot Cast" under Key Bindings > AddOns and press it once with a buff missing | |
+| Own-aura filter: should return the aura with your own aura on, and `nil` with only another Paladin's | `/dump C_UnitAuras.GetAuraDataBySpellName("player", "Devotion Aura", "HELPFUL\|PLAYER")` | |
 | Range event, for group coverage (in a party) | `/run local f = CreateFrame("Frame") local ok, err = pcall(f.RegisterEvent, f, "UNIT_IN_RANGE_UPDATE") print("registered:", ok, err) if ok then f:SetScript("OnEvent", function(_, _, u, r) print(u, r) end) end`, then walk out of and back into range of a party member | |
 | Group range check (in a party) | `/dump UnitInRange("party1")` near a party member, then again far away | |
 | Spell range check (in a party) | `/dump C_Spell.IsSpellInRange("<buff spell>", "party1")` near a party member, then again far away | |
