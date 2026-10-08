@@ -13,6 +13,40 @@ describe("skip rules", function()
         assert.same({ "Inner Fire" }, h:buffUp())
     end)
 
+    it("Arcane Brilliance covers Arcane Intellect", function()
+        local h = Addon.load({ class = "MAGE", known = { "Arcane Intellect", "Dampen Magic" } })
+        h:give("Arcane Brilliance")
+        assert.same({ "Dampen Magic" }, h:buffUp())
+    end)
+
+    it("Prayer of Spirit covers Divine Spirit", function()
+        local h = Addon.load({ class = "PRIEST", known = { "Divine Spirit", "Inner Fire" } })
+        h:give("Prayer of Spirit")
+        assert.same({ "Inner Fire" }, h:buffUp())
+    end)
+
+    it("Greater Blessing of Might covers Blessing of Might", function()
+        local h = Addon.load({ class = "PALADIN", known = { "Blessing of Might" } })
+        h:give("Greater Blessing of Might")
+        assert.same({}, h:buffUp())
+    end)
+
+    it("Greater Blessing of Wisdom covers Blessing of Wisdom", function()
+        local h = Addon.load({
+            class = "PALADIN",
+            known = { "Blessing of Wisdom" },
+            config = { WISDOM_SELF = true },
+        })
+        h:give("Greater Blessing of Wisdom")
+        assert.same({}, h:buffUp())
+    end)
+
+    it("an expiring group version no longer covers the buff", function()
+        local h = Addon.load({ class = "MAGE", known = { "Arcane Intellect" } })
+        h:give("Arcane Brilliance", { duration = 3600, remaining = 200 })
+        assert.equal("Arcane Intellect", h:shown())
+    end)
+
     it("IGNORE_THORNS skips Thorns", function()
         local h = Addon.load({
             class = "DRUID",

@@ -19,6 +19,7 @@ local byName = {
     ["Ice Armor"] = 7302,
     ["Mage Armor"] = 6117,
     ["Arcane Intellect"] = 1459,
+    ["Arcane Brilliance"] = 23028,
     ["Dampen Magic"] = 604,
     -- PALADIN
     ["Devotion Aura"] = 465,
@@ -30,11 +31,14 @@ local byName = {
     ["Fire Resistance Aura"] = 19891,
     ["Blessing of Might"] = 19740,
     ["Blessing of Wisdom"] = 19742,
+    ["Greater Blessing of Might"] = 25782,
+    ["Greater Blessing of Wisdom"] = 25894,
     -- PRIEST
     ["Power Word: Fortitude"] = 1243,
     ["Prayer of Fortitude"] = 21562,
     ["Shadowform"] = 15473,
     ["Divine Spirit"] = 14752,
+    ["Prayer of Spirit"] = 27681,
     ["Inner Fire"] = 588,
     -- SHAMAN
     ["Lightning Shield"] = 324,

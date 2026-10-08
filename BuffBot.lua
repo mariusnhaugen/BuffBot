@@ -3,7 +3,17 @@ local _, BuffBot = ...
 local class = BuffBot.playerclass
 local classBuffs = {}
 local assignedBuff = ""
-local MULTIPLIER = 0.2 -- aura.Duration * MULTIPLIER to get reminder duration
+local REMINDER_DURA_MULTIPLIER = 0.2 -- aura.Duration * REMINDER_DURA_MULTIPLIER to get reminder duration
+
+-- Group versions that cover a single-target buff
+local GROUP_VERSIONS = {
+    ["Mark of the Wild"] = { "Gift of the Wild" },
+    ["Arcane Intellect"] = { "Arcane Brilliance" },
+    ["Power Word: Fortitude"] = { "Prayer of Fortitude" },
+    ["Divine Spirit"] = { "Prayer of Spirit" },
+    ["Blessing of Might"] = { "Greater Blessing of Might" },
+    ["Blessing of Wisdom"] = { "Greater Blessing of Wisdom" },
+}
 
 --------------- MAIN FUNCTIONS ----------------
 
@@ -53,14 +63,10 @@ local function ShouldSkipBuff(buffString)
             if BuffBot.HasUniqueClassBuff() then return true end -- check auras and armors
         end
     end
-    if class == "DRUID" then
-        if buffString == "Mark of the Wild" then
-            return BuffBot.UnitHasAssignedBuff("player", "Gift of the Wild")
-        end
-    end
-    if class == "PRIEST" then
-        if buffString == "Power Word: Fortitude" then
-            return BuffBot.UnitHasAssignedBuff("player", "Prayer of Fortitude")
+    local groupVersions = GROUP_VERSIONS[buffString]
+    if groupVersions then
+        for i = 1, #groupVersions do
+            if BuffBot.UnitHasAssignedBuff("player", groupVersions[i]) then return true end
         end
     end
     if class == "WARRIOR" then
@@ -124,7 +130,7 @@ function BuffBot.UnitHasAssignedBuff(unit, buffString)
     if aura ~= nil then
         if (aura.duration > 0) and (aura.expirationTime > 0) then
             local timeLeft = aura.expirationTime - GetTime()
-            if (timeLeft < aura.duration * MULTIPLIER) and (timeLeft < 300) then
+            if (timeLeft < aura.duration * REMINDER_DURA_MULTIPLIER) and (timeLeft < 300) then
                 return false
             end
         end
