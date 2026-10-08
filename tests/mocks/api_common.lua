@@ -196,8 +196,6 @@ return function(state, env)
     -- Misc
     env.SlashCmdList = {}
 
-    function env.DevTools_Dump(value) state.dumped = value end
-
     function env.print(...)
         local parts = {}
         for i = 1, select("#", ...) do parts[#parts + 1] = tostring((select(i, ...))) end

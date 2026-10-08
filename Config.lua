@@ -15,7 +15,12 @@ SlashCmdList.BUFFBOTSETTINGS = function(arg)
     end
 
     if arg == "buffs" then
-        DevTools_Dump(BuffBot.classBuffList)
+        local buffs = BuffBot.classBuffList or {}
+        if #buffs == 0 then
+            print("BuffBot buffs: none")
+        else
+            print("BuffBot buffs: " .. table.concat(buffs, ", "))
+        end
         return
     end
 

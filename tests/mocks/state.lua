@@ -19,7 +19,6 @@ function State.new(class)
         frames = {},
         templates = {},
         categories = {},
-        dumped = nil,
         openedCategory = nil,
     }, State)
 end
