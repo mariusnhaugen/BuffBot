@@ -148,6 +148,19 @@ describe("settings panel", function()
         assert.same({ "CENTER", h.env.UIParent, "CENTER", 100, 0 }, { h.button:GetPoint() })
     end)
 
+    it("reset button does nothing in combat", function()
+        local h = openPanel()
+        h.button:SetPoint("TOPLEFT", h.env.UIParent, "TOPLEFT", 1, 1)
+        local reset
+        for _, frame in ipairs(h.state.frames) do
+            if frame:GetText() == "Reset Button Position" then reset = frame end
+        end
+        h:enterCombat()
+        reset:Click()
+        assert.same({ "TOPLEFT", h.env.UIParent, "TOPLEFT", 1, 1 }, { h.button:GetPoint() })
+        assert.is_true(h:printed("can't move the button in combat"))
+    end)
+
     it("is painted only once", function()
         local h = openPanel()
         local count = #h.state.frames

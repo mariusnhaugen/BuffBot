@@ -105,6 +105,11 @@ local function PaintSettingsFrame()
     buttonResetPosition:SetWidth(140)
     buttonResetPosition:SetHeight(28)
     buttonResetPosition:SetScript("OnClick", function()
+        -- Moving the secure button is blocked in combat
+        if InCombatLockdown() then
+            print("BuffBot: can't move the button in combat.")
+            return
+        end
         BuffBot.debug("Macro button position reset ")
         BuffBot.SetMacroButtonDefaultPosition()
     end)
