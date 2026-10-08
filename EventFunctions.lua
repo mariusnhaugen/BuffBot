@@ -73,7 +73,13 @@ function events:ADDON_LOADED(arg1)
     if (arg1 ~= addonName) then return end
 
     if BuffBotConfig == nil then
-        BuffBotConfig = BuffBot.GetDefaultConfig()
+        BuffBotConfig = {}
+    end
+    -- Fill in settings added since the config was saved
+    for key, value in pairs(BuffBot.GetDefaultConfig()) do
+        if BuffBotConfig[key] == nil then
+            BuffBotConfig[key] = value
+        end
     end
     BuffBot.config = BuffBotConfig
 

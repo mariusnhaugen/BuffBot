@@ -27,6 +27,27 @@ describe("saved config", function()
         local saved = { SUGGESTION_LIST = false, DEBUG_MODE = false }
         local h = Addon.load({ saved = saved })
         assert.equal(saved, h.ns.config)
+        assert.is_false(h.ns.config.SUGGESTION_LIST)
+    end)
+
+    it("fills in settings missing from an older saved config", function()
+        local h = Addon.load({ saved = { SUGGESTION_LIST = false, CHEETAH_REMINDER = false } })
+        assert.is_false(h.ns.config.SUGGESTION_LIST)
+        assert.is_false(h.ns.config.CHEETAH_REMINDER)
+        assert.is_false(h.ns.config.IGNORE_THORNS)
+        assert.is_false(h.ns.config.BLOODRAGE)
+    end)
+
+    it("an older saved config without the Cheetah setting gets the default", function()
+        local h = Addon.load({
+            class = "HUNTER",
+            known = { "Aspect of the Hawk" },
+            saved = { SUGGESTION_LIST = true },
+        })
+        assert.is_true(h.ns.config.CHEETAH_REMINDER)
+        h.state:giveAura("Aspect of the Cheetah")
+        h:refresh()
+        assert.equal("Aspect of the Hawk", h:shown())
     end)
 
     it("restores a saved button position", function()
