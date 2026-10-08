@@ -1,6 +1,5 @@
 local addonName, BuffBot = ...
 local events = CreateFrame("Frame")
-local groupHasChanged = false
 local class = BuffBot.playerclass
 local function debug() end
 debug = BuffBot.debug
@@ -14,10 +13,6 @@ function events:UNIT_AURA(unit, info)
             else
                 BuffBot.CheckPlayerBuffs()
             end
-        end
-        if groupHasChanged then
-            debug("Group changed")
-            groupHasChanged = false
         end
         return
     end
@@ -36,7 +31,6 @@ end
 
 function events:GROUP_ROSTER_UPDATE()
     BuffBot.UpdateClassBuffList()
-    groupHasChanged = true
 end
 
 function events:GROUP_LEFT()
