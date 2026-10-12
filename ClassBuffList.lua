@@ -29,10 +29,6 @@ for _, aura in ipairs(UniqueBuffs.PALADIN) do
     BuffBot.OwnOnlyBuffs[aura] = true
 end
 
--- Spells that prevent downranking and require special lookup calls
-BuffBot.RanklessSpells = { "Battle Shout", unpack(UniqueBuffs.PALADIN) }
-
-
 local spellIDTable = { -- Rank 1 for checking.
     --DRUID
     ["Omen of Clarity"] = 16864,
@@ -72,20 +68,13 @@ local spellIDTable = { -- Rank 1 for checking.
 
 
 function BuffBot.CheckSpellAvailable(spellString)
-    if spellString == "" then return end
     local spellID = spellIDTable[spellString]
-
-    if class == "PALADIN" or class == "WARRIOR" then
-        if BuffBot.IndexOf(spellString, BuffBot.RanklessSpells) then
-            --get local name of R1, and find it in the spellbook
-            local info = C_Spell.GetSpellInfo(spellID)
-            return info ~= nil and C_Spell.GetSpellInfo(info.name) ~= nil
-        end
-    end
-
-    if spellID then
-        return IsPlayerSpell(spellID)
-    end
+    if not spellID then return end
+    -- Some spells replace their lower ranks, so IsPlayerSpell(rank 1) can be
+    -- false while a higher rank is known. Name lookups resolve the highest
+    -- known rank, so look up rank 1's name by ID and find it in the spellbook.
+    local info = C_Spell.GetSpellInfo(spellID)
+    return info ~= nil and C_Spell.GetSpellInfo(info.name) ~= nil
 end
 
 local function FilterUniqueBuffs()

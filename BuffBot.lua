@@ -17,10 +17,6 @@ local GROUP_VERSIONS = {
 
 --------------- MAIN FUNCTIONS ----------------
 
-function BuffBotDump()
-    return BuffBot.RanklessSpells
-end
-
 function BuffBot.UpdateClassBuffList()
     BuffBot.debug("UpdateClassBuffList")
     BuffBot.FilterInitialList()

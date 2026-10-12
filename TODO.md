@@ -12,13 +12,6 @@ commit.
 
 ## Robustness: errors and misbehaviour
 
-- [ ] **6. Saved button position stores a frame object.**
-  `{ macroButton:GetPoint() }` saves the anchor frame, which saved
-  variables can't store properly. Probe: the button rows in
-  `TESTING.md`. Fix: save point, offsets and the
-  frame's name, and anchor to `UIParent` on load.
-- [ ] **7. Stale icon.** `UpdateMacro` keeps the previous icon when
-  `C_Spell.GetSpellTexture` returns nil.
 - [ ] **8. Button shows when buffing is impossible:** dead, ghost, on a taxi.
   Handle `PLAYER_DEAD`, `PLAYER_ALIVE`, `PLAYER_UNGHOST` and check
   `UnitOnTaxi`.
@@ -32,9 +25,9 @@ commit.
   use English names, so other client languages break. Use the spell ID
   table as the source of truth and resolve names with
   `C_Spell.GetSpellInfo(id).name`.
-- [ ] **11. Replace `RanklessSpells`.** "Rank 1 name by ID, then check the name
-  resolves" works for every spell, and would remove the Paladin/Warrior
-  branch in `CheckSpellAvailable`.
+  The icon lookup (`C_Spell.GetSpellTexture` in `UpdateMacro`) also uses
+  the name, so the button keeps the previous spell's icon on those
+  clients. Looking it up by ID fixes both.
 - [ ] **12. Finish the probe table in `TESTING.md`.** Aura data fields,
   `UNIT_AURA` payload, settings panel, keybind and the group range rows
   are still blank.
@@ -108,6 +101,8 @@ Design notes, for after the robustness work:
 - [x] Reset Button Position does nothing in combat (`23f2cb2`)
 - [x] `/bb buffs` prints the list instead of using `DevTools_Dump` (`7a0a88f`)
 - [x] Only the player's own Paladin aura counts (`7bc2b80`)
+- [x] Save the button position without the anchor frame (`54af139`)
+- [x] Check every spell's availability the same way, without `RanklessSpells`
 
 ## Shelf
 

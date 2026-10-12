@@ -11,7 +11,6 @@ globals = {
     "SLASH_BUFFBOTSETTINGS1",
     "SLASH_BUFFBOTSETTINGS2",
     "BuffBotConfig",
-    "BuffBotDump",
 }
 
 -- WoW API available on the Forever client. GetSpellInfo, GetSpellTexture and
