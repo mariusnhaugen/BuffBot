@@ -19,10 +19,19 @@ end
 local Harness = {}
 Harness.__index = Harness
 
+local function accepts(registration, unit)
+    if registration == true then return true end
+    for _, registered in ipairs(registration) do
+        if registered == unit then return true end
+    end
+    return false
+end
+
 function Harness:fire(event, ...)
     for _, frame in ipairs(self.state.frames) do
         local onEvent = frame:GetScript("OnEvent")
-        if frame.events[event] and onEvent then
+        local registration = frame.events[event]
+        if registration and onEvent and accepts(registration, (...)) then
             onEvent(frame, event, ...)
         end
     end

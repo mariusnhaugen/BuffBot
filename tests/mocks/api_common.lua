@@ -34,9 +34,12 @@ function Region:GetScript(event) return self.scripts[event] end
 
 function Region:RegisterEvent(event) self.events[event] = true end
 
+-- Unit events store the units they were registered for; fire() filters on them
+function Region:RegisterUnitEvent(event, ...) self.events[event] = { ... } end
+
 function Region:UnregisterEvent(event) self.events[event] = nil end
 
-function Region:IsEventRegistered(event) return self.events[event] == true end
+function Region:IsEventRegistered(event) return self.events[event] ~= nil end
 
 function Region:Show() self.shown = true end
 

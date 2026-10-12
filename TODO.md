@@ -15,9 +15,11 @@ commit.
 - [ ] **8. Button shows when buffing is impossible:** dead, ghost, on a taxi.
   Handle `PLAYER_DEAD`, `PLAYER_ALIVE`, `PLAYER_UNGHOST` and check
   `UnitOnTaxi`.
-- [ ] **9. Battle Shout lookup can error.** `UNIT_SPELLCAST_SUCCEEDED` indexes
-  `C_Spell.GetSpellInfo(6673).name` without a nil check, and runs for every
-  class on every cast. Limit it to Warriors and cache the result.
+- [ ] **9. Cast handler runs for every class.** `UNIT_SPELLCAST_SUCCEEDED` is
+  now registered for the player only, but every class still does the
+  Battle Shout lookup and a buff re-check on each cast. If the cast probe
+  in `TESTING.md` shows `UNIT_AURA` covers the re-check, register the
+  event for Warriors only. #22 removes the Battle Shout lookup.
 
 ## Port
 
@@ -29,8 +31,8 @@ commit.
   the name, so the button keeps the previous spell's icon on those
   clients. Looking it up by ID fixes both.
 - [ ] **12. Finish the probe table in `TESTING.md`.** Aura data fields,
-  `UNIT_AURA` payload, settings panel, keybind and the group range rows
-  are still blank.
+  `UNIT_AURA` payload, settings panel, keybind, cast handler and the
+  group range rows are still blank.
 - [ ] **13. One version number.** It's hard-coded in the TOC version, the TOC
   title and the load message. Read it with `C_AddOns.GetAddOnMetadata`.
 
@@ -43,9 +45,9 @@ commit.
 ## Cleanup
 
 - [ ] **15. Dead code:** `RecommendOtherPaladinBuff` and its commented caller,
-  `BuffBotDump`, `HIDE_ICON`, `BuffBot.DEBUG_MODE`, `playername`,
-  `playerlevel`, the `PLAYER_LOGOUT` handler, and
-  `if #BuffBot.suggestionList then` (always true).
+  `HIDE_ICON`, `BuffBot.DEBUG_MODE`, `playername`, `playerlevel`, the
+  `PLAYER_LOGOUT` handler, and `if #BuffBot.suggestionList then` (always
+  true).
 - [ ] **16. Turn on luacheck's unused-variable warnings.** `.luacheckrc`
   ignores 2xx–6xx.
 - [ ] **17. Copy-paste slips:** the Strict Armor checkbox logs "Dampen changed"
@@ -102,7 +104,7 @@ Design notes, for after the robustness work:
 - [x] `/bb buffs` prints the list instead of using `DevTools_Dump` (`7a0a88f`)
 - [x] Only the player's own Paladin aura counts (`7bc2b80`)
 - [x] Save the button position without the anchor frame (`54af139`)
-- [x] Check every spell's availability the same way, without `RanklessSpells`
+- [x] Check every spell's availability the same way, without `RanklessSpells` (`39eeb24`)
 
 ## Shelf
 
