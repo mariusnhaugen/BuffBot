@@ -103,7 +103,7 @@ Design notes, for after the robustness work:
 - [x] Only the player's own Paladin aura counts (`7bc2b80`)
 - [x] Save the button position without the anchor frame (`54af139`)
 - [x] Check every spell's availability the same way, without `RanklessSpells` (`39eeb24`)
-- [x] Load message reads the version from the TOC; the TOC title keeps its own copy for the add-on menu
+- [x] Load message reads the version from the TOC; the TOC title keeps its own copy for the add-on menu (`b94f3e8`)
 
 ## Shelf
 
