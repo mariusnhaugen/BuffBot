@@ -16,6 +16,7 @@ globals = {
 -- WoW API available on the Forever client. GetSpellInfo, GetSpellTexture and
 -- IsUsableSpell are removed there, so they are deliberately not listed.
 read_globals = {
+    "C_AddOns",
     "C_Spell",
     "C_UnitAuras",
     "CreateFrame",

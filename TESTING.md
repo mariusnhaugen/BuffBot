@@ -41,6 +41,7 @@ Results decided how the port handles spell ranks. Run on the Forever beta with
 | Usable with no rage | `/dump C_Spell.IsSpellUsable("Battle Shout")` | `false, true`: not usable, and the reason is insufficient power (same as Classic `IsUsableSpell`) |
 | Removed globals | `/dump GetSpellInfo, IsUsableSpell, GetSpellTexture` | All three are `nil` |
 | Old checkbox template | `/run local ok, f = pcall(CreateFrame, "CheckButton", nil, UIParent, "InterfaceOptionsCheckButtonTemplate") print(ok, ok and f.Text)` | `true`, table: the template exists and has a `.Text` label |
+| Add-on metadata: should print `2.0.1` | `/dump C_AddOns.GetAddOnMetadata("BuffBot", "Version")` | |
 | Retribution Aura by ID | `/dump C_Spell.GetSpellInfo(7294)` | |
 | Aura lookup with the buff on: needs `duration`, `expirationTime` and `isFromPlayerOrPlayerPet` | `/dump C_UnitAuras.GetAuraDataBySpellName("player", "<buff name>")` | |
 | Aura lookup without the buff: should be `nil` | `/dump C_UnitAuras.GetAuraDataBySpellName("player", "<buff you don't have>")` | |

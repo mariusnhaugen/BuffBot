@@ -85,7 +85,8 @@ function events:ADDON_LOADED(arg1)
     if BuffBot.config.DEBUG_MODE then
         debugString = "- DEBUG MODE ON"
     end
-    print("BuffBot|cff00ccff v2.0.1|r Loaded. /bb", debugString)
+    local version = C_AddOns.GetAddOnMetadata(addonName, "Version")
+    print("BuffBot|cff00ccff v" .. version .. "|r Loaded. /bb", debugString)
 
     if (BuffBot.config.buttonPosition == nil) then
         print("You can drag the BuffBot button by holding Alt.")

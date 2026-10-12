@@ -31,10 +31,8 @@ commit.
   the name, so the button keeps the previous spell's icon on those
   clients. Looking it up by ID fixes both.
 - [ ] **12. Finish the probe table in `TESTING.md`.** Aura data fields,
-  `UNIT_AURA` payload, settings panel, keybind, cast handler and the
-  group range rows are still blank.
-- [ ] **13. One version number.** It's hard-coded in the TOC version, the TOC
-  title and the load message. Read it with `C_AddOns.GetAddOnMetadata`.
+  `UNIT_AURA` payload, settings panel, keybind, cast handler, add-on
+  metadata and the group range rows are still blank.
 
 ## Performance
 
@@ -105,6 +103,7 @@ Design notes, for after the robustness work:
 - [x] Only the player's own Paladin aura counts (`7bc2b80`)
 - [x] Save the button position without the anchor frame (`54af139`)
 - [x] Check every spell's availability the same way, without `RanklessSpells` (`39eeb24`)
+- [x] Load message reads the version from the TOC; the TOC title keeps its own copy for the add-on menu
 
 ## Shelf
 

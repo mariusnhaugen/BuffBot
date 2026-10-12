@@ -33,6 +33,16 @@ return function(state, env)
         end,
     }
 
+    -- Reads "## Field: value" lines from the addon's TOC
+    env.C_AddOns = {
+        GetAddOnMetadata = function(addon, field)
+            for line in io.lines(addon .. ".toc") do
+                local key, value = line:gsub("\r$", ""):match("^##%s*(.-):%s*(.-)%s*$")
+                if key == field then return value end
+            end
+        end,
+    }
+
     -- Label is exposed as the global <name>Text.
     state.templates.InterfaceOptionsCheckButtonTemplate = function(frame)
         local label = frame:CreateFontString(frame:GetName() and (frame:GetName() .. "Text"))

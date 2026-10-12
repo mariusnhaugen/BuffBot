@@ -20,6 +20,7 @@ describe("saved config", function()
     it("prints the load message and the drag hint on first load", function()
         local h = Addon.load()
         assert.is_true(h:printed("Loaded. /bb"))
+        assert.is_true(h:printed("v" .. h.env.C_AddOns.GetAddOnMetadata("BuffBot", "Version") .. "|r"))
         assert.is_true(h:printed("You can drag the BuffBot button by holding Alt."))
     end)
 
