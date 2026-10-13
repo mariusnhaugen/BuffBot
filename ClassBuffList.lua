@@ -29,31 +29,47 @@ for _, aura in ipairs(UniqueBuffs.PALADIN) do
     BuffBot.OwnOnlyBuffs[aura] = true
 end
 
-local spellIDTable = { -- Rank 1 for checking.
+-- Every spell the add-on names, by rank 1 ID. The English names are only
+-- keys: BuffBot.SpellName turns them into the client's names.
+local spellIDTable = {
     --DRUID
     ["Omen of Clarity"] = 16864,
     ["Mark of the Wild"] = 1126,
+    ["Gift of the Wild"] = 21849,
     ["Thorns"] = 467,
     --HUNTER
     ["Trueshot Aura"] = 19506,
     ["Aspect of the Hawk"] = 13165,
+    ["Aspect of the Monkey"] = 13163,
+    ["Aspect of the Wild"] = 20043,
+    ["Aspect of the Beast"] = 13161,
+    ["Aspect of the Cheetah"] = 5118,
+    ["Aspect of the Pack"] = 13159,
     --MAGE
     ["Frost Armor"] = 168, -- Low level
     ["Ice Armor"] = 7302,
     ["Mage Armor"] = 6117,
     ["Arcane Intellect"] = 1459,
+    ["Arcane Brilliance"] = 23028,
     ["Dampen Magic"] = 604,
     -- PALADIN
     ["Devotion Aura"] = 465,
     ["Sanctity Aura"] = 20218,
     ["Concentration Aura"] = 19746,
     ["Retribution Aura"] = 7294,
+    ["Frost Resistance Aura"] = 19888,
+    ["Shadow Resistance Aura"] = 19876,
+    ["Fire Resistance Aura"] = 19891,
     ["Blessing of Might"] = 19740,
     ["Blessing of Wisdom"] = 19742,
+    ["Greater Blessing of Might"] = 25782,
+    ["Greater Blessing of Wisdom"] = 25894,
     -- PRIEST
     ["Power Word: Fortitude"] = 1243,
+    ["Prayer of Fortitude"] = 21562,
     ["Shadowform"] = 15473,
     ["Divine Spirit"] = 14752,
+    ["Prayer of Spirit"] = 27681,
     ["Inner Fire"] = 588,
     -- ROGUE
     -- SHAMAN
@@ -66,6 +82,19 @@ local spellIDTable = { -- Rank 1 for checking.
     ["Bloodrage"] = 2687,
 }
 
+
+-- The client's name for a spell key. ID lookups resolve on every client and
+-- names don't change in a session, so they're cached.
+local spellNames = {}
+function BuffBot.SpellName(spellString)
+    local name = spellNames[spellString]
+    if name then return name end
+    local spellID = spellIDTable[spellString]
+    local info = spellID and C_Spell.GetSpellInfo(spellID)
+    if not info then return spellString end
+    spellNames[spellString] = info.name
+    return info.name
+end
 
 function BuffBot.CheckSpellAvailable(spellString)
     local spellID = spellIDTable[spellString]

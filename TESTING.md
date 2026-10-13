@@ -251,3 +251,12 @@ With a buff missing, take a flight path. The button should hide on takeoff and c
 `/run local f = CreateFrame("Frame") f:RegisterEvent("PLAYER_CONTROL_LOST") f:RegisterEvent("PLAYER_CONTROL_GAINED") f:SetScript("OnEvent", function(_, e) print(e, UnitOnTaxi("player")) end)`, then fly
 
 Result:
+
+### Spell IDs added for client names
+
+Should print each spell's name: Gift of the Wild, Arcane Brilliance, Prayer of Fortitude, Prayer of Spirit, Greater Blessing of Might, Greater Blessing of Wisdom, Aspect of the Monkey, Wild, Beast, Cheetah and Pack, then Frost, Shadow and Fire Resistance Aura. A `nil` means a wrong ID.
+
+`/run for _, id in ipairs({21849, 23028, 21562, 27681, 25782, 25894, 13163, 20043, 13161, 5118, 13159, 19888, 19876, 19891}) do local i = C_Spell.GetSpellInfo(id) print(id, i and i.name) end`
+
+Result:
+All 14 IDs resolve to the expected names

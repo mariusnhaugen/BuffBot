@@ -45,8 +45,9 @@ function Harness:refresh()
     self:fire("UNIT_AURA", "player", {})
 end
 
+-- Takes English or client names, so buffUp can pass what the button shows
 function Harness:give(name, opts)
-    self.state:giveAura(name, opts)
+    self.state:giveAura(self.state:englishName(name) or name, opts)
     self:refresh()
 end
 
@@ -158,9 +159,11 @@ local M = {}
 --   saved   BuffBotConfig SavedVariables value before load (default nil)
 --   config  config overrides applied after ADDON_LOADED
 --   raid    start in a raid
+--   translate  function mapping English spell names to the client's names
 function M.load(opts)
     opts = opts or {}
     local state = State.new(opts.class)
+    state.translate = opts.translate
     state:learn(unpack(opts.known or {}))
     if opts.raid then state.group, state.raid = true, true end
 

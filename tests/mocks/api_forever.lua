@@ -15,20 +15,22 @@ return function(state, env)
             if spell == nil then return nil end
             if type(spell) == "number" then
                 local name = Spells.nameOf(spell)
-                return name and info(name, spell)
+                return name and info(state:localName(name), spell)
             end
-            if not state:knows(spell) then return nil end
-            return info(spell, Spells.idOf(spell) or 0)
+            local english = state:englishName(spell)
+            if not english or not state:knows(english) then return nil end
+            return info(spell, Spells.idOf(english) or 0)
         end,
 
         IsSpellUsable = function(name)
-            if not state:knows(name) then return false, false end
+            local english = state:englishName(name)
+            if not english or not state:knows(english) then return false, false end
             -- unusable spells are out of mana or rage
-            return state:isUsable(name), state.unusable[name] == true
+            return state:isUsable(english), state.unusable[english] == true
         end,
 
         GetSpellTexture = function(spell)
-            local name = type(spell) == "number" and Spells.nameOf(spell) or spell
+            local name = type(spell) == "number" and Spells.nameOf(spell) or state:englishName(spell)
             if name and state:knows(name) then return Spells.iconOf(name) end
             return nil
         end,

@@ -99,7 +99,7 @@ function BuffBot.UnitHasAssignedBuff(unit, buffString)
     if buffString == "" then return end
 
     local filter = BuffBot.OwnOnlyBuffs[buffString] and "HELPFUL|PLAYER" or nil
-    local aura = C_UnitAuras.GetAuraDataBySpellName(unit, buffString, filter)
+    local aura = C_UnitAuras.GetAuraDataBySpellName(unit, BuffBot.SpellName(buffString), filter)
     if aura ~= nil then
         if (aura.duration > 0) and (aura.expirationTime > 0) then
             local timeLeft = aura.expirationTime - GetTime()

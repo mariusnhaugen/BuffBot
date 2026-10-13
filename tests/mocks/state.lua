@@ -40,6 +40,20 @@ function State:knows(name)
     return self.known[name] == true
 end
 
+-- A client in another language. translate maps the English names the specs
+-- use to the client's names; the API mocks only accept the client's names.
+function State:localName(english)
+    return self.translate and self.translate(english) or english
+end
+
+function State:englishName(name)
+    if not self.translate then return name end
+    for _, english in ipairs(Spells.names()) do
+        if self.translate(english) == name then return english end
+    end
+    return nil
+end
+
 function State:isUsable(name)
     return self:knows(name) and not self.unusable[name]
 end

@@ -12,7 +12,7 @@ _G["BINDING_NAME_" .. "CLICK BUFFBOT_MacroButton:LeftButton"] = "BuffBot Cast"
 function BuffBot.UpdateTint()
     local icon = macroButton:GetNormalTexture()
     if not icon or not macroButton.spell then return end
-    local _, noPower = C_Spell.IsSpellUsable(macroButton.spell)
+    local _, noPower = C_Spell.IsSpellUsable(BuffBot.SpellName(macroButton.spell))
     if noPower and not macroButton.hasFirstSpell then
         icon:SetVertexColor(0.5, 0.5, 1.0)
     else
@@ -37,7 +37,7 @@ end
 -- firstSpell, if given, is tried first on each press out of combat
 function BuffBot.UpdateMacro(spellName, unit, firstSpell)
     if InCombatLockdown() then return end
-    local texture = C_Spell.GetSpellTexture(spellName)
+    local texture = C_Spell.GetSpellTexture(BuffBot.SpellName(spellName))
     if texture then
         macroButton:SetNormalTexture(texture)
     end
@@ -45,9 +45,9 @@ function BuffBot.UpdateMacro(spellName, unit, firstSpell)
     macroButton.hasFirstSpell = firstSpell ~= nil
     BuffBot.UpdateTint()
     BuffBot.UpdateIconVisibility()
-    local macro = "/cast [target=" .. unit .. "]" .. spellName
+    local macro = "/cast [target=" .. unit .. "]" .. BuffBot.SpellName(spellName)
     if firstSpell then
-        macro = "/cast [nocombat] " .. firstSpell .. "\n" .. macro
+        macro = "/cast [nocombat] " .. BuffBot.SpellName(firstSpell) .. "\n" .. macro
     end
     macroButton:SetAttribute("macrotext1", macro) -- text for macro on left click
     macroButton:Show()
@@ -131,7 +131,7 @@ function BuffBot.UpdateSuggestionList()
             BuffBot.suggestionList[i] = macroButton:CreateFontString(nil, "OVERLAY", "GameTooltipText")
             BuffBot.suggestionList[i]:SetPoint("TOPLEFT", macroButton, 0, -35 + (i * -15))
         end
-        BuffBot.suggestionList[i]:SetText(missing[i])
+        BuffBot.suggestionList[i]:SetText(BuffBot.SpellName(missing[i]))
         BuffBot.suggestionList[i]:Show()
     end
 end

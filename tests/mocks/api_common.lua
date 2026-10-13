@@ -182,12 +182,14 @@ return function(state, env)
     env.C_UnitAuras = {
         GetAuraDataBySpellName = function(unit, name, filter)
             if unit ~= "player" then return nil end
-            local aura = state.auras[name]
+            local english = state:englishName(name)
+            local aura = english and state.auras[english]
             if not aura then return nil end
             -- The PLAYER filter only returns auras the player cast
             if filter and filter:find("PLAYER") and not aura.isFromPlayerOrPlayerPet then return nil end
             local copy = {}
             for k, v in pairs(aura) do copy[k] = v end
+            copy.name = state:localName(english)
             return copy
         end,
     }

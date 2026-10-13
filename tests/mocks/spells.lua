@@ -65,6 +65,12 @@ function Spells.nameOf(id)
     return byID[id]
 end
 
+function Spells.names()
+    local names = {}
+    for name in pairs(byName) do table.insert(names, name) end
+    return names
+end
+
 function Spells.iconOf(name)
     return "Interface\\Icons\\" .. name
 end
