@@ -56,21 +56,28 @@ local function ShouldSkipBuff(buffString)
     end
 end
 
-function BuffBot.FindNextBuffInList()
-    if InCombatLockdown() then return "done" end
-    if UnitIsDeadOrGhost("player") or UnitOnTaxi("player") then return "done" end
-    if classBuffs == nil then return "done" end
+-- Every buff the button would cast, in order. The button casts the first, and
+-- the suggestion list shows them all.
+function BuffBot.MissingBuffs()
+    local missing = {}
+    if InCombatLockdown() then return missing end
+    if UnitIsDeadOrGhost("player") or UnitOnTaxi("player") then return missing end
+    if classBuffs == nil then return missing end
 
-    for i = 1, #classBuffs do                   -- For all buffs in filtered buff list.
+    for i = 1, #classBuffs do
         local currentBuff = classBuffs[i]
-        if not ShouldSkipBuff(currentBuff) then -- check for exceptions
-            if (not BuffBot.UnitHasAssignedBuff("player", currentBuff)) then
-                BuffBot.debug(currentBuff, " Missing.")
-                return currentBuff
-            end
+        if not ShouldSkipBuff(currentBuff) and not BuffBot.UnitHasAssignedBuff("player", currentBuff) then
+            table.insert(missing, currentBuff)
         end
     end
-    return "done"
+    return missing
+end
+
+function BuffBot.FindNextBuffInList()
+    local buff = BuffBot.MissingBuffs()[1]
+    if not buff then return "done" end
+    BuffBot.debug(buff, " Missing.")
+    return buff
 end
 
 function BuffBot.CheckPlayerBuffs()

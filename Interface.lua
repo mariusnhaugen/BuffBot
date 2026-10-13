@@ -3,8 +3,6 @@ local macroButton;
 
 local LEFTBUTTON = 'LeftButton';
 
-BuffBot.futureBuffStrings = {}
-
 -- Define blizzard Keybind
 _G["BINDING_NAME_" .. "CLICK BUFFBOT_MacroButton:LeftButton"] = "BuffBot Cast"
 
@@ -119,16 +117,6 @@ end)
 
 
 BuffBot.suggestionList = {}
-local function FilterSuggestionList()
-    local filteredTable = {}
-    for i = 1, #BuffBot.futureBuffStrings, 1 do
-        if not BuffBot.UnitHasAssignedBuff("player", BuffBot.futureBuffStrings[i]) then
-            table.insert(filteredTable, BuffBot.futureBuffStrings[i])
-        end
-    end
-    BuffBot.futureBuffStrings = filteredTable
-end
-
 function BuffBot.UpdateSuggestionList()
     for i = 1, #BuffBot.suggestionList, 1 do
         BuffBot.suggestionList[i]:SetText("")
@@ -136,23 +124,15 @@ function BuffBot.UpdateSuggestionList()
     end
 
     if not BuffBot.config.SUGGESTION_LIST then return end
-    local classBuffs = BuffBot.classBuffList
-    if #classBuffs > 0 then
-        local nextIndex = BuffBot.IndexOf(BuffBot.FindNextBuffInList(), classBuffs)
-        BuffBot.futureBuffStrings = { unpack(classBuffs, nextIndex, #classBuffs) }
-
-        FilterSuggestionList()
-
-        for i = 1, #BuffBot.futureBuffStrings, 1 do
-            if i == 6 then break end
-            local offset = -35 + (i * -15)
-            if (not BuffBot.suggestionList[i]) and (i <= 5) then
-                BuffBot.suggestionList[i] = macroButton:CreateFontString(nil, "OVERLAY", "GameTooltipText")
-                BuffBot.suggestionList[i]:SetPoint("TOPLEFT", macroButton, 0, offset)
-            end
-            BuffBot.suggestionList[i]:SetText(BuffBot.futureBuffStrings[i])
-            BuffBot.suggestionList[i]:Show()
+    -- Same list and skip rules as the button, so they always agree
+    local missing = BuffBot.MissingBuffs()
+    for i = 1, math.min(#missing, 5) do
+        if not BuffBot.suggestionList[i] then
+            BuffBot.suggestionList[i] = macroButton:CreateFontString(nil, "OVERLAY", "GameTooltipText")
+            BuffBot.suggestionList[i]:SetPoint("TOPLEFT", macroButton, 0, -35 + (i * -15))
         end
+        BuffBot.suggestionList[i]:SetText(missing[i])
+        BuffBot.suggestionList[i]:Show()
     end
 end
 

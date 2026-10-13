@@ -87,6 +87,18 @@ describe("suggestion list", function()
         assert.same({ "Power Word: Fortitude", "Shadowform", "Inner Fire" }, h:suggestions())
     end)
 
+    it("leaves out a buff covered by its group version", function()
+        local h = Addon.load({ class = "DRUID", known = { "Mark of the Wild", "Thorns" } })
+        h:give("Gift of the Wild")
+        assert.same({ "Thorns" }, h:suggestions())
+    end)
+
+    it("leaves out an aspect while another one is active", function()
+        local h = Addon.load({ class = "HUNTER", known = { "Aspect of the Hawk", "Trueshot Aura" } })
+        h:give("Aspect of the Monkey")
+        assert.same({ "Trueshot Aura" }, h:suggestions())
+    end)
+
     it("is cleared when SUGGESTION_LIST is turned off", function()
         local h = Addon.load({ class = "PRIEST", known = known })
         h.ns.config.SUGGESTION_LIST = false
