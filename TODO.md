@@ -3,13 +3,6 @@
 Open work for the Forever branch. Tick items off as they land, and note the
 commit.
 
-## Robustness: wrong decisions in groups
-
-- [ ] **3. Suggestion list disagrees with the button.** `FilterSuggestionList`
-  (`Interface.lua`) checks only whether each buff is present, not
-  `ShouldSkipBuff`. It can show Mark of the Wild under Gift of the Wild, or
-  Hawk while in Monkey.
-
 ## Port
 
 - [ ] **10. English-only spell names.** Lookups, macros and the suggestion list
@@ -88,3 +81,4 @@ Design notes, for after the robustness work:
 - [x] Turn on luacheck's unused-variable warnings (`57415f3`)
 - [x] Remove dead code, including the `PLAYER_LOGOUT` handler (`57415f3`, `b056b5f`)
 - [x] Hide Icon, and Hide Text in place of Show Suggestion List (`3ec0e15`)
+- [x] Suggestion list follows the button's skip rules (`8ba46a6`)
