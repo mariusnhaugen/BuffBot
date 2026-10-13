@@ -66,6 +66,31 @@ function Harness:setOutOfPower(name, out)
     self:fire("SPELL_UPDATE_USABLE")
 end
 
+function Harness:die()
+    self.state.dead = true
+    self:fire("PLAYER_DEAD")
+end
+
+function Harness:releaseSpirit()
+    self.state.dead, self.state.ghost = false, true
+    self:fire("PLAYER_ALIVE")
+end
+
+function Harness:resurrect()
+    self.state.dead, self.state.ghost = false, false
+    self:fire("PLAYER_UNGHOST")
+end
+
+function Harness:takeTaxi()
+    self.state.taxi = true
+    self:fire("PLAYER_CONTROL_LOST")
+end
+
+function Harness:landTaxi()
+    self.state.taxi = false
+    self:fire("PLAYER_CONTROL_GAINED")
+end
+
 function Harness:enterCombat()
     self.state.combat = true
     self:fire("PLAYER_REGEN_DISABLED")

@@ -235,3 +235,19 @@ With Battle Shout missing and no rage, the first press out of combat should cast
 Press the BuffBot button twice
 
 Result:
+
+### Button when dead or a ghost
+
+With a buff missing, die, release, then resurrect. The button should hide on death, stay hidden as a ghost, and come back once alive.
+
+`/dump UnitIsDeadOrGhost("player")` at each step
+
+Result:
+
+### Button on a flight path
+
+With a buff missing, take a flight path. The button should hide on takeoff and come back on landing. If it stays up, check whether `PLAYER_CONTROL_LOST` fires on takeoff.
+
+`/run local f = CreateFrame("Frame") f:RegisterEvent("PLAYER_CONTROL_LOST") f:RegisterEvent("PLAYER_CONTROL_GAINED") f:SetScript("OnEvent", function(_, e) print(e, UnitOnTaxi("player")) end)`, then fly
+
+Result:

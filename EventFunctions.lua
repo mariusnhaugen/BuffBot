@@ -47,6 +47,27 @@ function events:SPELL_UPDATE_USABLE()
     BuffBot.UpdateTint()
 end
 
+-- Dying, releasing, resurrecting, and taking or leaving a flight path
+function events:PLAYER_DEAD()
+    BuffBot.CheckPlayerBuffs()
+end
+
+function events:PLAYER_ALIVE()
+    BuffBot.CheckPlayerBuffs()
+end
+
+function events:PLAYER_UNGHOST()
+    BuffBot.CheckPlayerBuffs()
+end
+
+function events:PLAYER_CONTROL_LOST()
+    BuffBot.CheckPlayerBuffs()
+end
+
+function events:PLAYER_CONTROL_GAINED()
+    BuffBot.CheckPlayerBuffs()
+end
+
 function events:PLAYER_REGEN_ENABLED()
     BuffBot.CheckPlayerBuffs()
 end
@@ -98,6 +119,12 @@ events:RegisterEvent("GROUP_ROSTER_UPDATE")
 events:RegisterEvent("GROUP_LEFT")
 
 events:RegisterEvent("SPELL_UPDATE_USABLE")
+
+events:RegisterEvent("PLAYER_DEAD")
+events:RegisterEvent("PLAYER_ALIVE")
+events:RegisterEvent("PLAYER_UNGHOST")
+events:RegisterEvent("PLAYER_CONTROL_LOST")
+events:RegisterEvent("PLAYER_CONTROL_GAINED")
 
 events:RegisterEvent("PLAYER_REGEN_ENABLED")
 events:RegisterEvent("PLAYER_REGEN_DISABLED")

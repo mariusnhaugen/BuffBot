@@ -78,6 +78,7 @@ end
 
 function BuffBot.FindNextBuffInList()
     if InCombatLockdown() then return "done" end
+    if UnitIsDeadOrGhost("player") or UnitOnTaxi("player") then return "done" end
     if classBuffs == nil then return "done" end
 
     for i = 1, #classBuffs do                   -- For all buffs in filtered buff list.

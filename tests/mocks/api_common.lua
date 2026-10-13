@@ -151,6 +151,10 @@ return function(state, env)
 
     function env.InCombatLockdown() return state.combat end
 
+    function env.UnitIsDeadOrGhost(unit) return unit == "player" and (state.dead or state.ghost) end
+
+    function env.UnitOnTaxi(unit) return unit == "player" and state.taxi end
+
     function env.IsInGroup() return state.group or state.raid end
 
     function env.IsInRaid() return state.raid end

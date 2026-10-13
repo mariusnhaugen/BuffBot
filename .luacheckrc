@@ -33,7 +33,9 @@ read_globals = {
     "UIParent",
     "UnitClass",
     "UnitInRaid",
+    "UnitIsDeadOrGhost",
     "UnitLevel",
+    "UnitOnTaxi",
 }
 
 files["tests/"] = { std = "+busted" }
