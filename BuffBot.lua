@@ -33,26 +33,6 @@ function BuffBot.HasUniqueClassBuff()
     return false
 end
 
-local function RecommendOtherPaladinBuff(buffString)
-    if buffString == "" then return end
-
-    -- for aura: GetShapeshiftForm() returns 0 for no aura, 1 for Devotion
-    --when this function is called, the existence of one of the buff has already been checked
-    -- Check if the origin is player, and suggest alternate buff.
-    if BuffBot.BuffIsFromPlayer(buffString) then
-        --TODO: CheckSpellAvailable
-        if IsInGroup() then
-            return "Blessing of Salvation"
-        else
-            if buffString == "Blessing of Wisdom" then
-                return "Blessing of Might"
-            else
-                return "Blessing of Wisdom"
-            end
-        end
-    end
-end
-
 -- With the option on, Battle Shout always tries Bloodrage first out of combat,
 -- whatever the rage: rage drains without an event, so a macro picked by rage
 -- goes stale. The next press falls through to Battle Shout. In combat the
@@ -87,15 +67,6 @@ function BuffBot.FindNextBuffInList()
             if (not BuffBot.UnitHasAssignedBuff("player", currentBuff)) then
                 BuffBot.debug(currentBuff, " Missing.")
                 return currentBuff
-                -- else
-                --     if class == "PALADIN" then
-                --         if currentBuff == "Blessing of Wisdom" or currentBuff == "Blessing of Might" then
-                --             local newBuff = RecommendOtherPaladinBuff(currentBuff)
-                --             if newBuff then
-                --                 return newBuff
-                --             end
-                --         end
-                --     end
             end
         end
     end
@@ -130,17 +101,6 @@ function BuffBot.UnitHasAssignedBuff(unit, buffString)
             end
         end
         return true
-    else
-        return false
-    end
-end
-
-function BuffBot.BuffIsFromPlayer(buffString)
-    if buffString == "" then return end
-
-    local aura = C_UnitAuras.GetAuraDataBySpellName("player", buffString)
-    if aura ~= nil then
-        return aura.isFromPlayerOrPlayerPet
     else
         return false
     end

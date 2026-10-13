@@ -2,7 +2,6 @@ local _, BuffBot = ...
 local macroButton;
 
 local LEFTBUTTON = 'LeftButton';
-local MIDDLEBUTTON = 'MiddleButton';
 
 BuffBot.futureBuffStrings = {}
 

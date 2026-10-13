@@ -1,8 +1,5 @@
 local addonName, BuffBot = ...
 local events = CreateFrame("Frame")
-local class = BuffBot.playerclass
-local function debug() end
-debug = BuffBot.debug
 
 function events:UNIT_AURA(unit, info)
     if info.isFullUpdate then
