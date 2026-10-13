@@ -166,7 +166,7 @@ local function PaintSettingsFrame()
 
     local buttonBloodrage = createCheckbox(
         "Always try Bloodrage out of combat",
-        "Casts Bloodrage before Battle Shout out of combat, so Battle Shout never waits for rage. Press the button again for Battle Shout. \n\nWhile Bloodrage is on cooldown, each press shows a \"Not ready yet\" error before casting Battle Shout.",
+        "Cast Bloodrage before Battle Shout out of combat. \n\nCan cause errors while Bloodrage is on cooldown.",
         function(_, checkboxValue)
             BuffBot.debug("Bloodrage - ", checkboxValue)
             BuffBot.config.BLOODRAGE = checkboxValue
