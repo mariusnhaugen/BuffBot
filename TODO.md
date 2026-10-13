@@ -3,16 +3,6 @@
 Open work for the Forever branch. Tick items off as they land, and note the
 commit.
 
-## Port
-
-- [ ] **10. English-only spell names.** Lookups, macros and the suggestion list
-  use English names, so other client languages break. Use the spell ID
-  table as the source of truth and resolve names with
-  `C_Spell.GetSpellInfo(id).name`.
-  The icon lookup (`C_Spell.GetSpellTexture` in `UpdateMacro`) also uses
-  the name, so the button keeps the previous spell's icon on those
-  clients. Looking it up by ID fixes both.
-
 ## Later: group coverage
 
 Design notes, for after the robustness work:
@@ -82,3 +72,4 @@ Design notes, for after the robustness work:
 - [x] Remove dead code, including the `PLAYER_LOGOUT` handler (`57415f3`, `b056b5f`)
 - [x] Hide Icon, and Hide Text in place of Show Suggestion List (`3ec0e15`)
 - [x] Suggestion list follows the button's skip rules (`8ba46a6`)
+- [x] Use the client's spell names, looked up by ID (`f279f20`)
