@@ -59,9 +59,18 @@ function Region:GetPoint() return unpack(self.points[1] or {}) end
 
 function Region:ClearAllPoints() self.points = {} end
 
-function Region:SetNormalTexture(texture) self.normalTexture = texture end
+function Region:SetNormalTexture(texture)
+    self.normalTexture = self.normalTexture or setmetatable({ kind = "Texture", calls = {} }, Region)
+    self.normalTexture.file = texture
+end
 
 function Region:GetNormalTexture() return self.normalTexture end
+
+function Region:GetTexture() return self.file end
+
+function Region:SetVertexColor(r, g, b) self.vertexColor = { r, g, b } end
+
+function Region:GetVertexColor() return unpack(self.vertexColor or { 1, 1, 1 }) end
 
 function Region:SetText(text) self.text_ = text end
 

@@ -23,7 +23,8 @@ return function(state, env)
 
         IsSpellUsable = function(name)
             if not state:knows(name) then return false, false end
-            return state:isUsable(name), false
+            -- unusable spells are out of mana or rage
+            return state:isUsable(name), state.unusable[name] == true
         end,
 
         GetSpellTexture = function(spell)

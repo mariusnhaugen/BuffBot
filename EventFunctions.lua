@@ -41,6 +41,12 @@ function events:SPELLS_CHANGED()
     BuffBot.UpdateClassBuffList()
 end
 
+-- Fires on most power changes, so only re-tint while the button is up
+function events:SPELL_UPDATE_USABLE()
+    if not BuffBot.macroButton:IsShown() then return end
+    BuffBot.UpdateTint()
+end
+
 function events:PLAYER_REGEN_ENABLED()
     BuffBot.CheckPlayerBuffs()
 end
@@ -90,6 +96,8 @@ events:RegisterEvent("UNIT_AURA")
 
 events:RegisterEvent("GROUP_ROSTER_UPDATE")
 events:RegisterEvent("GROUP_LEFT")
+
+events:RegisterEvent("SPELL_UPDATE_USABLE")
 
 events:RegisterEvent("PLAYER_REGEN_ENABLED")
 events:RegisterEvent("PLAYER_REGEN_DISABLED")

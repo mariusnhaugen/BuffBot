@@ -15,7 +15,7 @@ describe("cast button", function()
     it("casts the next buff on the player with its icon", function()
         local h = Addon.load({ class = "WARRIOR", known = { "Battle Shout" } })
         assert.equal("/cast [target=player]Battle Shout", h.button:GetAttribute("macrotext1"))
-        assert.equal(h.state:iconOf("Battle Shout"), h.button:GetNormalTexture())
+        assert.equal(h.state:iconOf("Battle Shout"), h.button:GetNormalTexture():GetTexture())
         assert.is_true(h.button:IsShown())
     end)
 

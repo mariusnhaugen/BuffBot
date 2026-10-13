@@ -10,6 +10,19 @@ BuffBot.futureBuffStrings = {}
 _G["BINDING_NAME_" .. "CLICK BUFFBOT_MacroButton:LeftButton"] = "BuffBot Cast"
 
 --################### Public Functions ##########################
+-- Blue when out of mana or rage, like the action bars. Not for a firstSpell
+-- macro, which makes its own rage.
+function BuffBot.UpdateTint()
+    local icon = macroButton:GetNormalTexture()
+    if not icon or not macroButton.spell then return end
+    local _, noPower = C_Spell.IsSpellUsable(macroButton.spell)
+    if noPower and not macroButton.hasFirstSpell then
+        icon:SetVertexColor(0.5, 0.5, 1.0)
+    else
+        icon:SetVertexColor(1.0, 1.0, 1.0)
+    end
+end
+
 -- firstSpell, if given, is tried first on each press out of combat
 function BuffBot.UpdateMacro(spellName, unit, firstSpell)
     if InCombatLockdown() then return end
@@ -17,6 +30,9 @@ function BuffBot.UpdateMacro(spellName, unit, firstSpell)
     if texture then
         macroButton:SetNormalTexture(texture)
     end
+    macroButton.spell = spellName
+    macroButton.hasFirstSpell = firstSpell ~= nil
+    BuffBot.UpdateTint()
     local macro = "/cast [target=" .. unit .. "]" .. spellName
     if firstSpell then
         macro = "/cast [nocombat] " .. firstSpell .. "\n" .. macro

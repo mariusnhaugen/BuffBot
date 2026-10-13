@@ -74,11 +74,6 @@ local function ShouldSkipBuff(buffString)
             if BuffBot.UnitHasAssignedBuff("player", groupVersions[i]) then return true end
         end
     end
-    if class == "WARRIOR" then
-        if buffString == "Battle Shout" then
-            if not C_Spell.IsSpellUsable("Battle Shout") and not BloodrageFirst(buffString) then return true end
-        end
-    end
 end
 
 function BuffBot.FindNextBuffInList()

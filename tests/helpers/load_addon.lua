@@ -60,6 +60,12 @@ function Harness:learn(...)
     self:fire("SPELLS_CHANGED")
 end
 
+-- Out of mana or rage for a spell
+function Harness:setOutOfPower(name, out)
+    self.state.unusable[name] = out or nil
+    self:fire("SPELL_UPDATE_USABLE")
+end
+
 function Harness:enterCombat()
     self.state.combat = true
     self:fire("PLAYER_REGEN_DISABLED")
