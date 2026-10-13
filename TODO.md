@@ -30,8 +30,14 @@ Design notes, for after the robustness work:
 
 - 18. Show only the current class's settings.
 - 19. Button feedback: dim when unusable, tooltip, cooldown swipe.
-- 20. Weapon enchants with `GetWeaponEnchantInfo`: Rogue poisons, Shaman
-  imbues.
+- 20. Rogue poisons. Shaman imbues are done; poisons use the same check
+  (`BuffBot.HasWeaponEnchant`, any temporary enchant counts), but they're
+  items, not spells: the macro is `/use <poison>` then `/use 16`. Rogues
+  dual wield, so the off hand (weapon slot 1) needs checking too.
+- 26. Known issue: the first Rockbiter cast once needed a second press
+  before the button moved on. Not reproduced since. A probe for
+  `UNIT_INVENTORY_CHANGED` printed nothing, so the event may not always
+  fire, or `C_Item.GetWeaponEnchantInfo` may lag behind it.
 - 21. More Paladin buffs: Kings, Light, Sanctuary, Righteous Fury.
 - 25. Size sliders for the icon and the text. The icon scales the 48px
   button (`SetSize`, out of combat only), and the text changes the font
@@ -73,3 +79,4 @@ Design notes, for after the robustness work:
 - [x] Hide Icon, and Hide Text in place of Show Suggestion List (`3ec0e15`)
 - [x] Suggestion list follows the button's skip rules (`8ba46a6`)
 - [x] Use the client's spell names, looked up by ID (`f279f20`)
+- [x] Shaman weapon imbues, with a setting to pick the imbue (`8254999`)
