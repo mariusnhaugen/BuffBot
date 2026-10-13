@@ -72,7 +72,7 @@ BuffBot.SetMacroButtonDefaultPosition()
 macroButton:SetScript('OnMouseDown', function(_, button)
     if (button == LEFTBUTTON and IsAltKeyDown()) then
         if (macroButton.draggableOverlay == nil) then
-            macroButton.draggableOverlay = macroButton:CreateTexture("t", "OVERLAY")
+            macroButton.draggableOverlay = macroButton:CreateTexture(nil, "OVERLAY")
             macroButton.draggableOverlay:SetAllPoints()
             macroButton.draggableOverlay:SetColorTexture(0, 0.7, 0.7, 0.5)
         else
