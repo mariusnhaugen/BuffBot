@@ -30,9 +30,6 @@ commit.
   The icon lookup (`C_Spell.GetSpellTexture` in `UpdateMacro`) also uses
   the name, so the button keeps the previous spell's icon on those
   clients. Looking it up by ID fixes both.
-- [ ] **12. Finish the probe table in `TESTING.md`.** Aura data fields,
-  `UNIT_AURA` payload, settings panel, keybind, cast handler, add-on
-  metadata and the group range rows are still blank.
 
 ## Performance
 
@@ -104,6 +101,7 @@ Design notes, for after the robustness work:
 - [x] Save the button position without the anchor frame (`54af139`)
 - [x] Check every spell's availability the same way, without `RanklessSpells` (`39eeb24`)
 - [x] Load message reads the version from the TOC; the TOC title keeps its own copy for the add-on menu (`b94f3e8`)
+- [x] Probe results filled in (`a65e3f7`)
 
 ## Shelf
 

@@ -226,4 +226,4 @@ Result:
 `/dump C_Spell.IsSpellInRange("<buff spell>", "party1")` near a party member, then again far away
 
 Result:
-`true` near, `false` far, as plain values (not secrets)
+`true` near, `false` far, as plain values (not secrets), in and out of combat
