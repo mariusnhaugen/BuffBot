@@ -15,6 +15,11 @@ commit.
 - [ ] **8. Button shows when buffing is impossible:** dead, ghost, on a taxi.
   Handle `PLAYER_DEAD`, `PLAYER_ALIVE`, `PLAYER_UNGHOST` and check
   `UnitOnTaxi`.
+- [ ] **24. Stale Battle Shout with Bloodrage off.** The macro is picked when
+  BuffBot re-checks, usually on leaving combat with rage. Rage drains out
+  of combat without an event, so the button keeps offering a Battle Shout
+  that fails with "Not enough rage". Re-checking on rage changes was
+  rejected as too much event traffic for this.
 
 ## Port
 
@@ -26,12 +31,6 @@ commit.
   the name, so the button keeps the previous spell's icon on those
   clients. Looking it up by ID fixes both.
 
-## Performance
-
-- [ ] **14. Debounce `GROUP_ROSTER_UPDATE`.** It rebuilds the whole list on
-  every roster change. Rebuild once, about 0.3s after the last change, with
-  `C_Timer.After`.
-
 ## Cleanup
 
 - [ ] **15. Dead code:** `RecommendOtherPaladinBuff` and its commented caller,
@@ -40,9 +39,6 @@ commit.
   true).
 - [ ] **16. Turn on luacheck's unused-variable warnings.** `.luacheckrc`
   ignores 2xx–6xx.
-- [ ] **17. Copy-paste slips:** the Strict Armor checkbox logs "Dampen changed"
-  (`Config.lua`), and `CreateTexture("t", ...)` creates a global `t`
-  (`Interface.lua`).
 
 ## Later: group coverage
 
@@ -60,10 +56,10 @@ Design notes, for after the robustness work:
 - Buff the player first, then members in a fixed order, so pressing the
   button repeatedly buffs the group. Skip members who are dead, offline or
   out of range.
-- Range: check `C_Spell.IsSpellInRange(spell, unit)` when picking a target.
-  For noticing when range changes, use `UNIT_IN_RANGE_UPDATE` if the
-  Forever probe shows it exists, otherwise `UnitInRange` on a slow
-  out-of-combat check.
+- Range: check `C_Spell.IsSpellInRange(spell, unit)` when picking a target,
+  and on a slow out-of-combat check to notice range changes. It returns
+  plain values in and out of combat. `UNIT_IN_RANGE_UPDATE` never fires on
+  Forever, and `UnitInRange` only returns secret values.
 - Raids: limit to your own party, or recommend the group versions that cost
   reagents.
 
@@ -82,6 +78,10 @@ Design notes, for after the robustness work:
   without it.
 - **Limiting `UNIT_AURA` to the player.** Group coverage needs it wide, and
   the current cost is one string comparison per event.
+- **Debouncing `GROUP_ROSTER_UPDATE` (14).** A rebuild only checks the
+  player's own short buff list, so dozens of them while a raid fills cost
+  nothing noticeable. The group coverage re-scan is scheduled with
+  `C_Timer.After`, which covers it once rebuilds scan every member.
 
 ## Done
 
@@ -97,4 +97,5 @@ Design notes, for after the robustness work:
 - [x] Check every spell's availability the same way, without `RanklessSpells` (`39eeb24`)
 - [x] Load message reads the version from the TOC; the TOC title keeps its own copy for the add-on menu (`b94f3e8`)
 - [x] Probe results filled in (`a65e3f7`)
+- [x] Copy-paste slips: Strict Armor debug message (`6977911`) and the global `t` texture (`c1139e3`)
 - [x] Chain Bloodrage and Battle Shout in one macro, and remove the cast handler (`3d780ad`)
