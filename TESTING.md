@@ -260,3 +260,12 @@ Should print each spell's name: Gift of the Wild, Arcane Brilliance, Prayer of F
 
 Result:
 All 14 IDs resolve to the expected names
+
+### Non-English client (German)
+
+Log in on a German client with buffs missing. The button should cast each buff, move on once it lands, and hide when fully buffed. The suggestion list should show German names. With a group buff on you, its single-target version should be skipped.
+
+Press the BuffBot button until fully buffed
+
+Result:
+Casts work with the German names. Group versions untested: the beta is capped below the level for group buffs.
