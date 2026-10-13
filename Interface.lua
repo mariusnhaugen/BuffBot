@@ -115,11 +115,9 @@ local function FilterSuggestionList()
 end
 
 function BuffBot.UpdateSuggestionList()
-    if #BuffBot.suggestionList then
-        for i = 1, #BuffBot.suggestionList, 1 do
-            BuffBot.suggestionList[i]:SetText("")
-            BuffBot.suggestionList[i]:Hide()
-        end
+    for i = 1, #BuffBot.suggestionList, 1 do
+        BuffBot.suggestionList[i]:SetText("")
+        BuffBot.suggestionList[i]:Hide()
     end
 
     if not BuffBot.config.SUGGESTION_LIST then return end

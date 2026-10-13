@@ -83,11 +83,9 @@ describe("saved config", function()
         assert.same({ point = "TOPLEFT", relativePoint = "TOPLEFT", x = 50, y = -60 }, h.ns.config.buttonPosition)
     end)
 
-    it("writes the config back on logout", function()
+    it("changes the saved settings table directly", function()
         local h = Addon.load()
         h.ns.config.IGNORE_THORNS = true
-        h.env.BuffBotConfig = nil
-        h:fire("PLAYER_LOGOUT")
         assert.equal(h.ns.config, h.env.BuffBotConfig)
         assert.is_true(h.env.BuffBotConfig.IGNORE_THORNS)
     end)

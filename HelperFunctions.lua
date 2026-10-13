@@ -1,9 +1,5 @@
 local _, BuffBot = ...
 
-
-BuffBot.DEBUG_MODE = false;
-BuffBot.playername = GetUnitName("player")
-BuffBot.playerlevel = UnitLevel("player")
 BuffBot.playerclass = (select(2, UnitClass("player")))
 --- Helper Functions ---
 function BuffBot.IndexOf(value, table)

@@ -102,10 +102,6 @@ function events:ADDON_LOADED(arg1)
     end
 end
 
-function events:PLAYER_LOGOUT()
-    BuffBotConfig = BuffBot.config
-end
-
 events:SetScript("OnEvent", function(self, event, ...)
     self[event](self, ...)
 end)
@@ -130,4 +126,3 @@ events:RegisterEvent("PLAYER_REGEN_DISABLED")
 events:RegisterEvent("SPELLS_CHANGED")
 
 events:RegisterEvent("ADDON_LOADED")
-events:RegisterEvent("PLAYER_LOGOUT")
