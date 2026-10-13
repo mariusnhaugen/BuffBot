@@ -50,6 +50,10 @@ Design notes, for after the robustness work:
 - 20. Weapon enchants with `GetWeaponEnchantInfo`: Rogue poisons, Shaman
   imbues.
 - 21. More Paladin buffs: Kings, Light, Sanctuary, Righteous Fury.
+- 25. Size sliders for the icon and the text. The icon scales the 48px
+  button (`SetSize`, out of combat only), and the text changes the font
+  size of the suggestion list. Both use the game's own slider, with no
+  library.
 
 ## Decided against
 
