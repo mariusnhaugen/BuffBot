@@ -10,12 +10,6 @@ commit.
   `ShouldSkipBuff`. It can show Mark of the Wild under Gift of the Wild, or
   Hawk while in Monkey.
 
-## Robustness: errors and misbehaviour
-
-- [ ] **8. Button shows when buffing is impossible:** dead, ghost, on a taxi.
-  Handle `PLAYER_DEAD`, `PLAYER_ALIVE`, `PLAYER_UNGHOST` and check
-  `UnitOnTaxi`.
-
 ## Port
 
 - [ ] **10. English-only spell names.** Lookups, macros and the suggestion list
@@ -25,15 +19,6 @@ commit.
   The icon lookup (`C_Spell.GetSpellTexture` in `UpdateMacro`) also uses
   the name, so the button keeps the previous spell's icon on those
   clients. Looking it up by ID fixes both.
-
-## Cleanup
-
-- [ ] **15. Dead code:** `RecommendOtherPaladinBuff` and its commented caller,
-  `HIDE_ICON`, `BuffBot.DEBUG_MODE`, `playername`, `playerlevel`, the
-  `PLAYER_LOGOUT` handler, and `if #BuffBot.suggestionList then` (always
-  true).
-- [ ] **16. Turn on luacheck's unused-variable warnings.** `.luacheckrc`
-  ignores 2xx–6xx.
 
 ## Later: group coverage
 
@@ -95,3 +80,7 @@ Design notes, for after the robustness work:
 - [x] Copy-paste slips: Strict Armor debug message (`6977911`) and the global `t` texture (`c1139e3`)
 - [x] Chain Bloodrage and Battle Shout in one macro, and remove the cast handler (`3d780ad`)
 - [x] Show Battle Shout without rage, tinted blue and kept in sync (`d3804e0`)
+- [x] Hide the button when dead, a ghost or on a flight path (`a043b8c`)
+- [x] Turn on luacheck's unused-variable warnings (`57415f3`)
+- [x] Remove dead code, including the `PLAYER_LOGOUT` handler (`57415f3`, `b056b5f`)
+- [x] Hide Icon, and Hide Text in place of Show Suggestion List (`3ec0e15`)
