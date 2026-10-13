@@ -154,7 +154,7 @@ local function PaintSettingsFrame()
 
     local buttonBloodrage = createCheckbox(
         "Include Bloodrage",
-        "Cast Bloodrage first when missing rage for Battle Shout. \n\nBloodrage starts combat, so press the button again for Battle Shout.",
+        "Cast Bloodrage before Battle Shout out of combat, so Battle Shout never waits for rage. \n\nPress the button again for Battle Shout.",
         function(_, checkboxValue)
             BuffBot.debug("Bloodrage - ", checkboxValue)
             BuffBot.config.BLOODRAGE = checkboxValue

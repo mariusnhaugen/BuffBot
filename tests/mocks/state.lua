@@ -10,7 +10,6 @@ function State.new(class)
         class = class or "WARRIOR",
         known = {},
         unusable = {},
-        cooldowns = {},
         auras = {},
         combat = false,
         group = false,

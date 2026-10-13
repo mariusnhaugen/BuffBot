@@ -228,17 +228,9 @@ Result:
 Result:
 `true` near, `false` far, as plain values (not secrets), in and out of combat
 
-### Bloodrage cooldown lookup (Warrior)
-
-Should return a table with `duration` 0 when Bloodrage is ready, and above 0 right after casting it.
-
-`/dump C_Spell.GetSpellCooldown("Bloodrage")` before and after casting Bloodrage
-
-Result:
-
 ### Bloodrage then Battle Shout (Warrior, Include Bloodrage on)
 
-With no rage and Battle Shout missing, the first press should cast Bloodrage and the button should stay up in combat. The second press should cast Battle Shout.
+With Battle Shout missing and no rage, the first press out of combat should cast Bloodrage. The second press should cast Battle Shout. Bloodrage does not start combat on Forever.
 
 Press the BuffBot button twice
 

@@ -10,7 +10,7 @@ BuffBot.futureBuffStrings = {}
 _G["BINDING_NAME_" .. "CLICK BUFFBOT_MacroButton:LeftButton"] = "BuffBot Cast"
 
 --################### Public Functions ##########################
--- firstSpell, if given, is cast on the same press before spellName
+-- firstSpell, if given, is tried first on each press out of combat
 function BuffBot.UpdateMacro(spellName, unit, firstSpell)
     if InCombatLockdown() then return end
     local texture = C_Spell.GetSpellTexture(spellName)
@@ -19,10 +19,9 @@ function BuffBot.UpdateMacro(spellName, unit, firstSpell)
     end
     local macro = "/cast [target=" .. unit .. "]" .. spellName
     if firstSpell then
-        macro = "/cast " .. firstSpell .. "\n" .. macro
+        macro = "/cast [nocombat] " .. firstSpell .. "\n" .. macro
     end
     macroButton:SetAttribute("macrotext1", macro) -- text for macro on left click
-    macroButton.keepInCombat = firstSpell ~= nil
     macroButton:Show()
 end
 

@@ -46,8 +46,6 @@ function events:PLAYER_REGEN_ENABLED()
 end
 
 function events:PLAYER_REGEN_DISABLED()
-    -- A Bloodrage macro starts combat and needs a second press for Battle Shout
-    if BuffBot.macroButton.keepInCombat then return end
     BuffBot.macroButton:Hide()
 end
 

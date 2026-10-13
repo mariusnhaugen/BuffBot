@@ -53,17 +53,13 @@ local function RecommendOtherPaladinBuff(buffString)
     end
 end
 
--- Without the rage for Battle Shout, the macro casts Bloodrage first. Bloodrage
--- starts combat, so the macro can't change afterwards: the next press finds
--- Bloodrage on cooldown and falls through to Battle Shout.
+-- With the option on, Battle Shout always tries Bloodrage first out of combat,
+-- whatever the rage: rage drains without an event, so a macro picked by rage
+-- goes stale. The next press falls through to Battle Shout. In combat the
+-- Bloodrage line is skipped, so keybind presses don't error on its cooldown.
 local function BloodrageFirst(buffString)
     if class ~= "WARRIOR" or buffString ~= "Battle Shout" then return false end
-    if not BuffBot.config.BLOODRAGE or C_Spell.IsSpellUsable("Battle Shout") then return false end
-    if not BuffBot.CheckSpellAvailable("Bloodrage") then return false end
-    -- Already cast: keep the macro until the rage arrives
-    if C_UnitAuras.GetAuraDataBySpellName("player", "Bloodrage") then return true end
-    local cooldown = C_Spell.GetSpellCooldown("Bloodrage")
-    return cooldown ~= nil and cooldown.duration == 0
+    return BuffBot.config.BLOODRAGE and BuffBot.CheckSpellAvailable("Bloodrage")
 end
 
 local function ShouldSkipBuff(buffString)
