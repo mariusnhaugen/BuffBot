@@ -166,7 +166,7 @@ local function PaintSettingsFrame()
 
     local buttonBloodrage = createCheckbox(
         "Always try Bloodrage out of combat",
-        "Cast Bloodrage before Battle Shout out of combat. \n\nCan cause errors while Bloodrage is on cooldown.",
+        "Cast Bloodrage before Battle Shout out of combat. \n\nCan cause error spam while Bloodrage is on cooldown.",
         function(_, checkboxValue)
             BuffBot.debug("Bloodrage - ", checkboxValue)
             BuffBot.config.BLOODRAGE = checkboxValue
