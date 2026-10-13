@@ -15,11 +15,6 @@ commit.
 - [ ] **8. Button shows when buffing is impossible:** dead, ghost, on a taxi.
   Handle `PLAYER_DEAD`, `PLAYER_ALIVE`, `PLAYER_UNGHOST` and check
   `UnitOnTaxi`.
-- [ ] **9. Cast handler runs for every class.** `UNIT_SPELLCAST_SUCCEEDED` is
-  now registered for the player only, but every class still does the
-  Battle Shout lookup and a buff re-check on each cast. If the cast probe
-  in `TESTING.md` shows `UNIT_AURA` covers the re-check, register the
-  event for Warriors only. #22 removes the Battle Shout lookup.
 
 ## Port
 
@@ -102,32 +97,4 @@ Design notes, for after the robustness work:
 - [x] Check every spell's availability the same way, without `RanklessSpells` (`39eeb24`)
 - [x] Load message reads the version from the TOC; the TOC title keeps its own copy for the add-on menu (`b94f3e8`)
 - [x] Probe results filled in (`a65e3f7`)
-
-## Shelf
-
-Worked out, but parked for now.
-
-### 22. Bloodrage
-
-Bloodrage puts the player in combat, which locks the secure button. The
-macro stays on `/cast Bloodrage` and the button hides until combat ends.
-
-Plan: when Bloodrage is recommended, set the macro out of combat to
-`/cast Bloodrage` followed by `/cast Battle Shout`, so the next press falls
-through to Battle Shout without changing anything in combat. Don't hide
-the button on combat entry when the macro includes Bloodrage. Fall back to
-plain Battle Shout when Bloodrage is already on cooldown. This removes the
-`classBuffs` insertion and `BLOODRAGE_LOCKED`.
-
-### 23. Alt-drag also casts
-
-Alt-dragging the button runs its macro, so moving it casts the buff.
-
-Plan: drag with the right mouse button (optionally Alt+right-drag). Only
-left click casts (`type1`), and keybinds always send `LeftButton`, so a
-right-drag can never cast. Update the drag hint in the settings panel and
-the load message.
-
-Rejected: `[nomod:alt]` in the macro breaks Alt keybinds such as Alt+3.
-A separate keybind button name works, but players would have to set the
-keybind again.
+- [x] Chain Bloodrage and Battle Shout in one macro, and remove the cast handler (`3d780ad`)
