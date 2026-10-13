@@ -65,6 +65,11 @@ function events:PLAYER_CONTROL_GAINED()
     BuffBot.CheckPlayerBuffs()
 end
 
+-- Weapon enchants landing or dropping, and weapon swaps
+function events:UNIT_INVENTORY_CHANGED()
+    BuffBot.CheckPlayerBuffs()
+end
+
 function events:PLAYER_REGEN_ENABLED()
     BuffBot.CheckPlayerBuffs()
 end
@@ -112,6 +117,7 @@ events:RegisterEvent("GROUP_ROSTER_UPDATE")
 events:RegisterEvent("GROUP_LEFT")
 
 events:RegisterEvent("SPELL_UPDATE_USABLE")
+events:RegisterUnitEvent("UNIT_INVENTORY_CHANGED", "player")
 
 events:RegisterEvent("PLAYER_DEAD")
 events:RegisterEvent("PLAYER_ALIVE")

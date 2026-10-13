@@ -19,10 +19,12 @@ globals = {
 -- IsUsableSpell are removed there, so they are deliberately not listed.
 read_globals = {
     "C_AddOns",
+    "C_Item",
     "C_Spell",
     "C_UnitAuras",
     "CreateFrame",
     "GameTooltip",
+    "GetInventoryItemID",
     "GetTime",
     "GetUnitName",
     "InCombatLockdown",

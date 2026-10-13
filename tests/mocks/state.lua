@@ -15,6 +15,8 @@ function State.new(class)
         dead = false,
         ghost = false,
         taxi = false,
+        mainHand = 2361, -- equipped main-hand item ID, nil for none
+        weaponEnchant = nil, -- { type = 2 or 3, timeLeft = ms } on the main hand
         group = false,
         raid = false,
         time = 1000,

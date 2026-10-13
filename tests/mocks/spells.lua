@@ -42,6 +42,10 @@ local byName = {
     ["Inner Fire"] = 588,
     -- SHAMAN
     ["Lightning Shield"] = 324,
+    ["Rockbiter Weapon"] = 8017,
+    ["Flametongue Weapon"] = 8024,
+    ["Frostbrand Weapon"] = 8033,
+    ["Windfury Weapon"] = 8232,
     -- WARLOCK
     ["Demon Skin"] = 687,
     ["Demon Armor"] = 706,

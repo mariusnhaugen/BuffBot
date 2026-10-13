@@ -45,9 +45,14 @@ function Harness:refresh()
     self:fire("UNIT_AURA", "player", {})
 end
 
--- Takes English or client names, so buffUp can pass what the button shows
+-- Takes English or client names, so buffUp can pass what the button shows.
+-- Imbues go on the weapon instead.
 function Harness:give(name, opts)
-    self.state:giveAura(self.state:englishName(name) or name, opts)
+    local english = self.state:englishName(name) or name
+    if self.ns.WeaponImbues[english] then
+        return self:enchantWeapon(3)
+    end
+    self.state:giveAura(english, opts)
     self:refresh()
 end
 
@@ -90,6 +95,17 @@ end
 function Harness:landTaxi()
     self.state.taxi = false
     self:fire("PLAYER_CONTROL_GAINED")
+end
+
+-- type 2 for an oil or stone, 3 for an imbue; timeLeft in ms (default 1 hour)
+function Harness:enchantWeapon(type, timeLeft)
+    self.state.weaponEnchant = { type = type, timeLeft = timeLeft or 3600000 }
+    self:fire("UNIT_INVENTORY_CHANGED", "player")
+end
+
+function Harness:clearWeaponEnchant()
+    self.state.weaponEnchant = nil
+    self:fire("UNIT_INVENTORY_CHANGED", "player")
 end
 
 function Harness:enterCombat()

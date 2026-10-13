@@ -13,6 +13,7 @@ describe("saved config", function()
             IGNORE_THORNS = false,
             IGNORE_DAMPEN = false,
             CHEETAH_REMINDER = true,
+            SHAMAN_IMBUE = "Rockbiter Weapon",
         }, h.ns.config)
         assert.equal(h.ns.config, h.env.BuffBotConfig)
     end)

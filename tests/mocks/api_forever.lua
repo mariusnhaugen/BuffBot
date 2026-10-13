@@ -36,6 +36,29 @@ return function(state, env)
         end,
     }
 
+    -- One entry per enchant type, like the probe: permanent first, then the
+    -- temporary enchant or imbue. Only the main hand (slot 0) is modelled.
+    env.C_Item = {
+        GetWeaponEnchantInfo = function(weaponSlot)
+            local empty = { hasEnchant = false, enchantType = 0, timeLeft = 0, charges = 0, enchantID = 0, enchantIconID = 0 }
+            local enchant = weaponSlot == 0 and state.weaponEnchant
+            if not enchant then return { empty, empty } end
+            return { empty, {
+                hasEnchant = true,
+                enchantType = enchant.type,
+                timeLeft = enchant.timeLeft,
+                charges = 0,
+                enchantID = 29,
+                enchantIconID = 136086,
+            } }
+        end,
+    }
+
+    function env.GetInventoryItemID(unit, slot)
+        if unit == "player" and slot == 16 then return state.mainHand end
+        return nil
+    end
+
     -- Reads "## Field: value" lines from the addon's TOC
     env.C_AddOns = {
         GetAddOnMetadata = function(addon, field)

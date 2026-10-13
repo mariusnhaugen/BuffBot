@@ -43,6 +43,7 @@ function BuffBot.GetDefaultConfig()
     defaultConfig.IGNORE_THORNS = false
     defaultConfig.IGNORE_DAMPEN = false
     defaultConfig.CHEETAH_REMINDER = true
+    defaultConfig.SHAMAN_IMBUE = "Rockbiter Weapon"
 
     return defaultConfig
 end
@@ -208,6 +209,30 @@ local function PaintSettingsFrame()
         end)
     buttonCheetahReminder:SetPoint("TOPLEFT", buttonIgnoreThorns, 0, -40)
     buttonCheetahReminder:SetChecked(BuffBot.config.CHEETAH_REMINDER)
+
+    -- One imbue at a time: ticking one unticks the others
+    local imbueLabel = configPanel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+    imbueLabel:SetText("Shaman weapon imbue:")
+    imbueLabel:SetPoint("TOPLEFT", buttonCheetahReminder, 0, -40)
+    local imbueChecks = {}
+    local imbues = { "Rockbiter", "Flametongue", "Frostbrand", "Windfury" }
+    for i, imbue in ipairs(imbues) do
+        local spell = imbue .. " Weapon"
+        local check = createCheckbox(
+            imbue,
+            "Recommend " .. spell .. ". Falls back to Rockbiter Weapon until it's learned. Any oil or stone on the weapon also counts.",
+            function()
+                BuffBot.debug("Imbue changed - ", spell)
+                BuffBot.config.SHAMAN_IMBUE = spell
+                for other, otherCheck in pairs(imbueChecks) do
+                    otherCheck:SetChecked(other == spell)
+                end
+                BuffBot.UpdateClassBuffList()
+            end)
+        check:SetPoint("TOPLEFT", imbueLabel, (i - 1) * 120, -20)
+        check:SetChecked(BuffBot.config.SHAMAN_IMBUE == spell)
+        imbueChecks[spell] = check
+    end
 
     -- FOOTER --
     local t = configPanel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")

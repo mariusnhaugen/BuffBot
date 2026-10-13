@@ -269,3 +269,29 @@ Press the BuffBot button until fully buffed
 
 Result:
 Casts work with the German names, the button moves on as buffs land, and the suggestion list shows German names. Group versions untested: the beta is capped below the level for group buffs.
+
+### Weapon enchant lookup
+
+`GetWeaponEnchantInfo` returns `false` for add-ons, and `C_PaperDollInfo.GetTemporaryEnchantmentInfo` returns nothing (it's Blizzard-only). `C_Item.GetWeaponEnchantInfo(0)` works: it returns one entry per enchant type on the main hand.
+
+`/dump C_Item.GetWeaponEnchantInfo(0)` with and without Rockbiter Weapon
+
+Result:
+Without: both entries have `hasEnchant=false`. With Rockbiter: the second entry has `hasEnchant=true`, `enchantType=3` (Imbue), `enchantID=29` and `timeLeft` in ms (an hour on Forever). `UNIT_INVENTORY_CHANGED` fires when it lands and when it drops.
+
+### Shaman imbue IDs
+
+Should print Rockbiter Weapon, Flametongue Weapon, Frostbrand Weapon and Windfury Weapon.
+
+`/run for _, id in ipairs({8017, 8024, 8033, 8232}) do local i = C_Spell.GetSpellInfo(id) print(id, i and i.name) end`
+
+Result:
+All four IDs resolve to the expected names
+
+### Shaman imbue on the button
+
+With no weapon enchant, the button should offer Rockbiter Weapon (after Lightning Shield, if that's missing). Once it lands, the button should move on. Removing it should bring it back. An oil or stone should also count, and with no main-hand weapon the imbue shouldn't be offered.
+
+Press the BuffBot button, then right-click the enchant icon by your buffs to remove it
+
+Result:

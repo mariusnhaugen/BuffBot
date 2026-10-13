@@ -11,7 +11,7 @@ InitalClassBuffLists.MAGE = { "Unique", "Arcane Intellect", "Dampen Magic" }
 InitalClassBuffLists.PALADIN = { "Unique", "Blessing" }
 InitalClassBuffLists.PRIEST = { "Power Word: Fortitude", "Shadowform", "Divine Spirit", "Inner Fire" }
 InitalClassBuffLists.ROGUE = {}
-InitalClassBuffLists.SHAMAN = { "Lightning Shield" }
+InitalClassBuffLists.SHAMAN = { "Lightning Shield", "Imbue" }
 InitalClassBuffLists.WARLOCK = { "Unique" }
 InitalClassBuffLists.WARRIOR = { "Battle Shout" }
 
@@ -22,6 +22,14 @@ UniqueBuffs.MAGE = { "Mage Armor", "Frost Armor", "Ice Armor" }
 UniqueBuffs.WARLOCK = { "Demon Skin", "Demon Armor" }
 UniqueBuffs.PALADIN = { "Devotion Aura", "Sanctity Aura", "Concentration Aura", "Retribution Aura",
     "Frost Resistance Aura", "Shadow Resistance Aura", "Fire Resistance Aura" }
+
+-- Weapon enchants rather than auras, checked with BuffBot.HasWeaponEnchant
+BuffBot.WeaponImbues = {
+    ["Rockbiter Weapon"] = true,
+    ["Flametongue Weapon"] = true,
+    ["Frostbrand Weapon"] = true,
+    ["Windfury Weapon"] = true,
+}
 
 -- Auras every Paladin in the group can provide; only the player's own count
 BuffBot.OwnOnlyBuffs = {}
@@ -74,6 +82,10 @@ local spellIDTable = {
     -- ROGUE
     -- SHAMAN
     ["Lightning Shield"] = 324,
+    ["Rockbiter Weapon"] = 8017,
+    ["Flametongue Weapon"] = 8024,
+    ["Frostbrand Weapon"] = 8033,
+    ["Windfury Weapon"] = 8232,
     -- WARLOCK
     ["Demon Skin"] = 687, -- Low level
     ["Demon Armor"] = 706,
@@ -191,6 +203,13 @@ function BuffBot.FilterInitialList()
         local spellString = InitalClassBuffLists[BuffBot.playerclass][i]
         if spellString == "Unique" then
             spellString = RecommendUniqueBuff()
+        end
+        if spellString == "Imbue" then
+            -- The chosen imbue, or Rockbiter until it's learned
+            spellString = BuffBot.config.SHAMAN_IMBUE
+            if not BuffBot.CheckSpellAvailable(spellString) then
+                spellString = "Rockbiter Weapon"
+            end
         end
         if spellString == "Blessing" then
             if BuffBot.config.WISDOM_SELF then
