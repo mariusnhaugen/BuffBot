@@ -29,31 +29,201 @@ for new files or TOC changes.
 Results decided how the port handles spell ranks. Run on the Forever beta with
 `/console scriptErrors 1`, and fill in the results.
 
-| Check | Command | Result |
-|---|---|---|
-| Interface number | `/dump select(4, GetBuildInfo())` | `16001` |
-| Rank 1 lookup by ID | `/dump C_Spell.GetSpellInfo(465)` | Returns the spell info on a Warrior: ID lookups resolve spells the player doesn't know |
-| Lookup by name | `/dump C_Spell.GetSpellInfo("Devotion Aura")` | `nil` |
-| Battle Shout by ID | `/dump C_Spell.GetSpellInfo(6673)` | Returns the spell info, with `spellID` 6673 (rank 1, same as Classic) |
-| Battle Shout by name | `/dump C_Spell.GetSpellInfo("Battle Shout")` | Returns the spell info, with `spellID` 5242 (the learned rank 2, same as Classic) |
-| Rank 1 ID known with a higher rank learned | `/dump IsPlayerSpell(6673)` | `false`: rank 1 ID not known once a higher rank is learned (same as Classic) |
-| Name lookup for an unknown spell (run on a Warrior) | `/dump C_Spell.GetSpellInfo("Devotion Aura")` | `nil` (empty result): name lookups only resolve spells in the spellbook (same as Classic) |
-| Usable with no rage | `/dump C_Spell.IsSpellUsable("Battle Shout")` | `false, true`: not usable, and the reason is insufficient power (same as Classic `IsUsableSpell`) |
-| Removed globals | `/dump GetSpellInfo, IsUsableSpell, GetSpellTexture` | All three are `nil` |
-| Old checkbox template | `/run local ok, f = pcall(CreateFrame, "CheckButton", nil, UIParent, "InterfaceOptionsCheckButtonTemplate") print(ok, ok and f.Text)` | `true`, table: the template exists and has a `.Text` label |
-| Add-on metadata: should print `2.0.1` | `/dump C_AddOns.GetAddOnMetadata("BuffBot", "Version")` | |
-| Retribution Aura by ID | `/dump C_Spell.GetSpellInfo(7294)` | |
-| Aura lookup with the buff on: needs `duration`, `expirationTime` and `isFromPlayerOrPlayerPet` | `/dump C_UnitAuras.GetAuraDataBySpellName("player", "<buff name>")` | |
-| Aura lookup without the buff: should be `nil` | `/dump C_UnitAuras.GetAuraDataBySpellName("player", "<buff you don't have>")` | |
-| `UNIT_AURA` payload | `/run local f = CreateFrame("Frame") f:RegisterUnitEvent("UNIT_AURA", "player") f:SetScript("OnEvent", function(_, _, u, info) print(u, info and info.isFullUpdate, info and info.removedAuraInstanceIDs ~= nil) end)`, then gain and lose a buff | |
-| Settings panel | `/bb` with BuffBot loaded | |
-| Keybind | Bind "BuffBot Cast" under Key Bindings > AddOns and press it once with a buff missing | |
-| Holy buff in Shadowform | Cast Power Word: Fortitude while in Shadowform | Castable: casting it takes you out of Shadowform, so BuffBot shouldn't skip it |
-| Caster buff in a Druid form | Cast Mark of the Wild while in Cat or Bear Form | Castable: casting it takes you out of the form, so BuffBot shouldn't skip it |
-| Own-aura filter: should return the aura with your own aura on, and `nil` with only another Paladin's | `/dump C_UnitAuras.GetAuraDataBySpellName("player", "Devotion Aura", "HELPFUL\|PLAYER")` | |
-| Cast followed by `UNIT_AURA`: if `UNIT_AURA player` prints for each buff cast, the re-check after every cast is redundant and the cast event can be Warrior-only | `/run local f = CreateFrame("Frame") f:RegisterUnitEvent("UNIT_AURA", "player") f:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player") f:SetScript("OnEvent", function(_, e, u) print(GetTime(), e, u) end)`, then cast a buff BuffBot tracks, and refresh one you already have | |
-| Button anchor after a drag | Alt-drag the BuffBot button, then `/dump BUFFBOT_MacroButton:GetPoint()` | |
-| Saved button position | After the drag above, `/reload`, then `/dump BuffBotConfig.buttonPosition`, and check the button is where you left it | |
-| Range event, for group coverage (in a party) | `/run local f = CreateFrame("Frame") local ok, err = pcall(f.RegisterEvent, f, "UNIT_IN_RANGE_UPDATE") print("registered:", ok, err) if ok then f:SetScript("OnEvent", function(_, _, u, r) print(u, r) end) end`, then walk out of and back into range of a party member | |
-| Group range check (in a party) | `/dump UnitInRange("party1")` near a party member, then again far away | |
-| Spell range check (in a party) | `/dump C_Spell.IsSpellInRange("<buff spell>", "party1")` near a party member, then again far away | |
+### Interface number
+
+`/dump select(4, GetBuildInfo())`
+
+Result:
+`16001`
+
+### Rank 1 lookup by ID
+
+`/dump C_Spell.GetSpellInfo(465)`
+
+Result:
+Returns the spell info on a Warrior: ID lookups resolve spells the player doesn't know
+
+### Lookup by name
+
+`/dump C_Spell.GetSpellInfo("Devotion Aura")`
+
+Result:
+`nil`
+
+### Battle Shout by ID
+
+`/dump C_Spell.GetSpellInfo(6673)`
+
+Result:
+Returns the spell info, with `spellID` 6673 (rank 1, same as Classic)
+
+### Battle Shout by name
+
+`/dump C_Spell.GetSpellInfo("Battle Shout")`
+
+Result:
+Returns the spell info, with `spellID` 5242 (the learned rank 2, same as Classic)
+
+### Rank 1 ID known with a higher rank learned
+
+`/dump IsPlayerSpell(6673)`
+
+Result:
+`false`: rank 1 ID not known once a higher rank is learned (same as Classic)
+
+### Name lookup for an unknown spell (run on a Warrior)
+
+`/dump C_Spell.GetSpellInfo("Devotion Aura")`
+
+Result:
+`nil` (empty result): name lookups only resolve spells in the spellbook (same as Classic)
+
+### Usable with no rage
+
+`/dump C_Spell.IsSpellUsable("Battle Shout")`
+
+Result:
+`false, true`: not usable, and the reason is insufficient power (same as Classic `IsUsableSpell`)
+
+### Removed globals
+
+`/dump GetSpellInfo, IsUsableSpell, GetSpellTexture`
+
+Result:
+All three are `nil`
+
+### Old checkbox template
+
+`/run local ok, f = pcall(CreateFrame, "CheckButton", nil, UIParent, "InterfaceOptionsCheckButtonTemplate") print(ok, ok and f.Text)`
+
+Result:
+`true`, table: the template exists and has a `.Text` label
+
+### Add-on metadata
+
+Should print `2.0.1`.
+
+`/dump C_AddOns.GetAddOnMetadata("BuffBot", "Version")`
+
+Result:
+`2.0.1`
+
+### Retribution Aura by ID
+
+`/dump C_Spell.GetSpellInfo(7294)`
+
+Result:
+Returns the spell info
+
+### Aura lookup with the buff on
+
+Needs `duration`, `expirationTime` and `isFromPlayerOrPlayerPet`.
+
+`/dump C_UnitAuras.GetAuraDataBySpellName("player", "<buff name>")`
+
+Result:
+Returns the aura data, with `duration`, `expirationTime` and `isFromPlayerOrPlayerPet` all present
+
+### Aura lookup without the buff
+
+Should be `nil`.
+
+`/dump C_UnitAuras.GetAuraDataBySpellName("player", "<buff you don't have>")`
+
+Result:
+`nil`
+
+### `UNIT_AURA` payload
+
+`/run local f = CreateFrame("Frame") f:RegisterUnitEvent("UNIT_AURA", "player") f:SetScript("OnEvent", function(_, _, u, info) print(u, info and info.isFullUpdate, info and info.removedAuraInstanceIDs ~= nil) end)`, then gain and lose a buff
+
+Result:
+`player false false` on gain, `player false true` on loss: not a full update, and `removedAuraInstanceIDs` is only set when an aura goes
+
+### Settings panel
+
+`/bb` with BuffBot loaded
+
+Result:
+The settings panel opens
+
+### Keybind
+
+Bind "BuffBot Cast" under Key Bindings > AddOns and press it once with a buff missing
+
+Result:
+The binding is listed and casts the missing buff
+
+### Holy buff in Shadowform
+
+Cast Power Word: Fortitude while in Shadowform
+
+Result:
+Castable: casting it takes you out of Shadowform, so BuffBot shouldn't skip it
+
+### Caster buff in a Druid form
+
+Cast Mark of the Wild while in Cat or Bear Form
+
+Result:
+Castable: casting it takes you out of the form, so BuffBot shouldn't skip it
+
+### Own-aura filter
+
+Should return the aura with your own aura on, and `nil` with only another Paladin's.
+
+`/dump C_UnitAuras.GetAuraDataBySpellName("player", "Devotion Aura", "HELPFUL|PLAYER")`
+
+Result:
+Returns the aura with your own Devotion Aura on, and `nil` with only another Paladin's
+
+### Cast followed by `UNIT_AURA`
+
+If `UNIT_AURA player` prints for each buff cast, the re-check after every cast is redundant and the cast event can be Warrior-only.
+
+`/run local f = CreateFrame("Frame") f:RegisterUnitEvent("UNIT_AURA", "player") f:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player") f:SetScript("OnEvent", function(_, e, u) print(GetTime(), e, u) end)`, then cast a buff BuffBot tracks, and refresh one you already have
+
+Result:
+`UNIT_AURA player` prints after both the new cast and the refresh
+
+### Button anchor after a drag
+
+Alt-drag the BuffBot button, then `/dump BUFFBOT_MacroButton:GetPoint()`
+
+Result:
+`"CENTER", nil, "CENTER", 301.67, 261.67`: no relative frame, so the old anchor frame is gone
+
+### Saved button position
+
+After the drag above, `/reload`, then `/dump BuffBotConfig.buttonPosition`, and check the button is where you left it
+
+Result:
+The position is saved and the button is where it was left
+
+### Range event, for group coverage (in a party)
+
+`/run local f = CreateFrame("Frame") local ok, err = pcall(f.RegisterEvent, f, "UNIT_IN_RANGE_UPDATE") print("registered:", ok, err) if ok then f:SetScript("OnEvent", function(_, _, u, r) print(u, r) end) end`, then walk out of and back into range of a party member
+
+Result:
+`registered: true`, but nothing printed when crossing 40 yards either way
+
+### Group range check (in a party)
+
+`/dump UnitInRange("party1")` near a party member, then again far away
+
+Result:
+`<secret>: true, <secret>: true` within 40 yards, `<secret>: false, <secret>: true` beyond it: the range is checked, but both values are always secrets
+
+### Group range secret check (in a party, out of combat)
+
+`/run local r = UnitInRange("party1") print(issecretvalue and issecretvalue(r))`, then `/run local r = UnitInRange("party1") print(pcall(function() if r then return "readable" end return "readable" end))`
+
+Result:
+`true`, then `false` with "attempt to perform boolean test on upvalue 'r' (a secret boolean value, while execution tainted by '*** ForceTaint_Strong ***')": `UnitInRange` is secret even out of combat, and add-on code can't branch on it
+
+### Spell range check (in a party)
+
+`/dump C_Spell.IsSpellInRange("<buff spell>", "party1")` near a party member, then again far away
+
+Result:
+`true` near, `false` far, as plain values (not secrets)
