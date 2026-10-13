@@ -268,4 +268,4 @@ Log in on a German client with buffs missing. The button should cast each buff, 
 Press the BuffBot button until fully buffed
 
 Result:
-Casts work with the German names. Group versions untested: the beta is capped below the level for group buffs.
+Casts work with the German names, the button moves on as buffs land, and the suggestion list shows German names. Group versions untested: the beta is capped below the level for group buffs.
