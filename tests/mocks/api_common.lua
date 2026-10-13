@@ -8,7 +8,7 @@ local Spells = require("mocks.spells")
 local NOOP_METHODS = {
     "SetSize", "SetWidth", "SetHeight", "SetClampedToScreen", "SetMovable",
     "StartMoving", "StopMovingOrSizing", "SetAllPoints", "SetColorTexture",
-    "RegisterForClicks", "RegisterForDrag", "EnableMouse", "SetFrameStrata",
+    "RegisterForClicks", "RegisterForDrag", "SetFrameStrata",
 }
 
 local Region = {}
@@ -69,6 +69,14 @@ function Region:GetNormalTexture() return self.normalTexture end
 function Region:GetTexture() return self.file end
 
 function Region:SetVertexColor(r, g, b) self.vertexColor = { r, g, b } end
+
+function Region:EnableMouse(enabled) self.mouseDisabled = not enabled end
+
+function Region:IsMouseEnabled() return not self.mouseDisabled end
+
+function Region:SetAlpha(alpha) self.alpha = alpha end
+
+function Region:GetAlpha() return self.alpha or 1 end
 
 function Region:GetVertexColor() return unpack(self.vertexColor or { 1, 1, 1 }) end
 

@@ -19,6 +19,34 @@ describe("cast button", function()
         assert.is_true(h.button:IsShown())
     end)
 
+    it("hides the icon with Hide Icon on, and ignores the mouse", function()
+        local h = Addon.load({ class = "WARRIOR", known = { "Battle Shout" }, config = { HIDE_ICON = true } })
+        h:refresh()
+        assert.equal(0, h.button:GetNormalTexture():GetAlpha())
+        assert.is_false(h.button:IsMouseEnabled())
+        -- Still set up for the keybind
+        assert.equal("Battle Shout", h:shown())
+    end)
+
+    it("shows the icon and takes clicks again when Hide Icon is turned off", function()
+        local h = Addon.load({ class = "WARRIOR", known = { "Battle Shout" }, config = { HIDE_ICON = true } })
+        h:refresh()
+        h:setting("HIDE_ICON", false)
+        assert.equal(1, h.button:GetNormalTexture():GetAlpha())
+        assert.is_true(h.button:IsMouseEnabled())
+    end)
+
+    it("waits until after combat to stop taking clicks", function()
+        local h = Addon.load({ class = "WARRIOR", known = { "Battle Shout" } })
+        h.state.combat = true
+        h.ns.config.HIDE_ICON = true
+        h.ns.UpdateIconVisibility()
+        assert.equal(0, h.button:GetNormalTexture():GetAlpha())
+        assert.is_true(h.button:IsMouseEnabled())
+        h:leaveCombat()
+        assert.is_false(h.button:IsMouseEnabled())
+    end)
+
     it("hides when everything is buffed", function()
         local h = Addon.load({ class = "WARRIOR", known = { "Battle Shout" } })
         h:give("Battle Shout")

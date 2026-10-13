@@ -92,32 +92,31 @@ local function PaintSettingsFrame()
     slashCommandDescription:SetText("/bb, /buffbot to open this page. Alt+Drag to move the main button.")
 
     -- ############### Top Checkboxes
-    -- local checkboxHideIcon = createCheckbox(
-    --     "Hide Icon [NYI]",
-    --     "Hides Icon for text only/stealth mode buffing",
-    --     function(_, checkboxValue)
-    --         BuffBot.debug("Suggestion List - ", checkboxValue)
-    --         BuffBot.config.HIDE_ICON= checkboxValue
-    --         BuffBot.UpdateSuggestionList()
-    --     end)
-    -- checkboxHideIcon:SetPoint("TOPLEFT", slashCommandDescription, 0, -20)
-    -- checkboxHideIcon:SetChecked(BuffBot.config.HIDE_ICON)
-    -- checkboxHideIcon:Disable()
-
-    local checkboxSuggestionList = createCheckbox(
-        "Show Suggestion List",
-        "Shows list of the buttons next suggested casts.",
+    local checkboxHideIcon = createCheckbox(
+        "Hide Icon",
+        "Hides the button icon for text-only buffing. The keybind and the text still work.",
         function(_, checkboxValue)
-            BuffBot.debug("Suggestion List - ", checkboxValue)
-            BuffBot.config.SUGGESTION_LIST = checkboxValue
+            BuffBot.debug("Hide Icon - ", checkboxValue)
+            BuffBot.config.HIDE_ICON = checkboxValue
+            BuffBot.UpdateIconVisibility()
+        end)
+    checkboxHideIcon:SetPoint("TOPLEFT", mainDescription, 0, -50)
+    checkboxHideIcon:SetChecked(BuffBot.config.HIDE_ICON)
+
+    -- Saved as SUGGESTION_LIST, so the checkbox is its opposite
+    local checkboxHideText = createCheckbox(
+        "Hide Text",
+        "Hides the list of upcoming buffs under the button.",
+        function(_, checkboxValue)
+            BuffBot.debug("Hide Text - ", checkboxValue)
+            BuffBot.config.SUGGESTION_LIST = not checkboxValue
             BuffBot.UpdateSuggestionList()
         end)
-    checkboxSuggestionList:SetPoint("TOPLEFT", mainDescription, 0, -50)
-    -- checkboxSuggestionList:SetPoint("TOPLEFT", checkboxHideIcon, 120, 0) --### when hideicon is back
-    checkboxSuggestionList:SetChecked(BuffBot.config.SUGGESTION_LIST)
+    checkboxHideText:SetPoint("TOPLEFT", checkboxHideIcon, 120, 0)
+    checkboxHideText:SetChecked(not BuffBot.config.SUGGESTION_LIST)
 
     local buttonResetPosition = CreateFrame("Button", nil, configPanel, "UIPanelButtonTemplate")
-    buttonResetPosition:SetPoint("TOPLEFT", checkboxSuggestionList, 320, 0)
+    buttonResetPosition:SetPoint("TOPLEFT", checkboxHideIcon, 320, 0)
     buttonResetPosition:SetText("Reset Button Position")
     buttonResetPosition:SetWidth(140)
     buttonResetPosition:SetHeight(28)

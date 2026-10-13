@@ -22,6 +22,20 @@ function BuffBot.UpdateTint()
     end
 end
 
+-- Hide Icon leaves the suggestion list, which is attached to the button, and
+-- the keybind. The mouse can't be toggled on a secure button in combat, so
+-- that part waits for the next update out of combat.
+function BuffBot.UpdateIconVisibility()
+    local hidden = BuffBot.config.HIDE_ICON
+    local icon = macroButton:GetNormalTexture()
+    if icon then
+        icon:SetAlpha(hidden and 0 or 1)
+    end
+    if not InCombatLockdown() then
+        macroButton:EnableMouse(not hidden)
+    end
+end
+
 -- firstSpell, if given, is tried first on each press out of combat
 function BuffBot.UpdateMacro(spellName, unit, firstSpell)
     if InCombatLockdown() then return end
@@ -32,6 +46,7 @@ function BuffBot.UpdateMacro(spellName, unit, firstSpell)
     macroButton.spell = spellName
     macroButton.hasFirstSpell = firstSpell ~= nil
     BuffBot.UpdateTint()
+    BuffBot.UpdateIconVisibility()
     local macro = "/cast [target=" .. unit .. "]" .. spellName
     if firstSpell then
         macro = "/cast [nocombat] " .. firstSpell .. "\n" .. macro

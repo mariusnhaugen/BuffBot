@@ -138,7 +138,7 @@ describe("settings panel", function()
     end
 
     local checkboxes = {
-        ["Show Suggestion List"] = "SUGGESTION_LIST",
+        ["Hide Icon"] = "HIDE_ICON",
         ["Strict Mage Armors"] = "STRICT_ARMOR",
         ["Skip Dampen Magic"] = "IGNORE_DAMPEN",
         ["Always try Bloodrage out of combat"] = "BLOODRAGE",
@@ -170,6 +170,17 @@ describe("settings panel", function()
         assert.is_not_nil(tooltip.lines[2])
         check:GetScript("OnLeave")(check)
         assert.is_false(tooltip.shown)
+    end)
+
+    it("'Hide Text' is the opposite of SUGGESTION_LIST", function()
+        local h = openPanel()
+        local check = checkbox(h, "Hide Text")
+        assert.is_true(h.ns.config.SUGGESTION_LIST)
+        assert.is_false(check:GetChecked())
+        check:Click()
+        assert.is_false(h.ns.config.SUGGESTION_LIST)
+        check:Click()
+        assert.is_true(h.ns.config.SUGGESTION_LIST)
     end)
 
     it("toggling a class setting takes effect immediately", function()
