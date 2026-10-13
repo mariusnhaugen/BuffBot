@@ -7,19 +7,14 @@ commit.
 
 - [ ] **3. Suggestion list disagrees with the button.** `FilterSuggestionList`
   (`Interface.lua`) checks only whether each buff is present, not
-  `ShouldSkipBuff`. It can show Mark of the Wild under Gift of the Wild,
-  Hawk while in Monkey, or Battle Shout with no rage.
+  `ShouldSkipBuff`. It can show Mark of the Wild under Gift of the Wild, or
+  Hawk while in Monkey.
 
 ## Robustness: errors and misbehaviour
 
 - [ ] **8. Button shows when buffing is impossible:** dead, ghost, on a taxi.
   Handle `PLAYER_DEAD`, `PLAYER_ALIVE`, `PLAYER_UNGHOST` and check
   `UnitOnTaxi`.
-- [ ] **24. Stale Battle Shout with Bloodrage off.** The macro is picked when
-  BuffBot re-checks, usually on leaving combat with rage. Rage drains out
-  of combat without an event, so the button keeps offering a Battle Shout
-  that fails with "Not enough rage". Re-checking on rage changes was
-  rejected as too much event traffic for this.
 
 ## Port
 
@@ -99,3 +94,4 @@ Design notes, for after the robustness work:
 - [x] Probe results filled in (`a65e3f7`)
 - [x] Copy-paste slips: Strict Armor debug message (`6977911`) and the global `t` texture (`c1139e3`)
 - [x] Chain Bloodrage and Battle Shout in one macro, and remove the cast handler (`3d780ad`)
+- [x] Show Battle Shout without rage, tinted blue and kept in sync (`d3804e0`)
