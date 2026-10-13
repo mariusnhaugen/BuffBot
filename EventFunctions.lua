@@ -41,28 +41,13 @@ function events:SPELLS_CHANGED()
     BuffBot.UpdateClassBuffList()
 end
 
-function events:UNIT_SPELLCAST_SUCCEEDED(_, _, spellID)
-    if spellID == 2687 then --Bloodrage
-        BuffBot.BLOODRAGE_LOCKED = true
-        if BuffBot.RemoveBloodrage() then
-            BuffBot.UpdateMacro("Battle Shout", "player")
-        end
-    end
-    local battleShout = C_Spell.GetSpellInfo(C_Spell.GetSpellInfo(6673).name) --Battle shout, highest known rank
-    if battleShout and spellID == battleShout.spellID then
-        debug("Battle Shout Cast")
-        if BuffBot.BLOODRAGE_LOCKED then
-            BuffBot.BLOODRAGE_LOCKED = false
-        end
-    end
-    BuffBot.CheckPlayerBuffs()
-end
-
 function events:PLAYER_REGEN_ENABLED()
     BuffBot.CheckPlayerBuffs()
 end
 
 function events:PLAYER_REGEN_DISABLED()
+    -- A Bloodrage macro starts combat and needs a second press for Battle Shout
+    if BuffBot.macroButton.keepInCombat then return end
     BuffBot.macroButton:Hide()
 end
 
@@ -107,8 +92,6 @@ events:RegisterEvent("UNIT_AURA")
 
 events:RegisterEvent("GROUP_ROSTER_UPDATE")
 events:RegisterEvent("GROUP_LEFT")
-
-events:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player")
 
 events:RegisterEvent("PLAYER_REGEN_ENABLED")
 events:RegisterEvent("PLAYER_REGEN_DISABLED")

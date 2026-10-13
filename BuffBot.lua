@@ -53,6 +53,19 @@ local function RecommendOtherPaladinBuff(buffString)
     end
 end
 
+-- Without the rage for Battle Shout, the macro casts Bloodrage first. Bloodrage
+-- starts combat, so the macro can't change afterwards: the next press finds
+-- Bloodrage on cooldown and falls through to Battle Shout.
+local function BloodrageFirst(buffString)
+    if class ~= "WARRIOR" or buffString ~= "Battle Shout" then return false end
+    if not BuffBot.config.BLOODRAGE or C_Spell.IsSpellUsable("Battle Shout") then return false end
+    if not BuffBot.CheckSpellAvailable("Bloodrage") then return false end
+    -- Already cast: keep the macro until the rage arrives
+    if C_UnitAuras.GetAuraDataBySpellName("player", "Bloodrage") then return true end
+    local cooldown = C_Spell.GetSpellCooldown("Bloodrage")
+    return cooldown ~= nil and cooldown.duration == 0
+end
+
 local function ShouldSkipBuff(buffString)
     if (BuffBot.UniqueBuffs[class] ~= nil) then
         if BuffBot.IndexOf(buffString, BuffBot.UniqueBuffs[class]) then
@@ -67,14 +80,7 @@ local function ShouldSkipBuff(buffString)
     end
     if class == "WARRIOR" then
         if buffString == "Battle Shout" then
-            if not C_Spell.IsSpellUsable("Battle Shout") and not BuffBot.config.BLOODRAGE then return true end
-            if not C_Spell.IsSpellUsable("Battle Shout") and BuffBot.config.BLOODRAGE and (not BuffBot.UnitHasAssignedBuff("player", "Battle Shout")) then
-                if BuffBot.CheckSpellAvailable("Bloodrage") and (not BuffBot.IndexOf("Bloodrage", classBuffs)) and not BuffBot.BLOODRAGE_LOCKED then
-                    BuffBot.debug("Bloodrage Added")
-                    local bsIndex = BuffBot.IndexOf("Battle Shout", classBuffs)
-                    table.insert(classBuffs, bsIndex, "Bloodrage")
-                end
-            end
+            if not C_Spell.IsSpellUsable("Battle Shout") and not BloodrageFirst(buffString) then return true end
         end
     end
 end
@@ -112,7 +118,7 @@ function BuffBot.CheckPlayerBuffs()
         return
     end
     assignedBuff = buff
-    BuffBot.UpdateMacro(assignedBuff, "player")
+    BuffBot.UpdateMacro(assignedBuff, "player", BloodrageFirst(assignedBuff) and "Bloodrage" or nil)
 
     if BuffBot.config.SUGGESTION_LIST then
         BuffBot.UpdateSuggestionList()
@@ -146,13 +152,4 @@ function BuffBot.BuffIsFromPlayer(buffString)
     else
         return false
     end
-end
-
-function BuffBot.RemoveBloodrage()
-    local index = BuffBot.IndexOf("Bloodrage", classBuffs)
-    if index then
-        table.remove(classBuffs, index)
-        return true
-    end
-    return false
 end

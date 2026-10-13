@@ -1,5 +1,7 @@
 local Addon = require("helpers.load_addon")
 
+local CHAINED = "/cast Bloodrage\n/cast [target=player]Battle Shout"
+
 describe("Warrior Bloodrage option", function()
     local h
 
@@ -13,39 +15,57 @@ describe("Warrior Bloodrage option", function()
         h:refresh()
     end)
 
-    it("inserts Bloodrage before Battle Shout when out of rage", function()
-        assert.same({ "Bloodrage", "Battle Shout" }, h.ns.classBuffList)
+    it("casts Bloodrage before Battle Shout when out of rage", function()
+        assert.equal(CHAINED, h.button:GetAttribute("macrotext1"))
+        assert.is_true(h.button:IsShown())
     end)
 
-    it("shows Bloodrage once it has been inserted", function()
-        h:refresh()
-        assert.equal("Bloodrage", h:shown())
+    it("shows the Battle Shout icon", function()
+        assert.equal(h.state:iconOf("Battle Shout"), h.button:GetNormalTexture())
     end)
 
-    it("removes Bloodrage and goes back to Battle Shout after casting it", function()
+    it("keeps the button in combat so the next press casts Battle Shout", function()
+        h:enterCombat()
+        assert.is_true(h.button:IsShown())
+        assert.equal(CHAINED, h.button:GetAttribute("macrotext1"))
+    end)
+
+    it("keeps the macro while Bloodrage is active, before the rage arrives", function()
+        h.state.cooldowns["Bloodrage"] = 60
+        h:give("Bloodrage", { duration = 10 })
+        assert.equal(CHAINED, h.button:GetAttribute("macrotext1"))
+    end)
+
+    it("casts plain Battle Shout once there is rage", function()
+        h.state.unusable["Battle Shout"] = nil
         h:refresh()
-        h:cast("Bloodrage")
-        assert.same({ "Battle Shout" }, h.ns.classBuffList)
         assert.equal("Battle Shout", h:shown())
-        assert.is_true(h.ns.BLOODRAGE_LOCKED)
     end)
 
-    it("does not re-insert Bloodrage while locked", function()
-        h:refresh()
-        h:cast("Bloodrage")
-        h:refresh()
-        assert.same({ "Battle Shout" }, h.ns.classBuffList)
-    end)
-
-    it("unlocks after Battle Shout is cast", function()
-        h:refresh()
-        h:cast("Bloodrage")
+    it("hides the button again after Battle Shout lands and combat ends", function()
+        h:enterCombat()
         h.state.unusable["Battle Shout"] = nil
         h.state:giveAura("Battle Shout")
-        h:cast("Battle Shout")
-        assert.is_false(h.ns.BLOODRAGE_LOCKED)
+        h:leaveCombat()
         assert.is_nil(h:shown())
     end)
 
-    pending("handles Battle Shout dropping while Bloodrage is on cooldown (known bug)")
+    it("skips Battle Shout when out of rage with Bloodrage on cooldown", function()
+        h.state.cooldowns["Bloodrage"] = 60
+        h:refresh()
+        assert.is_nil(h:shown())
+    end)
+
+    it("hides the button in combat when the macro has no Bloodrage", function()
+        h.state.unusable["Battle Shout"] = nil
+        h:refresh()
+        h:enterCombat()
+        assert.is_false(h.button:IsShown())
+    end)
+
+    it("skips Battle Shout without Bloodrage learned", function()
+        h.state:unlearn("Bloodrage")
+        h:refresh()
+        assert.is_nil(h:shown())
+    end)
 end)

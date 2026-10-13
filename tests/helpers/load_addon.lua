@@ -1,7 +1,6 @@
 -- Loads the addon into a fresh sandbox per test, the way the client does:
 -- files in TOC order, each called with (addonName, namespace).
 local State = require("mocks.state")
-local Spells = require("mocks.spells")
 
 local ADDON_NAME = "BuffBot"
 
@@ -79,10 +78,6 @@ end
 function Harness:leaveGroup()
     self.state.group, self.state.raid = false, false
     self:fire("GROUP_LEFT")
-end
-
-function Harness:cast(name)
-    self:fire("UNIT_SPELLCAST_SUCCEEDED", "player", "Cast-GUID", assert(Spells.idOf(name), name))
 end
 
 function Harness:setting(key, value)

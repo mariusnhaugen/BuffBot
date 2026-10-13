@@ -57,20 +57,6 @@ describe("event handling", function()
         end)
     end
 
-    it("UNIT_SPELLCAST_SUCCEEDED from the player re-checks", function()
-        local h = mage()
-        h.state:giveAura("Arcane Intellect")
-        h:cast("Arcane Intellect")
-        assert.equal("Dampen Magic", h:shown())
-    end)
-
-    it("UNIT_SPELLCAST_SUCCEEDED from others is ignored", function()
-        local h = mage()
-        h.state:giveAura("Arcane Intellect")
-        h:fire("UNIT_SPELLCAST_SUCCEEDED", "party1", "Cast-GUID", 1459)
-        assert.equal("Arcane Intellect", h:shown())
-    end)
-
     it("ADDON_LOADED for another addon is ignored", function()
         local h = mage()
         local config = h.ns.config

@@ -26,6 +26,13 @@ return function(state, env)
             return state:isUsable(name), false
         end,
 
+        -- Off cooldown is a duration of 0
+        GetSpellCooldown = function(name)
+            if not state:knows(name) then return nil end
+            local duration = state.cooldowns[name] or 0
+            return { startTime = duration > 0 and state.time or 0, duration = duration, isEnabled = true, modRate = 1 }
+        end,
+
         GetSpellTexture = function(spell)
             local name = type(spell) == "number" and Spells.nameOf(spell) or spell
             if name and state:knows(name) then return Spells.iconOf(name) end
