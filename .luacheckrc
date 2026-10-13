@@ -20,6 +20,7 @@ read_globals = {
     "C_Spell",
     "C_UnitAuras",
     "CreateFrame",
+    "GameTooltip",
     "GetTime",
     "GetUnitName",
     "InCombatLockdown",

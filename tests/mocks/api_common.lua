@@ -198,6 +198,17 @@ return function(state, env)
         end,
     }
 
+    -- Records what the last hover showed
+    env.GameTooltip = {
+        lines = {},
+        shown = false,
+        SetOwner = function(self, owner) self.owner, self.lines = owner, {} end,
+        SetText = function(self, text) self.lines = { text } end,
+        AddLine = function(self, text) table.insert(self.lines, text) end,
+        Show = function(self) self.shown = true end,
+        Hide = function(self) self.shown = false end,
+    }
+
     -- Misc
     env.SlashCmdList = {}
 

@@ -162,6 +162,18 @@ describe("settings panel", function()
         end)
     end
 
+    it("hovering a checkbox shows its label and description", function()
+        local h = openPanel()
+        local check = checkbox(h, "Skip Thorns")
+        check:GetScript("OnEnter")(check)
+        local tooltip = h.env.GameTooltip
+        assert.is_true(tooltip.shown)
+        assert.equal("Skip Thorns", tooltip.lines[1])
+        assert.is_not_nil(tooltip.lines[2])
+        check:GetScript("OnLeave")(check)
+        assert.is_false(tooltip.shown)
+    end)
+
     it("toggling a class setting takes effect immediately", function()
         local h = openPanel({ class = "DRUID", known = { "Thorns" } })
         assert.equal("Thorns", h:shown())

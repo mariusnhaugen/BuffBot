@@ -48,6 +48,19 @@ function BuffBot.GetDefaultConfig()
 end
 
 local function PaintSettingsFrame()
+    -- The templates don't show tooltipText on hover on Forever
+    local function addTooltip(frame, title, text)
+        frame:SetScript("OnEnter", function(self)
+            GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+            GameTooltip:SetText(title, 1, 1, 1)
+            GameTooltip:AddLine(text, nil, nil, nil, true)
+            GameTooltip:Show()
+        end)
+        frame:SetScript("OnLeave", function()
+            GameTooltip:Hide()
+        end)
+    end
+
     local function createCheckbox(label, description, onClick)
         local check = CreateFrame("CheckButton", "BuffBotCheckbox" .. label, configPanel,
             "InterfaceOptionsCheckButtonTemplate")
@@ -57,8 +70,7 @@ local function PaintSettingsFrame()
         end)
         check.label = _G[check:GetName() .. "Text"]
         check.label:SetText(label)
-        check.tooltipText = label
-        check.tooltipRequirement = description
+        addTooltip(check, label, description)
         return check
     end
 
@@ -118,8 +130,8 @@ local function PaintSettingsFrame()
         BuffBot.debug("Macro button position reset ")
         BuffBot.SetMacroButtonDefaultPosition()
     end)
-    buttonResetPosition.tooltipText = "Resets Main Button Position"
-    buttonResetPosition.newbieText = "You can move the button by holding Alt and dragging."
+    addTooltip(buttonResetPosition, "Resets Main Button Position",
+        "You can move the button by holding Alt and dragging.")
 
 
     -- ############### CLASS SETTINGS
