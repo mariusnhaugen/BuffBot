@@ -212,7 +212,7 @@ local function PaintSettingsFrame()
 
     -- FOOTER --
     local t = configPanel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
-    t:SetText("Addon Author: Smiil-LivingFlame  -  Discord: smiil")
+    t:SetText("Addon Author: Smiil  -  Discord: smiil")
     t:SetPoint("BOTTOMLEFT", configPanel, 25, 30)
 end
 
