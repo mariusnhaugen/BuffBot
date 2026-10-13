@@ -143,7 +143,7 @@ describe("settings panel", function()
         ["Show Suggestion List"] = "SUGGESTION_LIST",
         ["Strict Mage Armors"] = "STRICT_ARMOR",
         ["Skip Dampen Magic"] = "IGNORE_DAMPEN",
-        ["Include Bloodrage"] = "BLOODRAGE",
+        ["Always try Bloodrage out of combat"] = "BLOODRAGE",
         ["Recommend Blessing of Wisdom"] = "WISDOM_SELF",
         ["Skip Thorns"] = "IGNORE_THORNS",
         ["Reminder to leave Cheetah"] = "CHEETAH_REMINDER",

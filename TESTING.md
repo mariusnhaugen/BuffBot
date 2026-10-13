@@ -228,7 +228,7 @@ Result:
 Result:
 `true` near, `false` far, as plain values (not secrets), in and out of combat
 
-### Bloodrage then Battle Shout (Warrior, Include Bloodrage on)
+### Bloodrage then Battle Shout (Warrior, "Always try Bloodrage out of combat" on)
 
 With Battle Shout missing and no rage, the first press out of combat should cast Bloodrage. The second press should cast Battle Shout. Bloodrage does not start combat on Forever.
 
