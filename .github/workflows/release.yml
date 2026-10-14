@@ -24,4 +24,8 @@ jobs:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
+      # Default zip name; the CurseForge label adds the add-on name to the
+      # default "{project-version}{classic}{nolib}", e.g. BuffBot-v2.1.0-forever
       - uses: BigWigsMods/packager@v2
+        with:
+          args: -n "{package-name}-{project-version}{nolib}{classic}:{package-name}-{project-version}{classic}{nolib}"
