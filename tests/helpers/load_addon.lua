@@ -163,6 +163,32 @@ function Harness:buffUp()
     error("buffUp did not converge: " .. table.concat(cast, ", "))
 end
 
+-- A settings dropdown's radio options: { text, selected, pick }
+function Harness:dropdown(name)
+    local dropdown = assert(self.env["BuffBotDropdown" .. name], "missing dropdown " .. name)
+    local options = {}
+    local rootDescription = {}
+    function rootDescription:CreateRadio(text, isSelected, setSelected, data)
+        table.insert(options, { text = text, selected = isSelected(data), pick = function() setSelected(data) end })
+    end
+    dropdown.menuGenerator(dropdown, rootDescription)
+    return options
+end
+
+-- The text of the selected option, or nil
+function Harness:selected(name)
+    for _, option in ipairs(self:dropdown(name)) do
+        if option.selected then return option.text end
+    end
+end
+
+function Harness:choose(name, text)
+    for _, option in ipairs(self:dropdown(name)) do
+        if option.text == text then return option.pick() end
+    end
+    error("no option " .. text .. " in " .. name)
+end
+
 function Harness:printed(pattern)
     for _, line in ipairs(self.state.printed) do
         if line:find(pattern, 1, true) then return true end

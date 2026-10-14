@@ -75,6 +75,28 @@ local function PaintSettingsFrame()
         return check
     end
 
+    -- A labelled dropdown that sets config[setting] to one of options' values
+    local function createDropdown(name, labelText, setting, options)
+        local label = configPanel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+        label:SetText(labelText)
+        local dropdown = CreateFrame("DropdownButton", "BuffBotDropdown" .. name, configPanel,
+            "WowStyle1DropdownTemplate")
+        dropdown:SetWidth(180)
+        dropdown:SetPoint("TOPLEFT", label, "BOTTOMLEFT", 0, -5)
+        dropdown:SetupMenu(function(_, rootDescription)
+            for _, option in ipairs(options) do
+                rootDescription:CreateRadio(option.text,
+                    function() return BuffBot.config[setting] == option.value end,
+                    function()
+                        BuffBot.debug(name, " changed - ", option.value)
+                        BuffBot.config[setting] = option.value
+                        BuffBot.UpdateClassBuffList()
+                    end)
+            end
+        end)
+        return label
+    end
+
     -- ############### Title
     local title = configPanel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
     title:SetPoint("TOPLEFT", configPanel, 15, -15)
@@ -210,29 +232,13 @@ local function PaintSettingsFrame()
     buttonCheetahReminder:SetPoint("TOPLEFT", buttonIgnoreThorns, 0, -40)
     buttonCheetahReminder:SetChecked(BuffBot.config.CHEETAH_REMINDER)
 
-    -- One imbue at a time: ticking one unticks the others
-    local imbueLabel = configPanel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
-    imbueLabel:SetText("Shaman weapon imbue:")
-    imbueLabel:SetPoint("TOPLEFT", buttonCheetahReminder, 0, -40)
-    local imbueChecks = {}
-    local imbues = { "Rockbiter", "Flametongue", "Frostbrand", "Windfury" }
-    for i, imbue in ipairs(imbues) do
-        local spell = imbue .. " Weapon"
-        local check = createCheckbox(
-            imbue,
-            "Recommend " .. spell .. ". Falls back to Rockbiter Weapon until it's learned. Any oil or stone on the weapon also counts.",
-            function()
-                BuffBot.debug("Imbue changed - ", spell)
-                BuffBot.config.SHAMAN_IMBUE = spell
-                for other, otherCheck in pairs(imbueChecks) do
-                    otherCheck:SetChecked(other == spell)
-                end
-                BuffBot.UpdateClassBuffList()
-            end)
-        check:SetPoint("TOPLEFT", imbueLabel, (i - 1) * 120, -20)
-        check:SetChecked(BuffBot.config.SHAMAN_IMBUE == spell)
-        imbueChecks[spell] = check
+    -- Weapon enchants, by the client's names
+    local imbues = {}
+    for _, imbue in ipairs({ "Rockbiter Weapon", "Flametongue Weapon", "Frostbrand Weapon", "Windfury Weapon" }) do
+        table.insert(imbues, { text = BuffBot.SpellName(imbue), value = imbue })
     end
+    local imbueLabel = createDropdown("ShamanImbue", "Shaman weapon imbue:", "SHAMAN_IMBUE", imbues)
+    imbueLabel:SetPoint("TOPLEFT", buttonCheetahReminder, 0, -40)
 
     -- FOOTER --
     local t = configPanel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
