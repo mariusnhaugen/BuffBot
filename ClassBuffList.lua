@@ -8,7 +8,7 @@ local InitalClassBuffLists = {}
 InitalClassBuffLists.DRUID = { "Omen of Clarity", "Mark of the Wild", "Thorns" }
 InitalClassBuffLists.HUNTER = { "Trueshot Aura", "Aspect of the Hawk" }
 InitalClassBuffLists.MAGE = { "Unique", "Arcane Intellect", "Dampen Magic" }
-InitalClassBuffLists.PALADIN = { "Unique", "Blessing" }
+InitalClassBuffLists.PALADIN = { "Unique", "Blessing", "Righteous Fury" }
 InitalClassBuffLists.PRIEST = { "Power Word: Fortitude", "Shadowform", "Divine Spirit", "Inner Fire" }
 InitalClassBuffLists.ROGUE = { "Main Hand Poison", "Off Hand Poison" }
 InitalClassBuffLists.SHAMAN = { "Lightning Shield", "Imbue" }
@@ -116,6 +116,7 @@ local spellIDTable = {
     ["Blessing of Wisdom"] = 19742,
     ["Greater Blessing of Might"] = 25782,
     ["Greater Blessing of Wisdom"] = 25894,
+    ["Righteous Fury"] = 25780,
     -- PRIEST
     ["Power Word: Fortitude"] = 1243,
     ["Prayer of Fortitude"] = 21562,
@@ -242,6 +243,13 @@ local function GetSpellSkip(spellString)
 
     if class == "MAGE" then
         if spellString == "Dampen Magic" and BuffBot.config.IGNORE_DAMPEN then
+            return true
+        end
+    end
+
+    -- Only tanks want the extra threat
+    if class == "PALADIN" then
+        if spellString == "Righteous Fury" and not BuffBot.config.RIGHTEOUS_FURY then
             return true
         end
     end

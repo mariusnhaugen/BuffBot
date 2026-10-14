@@ -73,6 +73,20 @@ describe("per-class buff priority (vanilla spells)", function()
             assert.same({ "Blessing of Wisdom" }, h:buffUp())
         end)
 
+        it("skips Righteous Fury unless the setting is on", function()
+            local h = Addon.load({ class = "PALADIN", known = { "Devotion Aura", "Blessing of Might", "Righteous Fury" } })
+            assert.same({ "Devotion Aura", "Blessing of Might" }, h:buffUp())
+        end)
+
+        it("recommends Righteous Fury last when RIGHTEOUS_FURY is on", function()
+            local h = Addon.load({
+                class = "PALADIN",
+                known = { "Devotion Aura", "Blessing of Might", "Righteous Fury" },
+                config = { RIGHTEOUS_FURY = true },
+            })
+            assert.same({ "Devotion Aura", "Blessing of Might", "Righteous Fury" }, h:buffUp())
+        end)
+
         it("recommends Retribution Aura when it is the only aura known", function()
             local h = Addon.load({ class = "PALADIN", known = { "Retribution Aura" } })
             assert.equal("Retribution Aura", h:shown())

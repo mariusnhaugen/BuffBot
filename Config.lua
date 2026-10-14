@@ -39,6 +39,7 @@ function BuffBot.GetDefaultConfig()
 
     defaultConfig.BLOODRAGE = false
     defaultConfig.WISDOM_SELF = false
+    defaultConfig.RIGHTEOUS_FURY = false
     defaultConfig.STRICT_ARMOR = false
     defaultConfig.IGNORE_THORNS = false
     defaultConfig.IGNORE_DAMPEN = false
@@ -211,6 +212,17 @@ local function PaintSettingsFrame()
     buttonBlessingOfWisdom:SetPoint("TOPLEFT", buttonBloodrage, 0, -40)
     buttonBlessingOfWisdom:SetChecked(BuffBot.config.WISDOM_SELF)
 
+    local buttonRighteousFury = createCheckbox(
+        "Recommend Righteous Fury",
+        "Cast Righteous Fury, for tanking.",
+        function(_, checkBoxValue)
+            BuffBot.debug("Righteous Fury changed - ", checkBoxValue)
+            BuffBot.config.RIGHTEOUS_FURY = checkBoxValue
+            BuffBot.UpdateClassBuffList()
+        end)
+    buttonRighteousFury:SetPoint("TOPLEFT", buttonBlessingOfWisdom, 0, -25)
+    buttonRighteousFury:SetChecked(BuffBot.config.RIGHTEOUS_FURY)
+
 
     local buttonIgnoreThorns = createCheckbox(
         "Skip Thorns",
@@ -220,7 +232,7 @@ local function PaintSettingsFrame()
             BuffBot.config.IGNORE_THORNS = checkBoxValue
             BuffBot.UpdateClassBuffList()
         end)
-    buttonIgnoreThorns:SetPoint("TOPLEFT", buttonBlessingOfWisdom, 0, -40)
+    buttonIgnoreThorns:SetPoint("TOPLEFT", buttonRighteousFury, 0, -40)
     buttonIgnoreThorns:SetChecked(BuffBot.config.IGNORE_THORNS)
 
     local buttonCheetahReminder = createCheckbox(

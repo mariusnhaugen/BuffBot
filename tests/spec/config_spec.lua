@@ -9,6 +9,7 @@ describe("saved config", function()
             DEBUG_MODE = false,
             BLOODRAGE = false,
             WISDOM_SELF = false,
+            RIGHTEOUS_FURY = false,
             STRICT_ARMOR = false,
             IGNORE_THORNS = false,
             IGNORE_DAMPEN = false,
@@ -146,6 +147,7 @@ describe("settings panel", function()
         ["Skip Dampen Magic"] = "IGNORE_DAMPEN",
         ["Always try Bloodrage out of combat"] = "BLOODRAGE",
         ["Recommend Blessing of Wisdom"] = "WISDOM_SELF",
+        ["Recommend Righteous Fury"] = "RIGHTEOUS_FURY",
         ["Skip Thorns"] = "IGNORE_THORNS",
         ["Reminder to leave Cheetah"] = "CHEETAH_REMINDER",
     }
