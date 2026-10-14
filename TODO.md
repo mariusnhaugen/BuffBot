@@ -74,6 +74,7 @@ Design notes, for after the robustness work:
 - [x] Chain Bloodrage and Battle Shout in one macro, and remove the cast handler (`3d780ad`)
 - [x] Show Battle Shout without rage, tinted blue and kept in sync (`d3804e0`)
 - [x] Hide the button when dead, a ghost or on a flight path (`a043b8c`)
+- [x] Button stayed up on a flight path: re-check after the taxi state changes (`18aeb1d`)
 - [x] Turn on luacheck's unused-variable warnings (`57415f3`)
 - [x] Remove dead code, including the `PLAYER_LOGOUT` handler (`57415f3`, `b056b5f`)
 - [x] Hide Icon, and Hide Text in place of Show Suggestion List (`3ec0e15`)

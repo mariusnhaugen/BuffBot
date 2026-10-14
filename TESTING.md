@@ -235,6 +235,7 @@ With Battle Shout missing and no rage, the first press out of combat should cast
 Press the BuffBot button twice
 
 Result:
+First press casts Bloodrage, second casts Battle Shout. In combat the button hides and the keybind gives plain Battle Shout with no "Not ready yet"
 
 ### Button when dead or a ghost
 
@@ -243,6 +244,7 @@ With a buff missing, die, release, then resurrect. The button should hide on dea
 `/dump UnitIsDeadOrGhost("player")` at each step
 
 Result:
+Hides on death, stays hidden as a ghost, comes back once alive
 
 ### Button on a flight path
 
@@ -251,6 +253,7 @@ With a buff missing, take a flight path. The button should hide on takeoff and c
 `/run local f = CreateFrame("Frame") f:RegisterEvent("PLAYER_CONTROL_LOST") f:RegisterEvent("PLAYER_CONTROL_GAINED") f:SetScript("OnEvent", function(_, e) print(e, UnitOnTaxi("player")) end)`, then fly
 
 Result:
+The control events fire before `UnitOnTaxi` changes (the probe prints `PLAYER_CONTROL_LOST false` on takeoff), so the button stayed up all flight. With the re-check delayed by half a second (`18aeb1d`), it hides on takeoff and comes back on landing
 
 ### Spell IDs added for client names
 
@@ -295,3 +298,4 @@ With no weapon enchant, the button should offer Rockbiter Weapon (after Lightnin
 Press the BuffBot button, then right-click the enchant icon by your buffs to remove it
 
 Result:
+Rockbiter Weapon is offered, the button moves on once it lands, and removing it brings it back. No main-hand weapon: not offered. Oils and stones untested, so `enchantType=2` is still unconfirmed
