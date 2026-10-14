@@ -16,7 +16,10 @@ function State.new(class)
         ghost = false,
         taxi = false,
         mainHand = 2361, -- equipped main-hand item ID, nil for none
-        weaponEnchant = nil, -- { type = 2 or 3, timeLeft = ms } on the main hand
+        offHand = nil, -- equipped off-hand item ID
+        -- By weapon slot (0 main hand, 1 off hand): { type = 2 or 3, timeLeft = ms, charges }
+        weaponEnchants = {},
+        bags = {}, -- item ID -> count
         group = false,
         raid = false,
         time = 1000,

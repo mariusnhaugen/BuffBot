@@ -49,6 +49,11 @@ local function ShouldSkipBuff(buffString)
     if BuffBot.WeaponImbues[buffString] and not GetInventoryItemID("player", INVSLOT_MAINHAND) then
         return true
     end
+    -- A poison needs a weapon in that hand and a poison in the bags
+    local poison = BuffBot.WeaponPoisons[buffString]
+    if poison and not (GetInventoryItemID("player", poison.invSlot) and BuffBot.PoisonItem(buffString)) then
+        return true
+    end
     if (BuffBot.UniqueBuffs[class] ~= nil) then
         if BuffBot.IndexOf(buffString, BuffBot.UniqueBuffs[class]) then
             if BuffBot.HasUniqueClassBuff() then return true end -- check auras and armors
@@ -94,24 +99,33 @@ function BuffBot.CheckPlayerBuffs()
         return
     end
     assignedBuff = buff
-    BuffBot.UpdateMacro(assignedBuff, "player", BloodrageFirst(assignedBuff) and "Bloodrage" or nil)
+    local poison = BuffBot.WeaponPoisons[assignedBuff]
+    if poison then
+        BuffBot.UpdateItemMacro(BuffBot.PoisonItem(assignedBuff), poison.invSlot)
+    else
+        BuffBot.UpdateMacro(assignedBuff, "player", BloodrageFirst(assignedBuff) and "Bloodrage" or nil)
+    end
 
     if BuffBot.config.SUGGESTION_LIST then
         BuffBot.UpdateSuggestionList()
     end
 end
 
--- Enum.WeaponSlot.MainHand, and Enum.ItemEnchantType's Temporary (oils and
--- stones) and Imbue (Shaman). Permanent enchants don't count.
+-- Enum.WeaponSlot.MainHand, and Enum.ItemEnchantType's Temporary (oils,
+-- stones and poisons) and Imbue (Shaman). Permanent enchants don't count.
 local WEAPON_MAINHAND = 0
 local ENCHANT_TEMPORARY, ENCHANT_IMBUE = 2, 3
+local LOW_CHARGES = 10
 
--- Any temporary enchant counts, so an oil isn't overwritten with an imbue
-function BuffBot.HasWeaponEnchant()
-    for _, enchant in ipairs(C_Item.GetWeaponEnchantInfo(WEAPON_MAINHAND) or {}) do
+-- Any temporary enchant counts, so an oil isn't overwritten with an imbue.
+-- weaponSlot defaults to the main hand.
+function BuffBot.HasWeaponEnchant(weaponSlot)
+    for _, enchant in ipairs(C_Item.GetWeaponEnchantInfo(weaponSlot or WEAPON_MAINHAND) or {}) do
         local temporary = enchant.enchantType == ENCHANT_TEMPORARY or enchant.enchantType == ENCHANT_IMBUE
-        -- Expiring like a buff: under 5 minutes left (timeLeft is in ms)
-        if enchant.hasEnchant and temporary and enchant.timeLeft >= 300000 then
+        -- Expiring like a buff: under 5 minutes left (timeLeft is in ms), or
+        -- low on charges. Enchants without charges report 0.
+        local expiring = enchant.timeLeft < 300000 or (enchant.charges > 0 and enchant.charges < LOW_CHARGES)
+        if enchant.hasEnchant and temporary and not expiring then
             return true
         end
     end
@@ -122,6 +136,10 @@ function BuffBot.UnitHasAssignedBuff(unit, buffString)
     if buffString == "" then return end
     if BuffBot.WeaponImbues[buffString] then
         return unit == "player" and BuffBot.HasWeaponEnchant()
+    end
+    local poison = BuffBot.WeaponPoisons[buffString]
+    if poison then
+        return unit == "player" and BuffBot.HasWeaponEnchant(poison.weaponSlot)
     end
 
     local filter = BuffBot.OwnOnlyBuffs[buffString] and "HELPFUL|PLAYER" or nil

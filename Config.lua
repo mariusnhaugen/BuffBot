@@ -44,6 +44,8 @@ function BuffBot.GetDefaultConfig()
     defaultConfig.IGNORE_DAMPEN = false
     defaultConfig.CHEETAH_REMINDER = true
     defaultConfig.SHAMAN_IMBUE = "Rockbiter Weapon"
+    defaultConfig.ROGUE_POISON_MAINHAND = "Instant Poison"
+    defaultConfig.ROGUE_POISON_OFFHAND = "Instant Poison"
 
     return defaultConfig
 end
@@ -239,6 +241,15 @@ local function PaintSettingsFrame()
     end
     local imbueLabel = createDropdown("ShamanImbue", "Shaman weapon imbue:", "SHAMAN_IMBUE", imbues)
     imbueLabel:SetPoint("TOPLEFT", buttonCheetahReminder, 0, -40)
+
+    local poisons = {}
+    for _, poison in ipairs(BuffBot.PoisonTypes) do
+        table.insert(poisons, { text = BuffBot.PoisonName(poison), value = poison })
+    end
+    local mainHandLabel = createDropdown("RogueMainHand", "Rogue main hand poison:", "ROGUE_POISON_MAINHAND", poisons)
+    mainHandLabel:SetPoint("TOPLEFT", imbueLabel, 0, -60)
+    local offHandLabel = createDropdown("RogueOffHand", "Rogue off hand poison:", "ROGUE_POISON_OFFHAND", poisons)
+    offHandLabel:SetPoint("TOPLEFT", mainHandLabel, 220, 0)
 
     -- FOOTER --
     local t = configPanel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")

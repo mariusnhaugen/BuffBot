@@ -71,6 +71,11 @@ function events:UNIT_INVENTORY_CHANGED()
     BuffBot.CheckPlayerBuffs()
 end
 
+-- Poisons bought or used up
+function events:BAG_UPDATE_DELAYED()
+    BuffBot.CheckPlayerBuffs()
+end
+
 function events:PLAYER_REGEN_ENABLED()
     BuffBot.CheckPlayerBuffs()
 end
@@ -119,6 +124,7 @@ events:RegisterEvent("GROUP_LEFT")
 
 events:RegisterEvent("SPELL_UPDATE_USABLE")
 events:RegisterUnitEvent("UNIT_INVENTORY_CHANGED", "player")
+events:RegisterEvent("BAG_UPDATE_DELAYED")
 
 events:RegisterEvent("PLAYER_DEAD")
 events:RegisterEvent("PLAYER_ALIVE")

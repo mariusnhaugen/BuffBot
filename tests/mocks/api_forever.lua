@@ -2,6 +2,7 @@
 -- spell functions, and the Interface Options checkbox template. Behaviour
 -- follows the client probe in TESTING.md.
 local Spells = require("mocks.spells")
+local Items = require("mocks.items")
 
 return function(state, env)
     local function info(name, id)
@@ -36,21 +37,35 @@ return function(state, env)
         end,
     }
 
-    -- One entry per enchant type, like the probe: permanent first, then the
-    -- temporary enchant or imbue. Only the main hand (slot 0) is modelled.
     env.C_Item = {
+        -- Two entries, like the probe. In game the enchant can be in either
+        -- (Rockbiter was second, a weightstone first); here it's second.
         GetWeaponEnchantInfo = function(weaponSlot)
             local empty = { hasEnchant = false, enchantType = 0, timeLeft = 0, charges = 0, enchantID = 0, enchantIconID = 0 }
-            local enchant = weaponSlot == 0 and state.weaponEnchant
+            local enchant = state.weaponEnchants[weaponSlot]
             if not enchant then return { empty, empty } end
             return { empty, {
                 hasEnchant = true,
                 enchantType = enchant.type,
                 timeLeft = enchant.timeLeft,
-                charges = 0,
+                charges = enchant.charges or 0,
                 enchantID = 29,
                 enchantIconID = 136086,
             } }
+        end,
+
+        GetItemCount = function(itemID)
+            return state.bags[itemID] or 0
+        end,
+
+        GetItemNameByID = function(itemID)
+            local name = Items.nameOf(itemID)
+            return name and state:localName(name)
+        end,
+
+        GetItemIconByID = function(itemID)
+            local name = Items.nameOf(itemID)
+            return name and Items.iconOf(name)
         end,
     }
 
@@ -61,7 +76,9 @@ return function(state, env)
     }
 
     function env.GetInventoryItemID(unit, slot)
-        if unit == "player" and slot == 16 then return state.mainHand end
+        if unit ~= "player" then return nil end
+        if slot == 16 then return state.mainHand end
+        if slot == 17 then return state.offHand end
         return nil
     end
 

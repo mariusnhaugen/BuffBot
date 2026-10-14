@@ -1,6 +1,7 @@
 -- Loads the addon into a fresh sandbox per test, the way the client does:
 -- files in TOC order, each called with (addonName, namespace).
 local State = require("mocks.state")
+local Items = require("mocks.items")
 
 local ADDON_NAME = "BuffBot"
 
@@ -46,8 +47,12 @@ function Harness:refresh()
 end
 
 -- Takes English or client names, so buffUp can pass what the button shows.
--- Imbues go on the weapon instead.
+-- Imbues and poisons ("Instant Poison on 17") go on the weapon instead.
 function Harness:give(name, opts)
+    local invSlot = name:match("^.+ on (1[67])$")
+    if invSlot then
+        return self:enchantWeapon(2, nil, { slot = tonumber(invSlot) - 16, charges = 60 })
+    end
     local english = self.state:englishName(name) or name
     if self.ns.WeaponImbues[english] then
         return self:enchantWeapon(3)
@@ -100,15 +105,30 @@ function Harness:landTaxi()
     self.state:advance(1)
 end
 
--- type 2 for an oil or stone, 3 for an imbue; timeLeft in ms (default 1 hour)
-function Harness:enchantWeapon(type, timeLeft)
-    self.state.weaponEnchant = { type = type, timeLeft = timeLeft or 3600000 }
+-- type 2 for an oil, stone or poison, 3 for an imbue; timeLeft in ms (default
+-- 1 hour). opts: slot (0 main hand, the default, or 1 off hand), charges.
+function Harness:enchantWeapon(type, timeLeft, opts)
+    opts = opts or {}
+    self.state.weaponEnchants[opts.slot or 0] = { type = type, timeLeft = timeLeft or 3600000, charges = opts.charges }
     self:fire("UNIT_INVENTORY_CHANGED", "player")
 end
 
-function Harness:clearWeaponEnchant()
-    self.state.weaponEnchant = nil
+function Harness:clearWeaponEnchant(slot)
+    self.state.weaponEnchants[slot or 0] = nil
     self:fire("UNIT_INVENTORY_CHANGED", "player")
+end
+
+function Harness:equipOffHand(itemID)
+    self.state.offHand = itemID
+    self:fire("UNIT_INVENTORY_CHANGED", "player")
+end
+
+-- Sets how many of an item (by English name) are in the bags; 0 for none
+function Harness:bag(name, count)
+    local id = assert(Items.idOf(name), "unknown item " .. name)
+    count = count or 1
+    self.state.bags[id] = count > 0 and count or nil
+    self:fire("BAG_UPDATE_DELAYED")
 end
 
 function Harness:enterCombat()
@@ -137,10 +157,17 @@ function Harness:setting(key, value)
 end
 
 -- Observations
+-- The spell the button casts, or "<item> on <slot>" for an item it uses on
+-- a weapon, by English item name
 function Harness:shown()
     if not self.button:IsShown() then return nil end
     local macro = self.button:GetAttribute("macrotext1")
-    return macro and macro:match("^/cast %[target=player%](.+)$")
+    if not macro then return nil end
+    local itemID, invSlot = macro:match("^/use item:(%d+)\n/use (%d+)$")
+    if itemID then
+        return Items.nameOf(tonumber(itemID)) .. " on " .. invSlot
+    end
+    return macro:match("^/cast %[target=player%](.+)$")
 end
 
 function Harness:suggestions()

@@ -10,7 +10,7 @@ InitalClassBuffLists.HUNTER = { "Trueshot Aura", "Aspect of the Hawk" }
 InitalClassBuffLists.MAGE = { "Unique", "Arcane Intellect", "Dampen Magic" }
 InitalClassBuffLists.PALADIN = { "Unique", "Blessing" }
 InitalClassBuffLists.PRIEST = { "Power Word: Fortitude", "Shadowform", "Divine Spirit", "Inner Fire" }
-InitalClassBuffLists.ROGUE = {}
+InitalClassBuffLists.ROGUE = { "Main Hand Poison", "Off Hand Poison" }
 InitalClassBuffLists.SHAMAN = { "Lightning Shield", "Imbue" }
 InitalClassBuffLists.WARLOCK = { "Unique" }
 InitalClassBuffLists.WARRIOR = { "Battle Shout" }
@@ -30,6 +30,50 @@ BuffBot.WeaponImbues = {
     ["Frostbrand Weapon"] = true,
     ["Windfury Weapon"] = true,
 }
+
+-- Poisons are items, one per hand, and checked like imbues. invSlot is the
+-- equipment slot, weaponSlot the slot for C_Item.GetWeaponEnchantInfo.
+BuffBot.WeaponPoisons = {
+    ["Main Hand Poison"] = { invSlot = 16, weaponSlot = 0, setting = "ROGUE_POISON_MAINHAND" },
+    ["Off Hand Poison"] = { invSlot = 17, weaponSlot = 1, setting = "ROGUE_POISON_OFFHAND" },
+}
+
+-- Also the fallback order when the chosen poison runs out
+BuffBot.PoisonTypes = { "Instant Poison", "Deadly Poison", "Crippling Poison", "Mind-numbing Poison", "Wound Poison" }
+
+-- Item IDs for each poison by rank, lowest first
+local poisonItemIDs = {
+    ["Instant Poison"] = { 6947, 6949, 6950, 8926, 8927, 8928 },
+    ["Deadly Poison"] = { 2892, 2893, 8984, 8985, 20844 },
+    ["Crippling Poison"] = { 3775, 3776 },
+    ["Mind-numbing Poison"] = { 5237, 6951, 9186 },
+    ["Wound Poison"] = { 10918, 10920, 10921, 10922 },
+}
+
+local function HighestRankInBags(poison)
+    local ranks = poisonItemIDs[poison] or {}
+    for i = #ranks, 1, -1 do
+        if C_Item.GetItemCount(ranks[i]) > 0 then return ranks[i] end
+    end
+end
+
+-- The client's name for a poison, from its rank 1 item. Item names can be
+-- missing until the item is cached, so it falls back to the English name.
+function BuffBot.PoisonName(poison)
+    return C_Item.GetItemNameByID(poisonItemIDs[poison][1]) or poison
+end
+
+-- The item ID for a hand: the highest rank of the chosen poison in the bags,
+-- or of the first other poison there is. nil with no poison at all.
+function BuffBot.PoisonItem(handKey)
+    local chosen = BuffBot.config[BuffBot.WeaponPoisons[handKey].setting]
+    local item = HighestRankInBags(chosen)
+    if item then return item end
+    for _, poison in ipairs(BuffBot.PoisonTypes) do
+        item = HighestRankInBags(poison)
+        if item then return item end
+    end
+end
 
 -- Auras every Paladin in the group can provide; only the player's own count
 BuffBot.OwnOnlyBuffs = {}
@@ -106,6 +150,15 @@ function BuffBot.SpellName(spellString)
     if not info then return spellString end
     spellNames[spellString] = info.name
     return info.name
+end
+
+-- The client's name for a list entry: the poison's item name, or the spell's
+function BuffBot.DisplayName(key)
+    if BuffBot.WeaponPoisons[key] then
+        local item = BuffBot.PoisonItem(key)
+        return item and C_Item.GetItemNameByID(item) or key
+    end
+    return BuffBot.SpellName(key)
 end
 
 function BuffBot.CheckSpellAvailable(spellString)
@@ -220,8 +273,10 @@ function BuffBot.FilterInitialList()
         end
 
         local skipSpell = GetSpellSkip(spellString)
+        -- Poisons are items, so whether there are any is checked on each update
+        local available = BuffBot.WeaponPoisons[spellString] or BuffBot.CheckSpellAvailable(spellString)
 
-        if BuffBot.CheckSpellAvailable(spellString) and not skipSpell then
+        if available and not skipSpell then
             debug(spellString, " Added to Filtered List")
             table.insert(FilteredClassBuffList, spellString)
         else

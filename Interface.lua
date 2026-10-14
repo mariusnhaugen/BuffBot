@@ -11,8 +11,11 @@ _G["BINDING_NAME_" .. "CLICK BUFFBOT_MacroButton:LeftButton"] = "BuffBot Cast"
 -- macro, which makes its own rage.
 function BuffBot.UpdateTint()
     local icon = macroButton:GetNormalTexture()
-    if not icon or not macroButton.spell then return end
-    local _, noPower = C_Spell.IsSpellUsable(BuffBot.SpellName(macroButton.spell))
+    if not icon then return end
+    local noPower = false
+    if macroButton.spell then
+        noPower = select(2, C_Spell.IsSpellUsable(BuffBot.SpellName(macroButton.spell)))
+    end
     if noPower and not macroButton.hasFirstSpell then
         icon:SetVertexColor(0.5, 0.5, 1.0)
     else
@@ -34,23 +37,35 @@ function BuffBot.UpdateIconVisibility()
     end
 end
 
--- firstSpell, if given, is tried first on each press out of combat
-function BuffBot.UpdateMacro(spellName, unit, firstSpell)
-    if InCombatLockdown() then return end
-    local texture = C_Spell.GetSpellTexture(BuffBot.SpellName(spellName))
+local function ShowMacro(texture, macro)
     if texture then
         macroButton:SetNormalTexture(texture)
     end
-    macroButton.spell = spellName
-    macroButton.hasFirstSpell = firstSpell ~= nil
     BuffBot.UpdateTint()
     BuffBot.UpdateIconVisibility()
+    macroButton:SetAttribute("macrotext1", macro) -- text for macro on left click
+    macroButton:Show()
+end
+
+-- firstSpell, if given, is tried first on each press out of combat
+function BuffBot.UpdateMacro(spellName, unit, firstSpell)
+    if InCombatLockdown() then return end
+    macroButton.spell = spellName
+    macroButton.hasFirstSpell = firstSpell ~= nil
     local macro = "/cast [target=" .. unit .. "]" .. BuffBot.SpellName(spellName)
     if firstSpell then
         macro = "/cast [nocombat] " .. BuffBot.SpellName(firstSpell) .. "\n" .. macro
     end
-    macroButton:SetAttribute("macrotext1", macro) -- text for macro on left click
-    macroButton:Show()
+    ShowMacro(C_Spell.GetSpellTexture(BuffBot.SpellName(spellName)), macro)
+end
+
+-- Uses an item on the weapon in invSlot (16 main hand, 17 off hand). By item
+-- ID, so the macro works in any client language.
+function BuffBot.UpdateItemMacro(itemID, invSlot)
+    if InCombatLockdown() then return end
+    macroButton.spell = nil
+    macroButton.hasFirstSpell = false
+    ShowMacro(C_Item.GetItemIconByID(itemID), "/use item:" .. itemID .. "\n/use " .. invSlot)
 end
 
 function BuffBot.SetMacroButtonDefaultPosition()
@@ -131,7 +146,7 @@ function BuffBot.UpdateSuggestionList()
             BuffBot.suggestionList[i] = macroButton:CreateFontString(nil, "OVERLAY", "GameTooltipText")
             BuffBot.suggestionList[i]:SetPoint("TOPLEFT", macroButton, 0, -35 + (i * -15))
         end
-        BuffBot.suggestionList[i]:SetText(BuffBot.SpellName(missing[i]))
+        BuffBot.suggestionList[i]:SetText(BuffBot.DisplayName(missing[i]))
         BuffBot.suggestionList[i]:Show()
     end
 end

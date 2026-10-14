@@ -14,6 +14,8 @@ describe("saved config", function()
             IGNORE_DAMPEN = false,
             CHEETAH_REMINDER = true,
             SHAMAN_IMBUE = "Rockbiter Weapon",
+            ROGUE_POISON_MAINHAND = "Instant Poison",
+            ROGUE_POISON_OFFHAND = "Instant Poison",
         }, h.ns.config)
         assert.equal(h.ns.config, h.env.BuffBotConfig)
     end)
@@ -112,7 +114,7 @@ describe("slash commands", function()
     end)
 
     it("/bb buffs with an empty list says so", function()
-        local h = Addon.load({ class = "ROGUE" })
+        local h = Addon.load({ class = "WARRIOR" })
         h:slash("buffs")
         assert.is_true(h:printed("BuffBot buffs: none"))
     end)
