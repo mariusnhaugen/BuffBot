@@ -1,0 +1,11 @@
+package-as: BuffBot
+
+manual-changelog:
+  filename: CHANGELOG.md
+  markup-type: markdown
+
+ignore:
+  - tests
+  - TESTING.md
+  - TODO.md
+  - deploy.sh

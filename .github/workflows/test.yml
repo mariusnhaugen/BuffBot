@@ -1,8 +1,11 @@
 name: test
 
 on:
+  # Branches only: a release tag runs the tests through release.yml
   push:
+    branches: ["**"]
   pull_request:
+  workflow_call:
 
 jobs:
   test:

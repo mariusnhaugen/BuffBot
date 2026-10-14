@@ -14,7 +14,7 @@ fi
 
 rsync -a --delete \
     --exclude .git --exclude .github --exclude tests \
-    --exclude .busted --exclude .luacheckrc --exclude .gitignore \
+    --exclude .busted --exclude .luacheckrc --exclude .gitignore --exclude .pkgmeta \
     --exclude TESTING.md --exclude TODO.md --exclude deploy.sh \
     "$src/" "$addons/BuffBot/"
 
