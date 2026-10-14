@@ -316,6 +316,7 @@ Should print each poison's name by rank: Instant Poison to Instant Poison VI, De
 `/run for _, id in ipairs({6947, 6949, 6950, 8926, 8927, 8928, 2892, 2893, 8984, 8985, 20844, 3775, 3776, 5237, 6951, 9186, 10918, 10920, 10921, 10922}) do print(id, C_Item.GetItemNameByID(id)) end`
 
 Result:
+All 20 IDs resolve to the expected names and ranks
 
 ### Item API (Rogue, with a poison in the bags)
 

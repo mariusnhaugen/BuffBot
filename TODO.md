@@ -72,7 +72,7 @@ Design notes, for after the robustness work:
 - [x] Hide the button when dead, a ghost or on a flight path (`a043b8c`)
 - [x] Button stayed up on a flight path: re-check after the taxi state changes (`18aeb1d`)
 - [x] Shaman imbue setting is a dropdown (`8adf27a`)
-- [x] 20. Rogue poisons, per hand (`d05f0ed`). The poison item IDs, the off-hand slot and charges still need a Rogue in game (see TESTING.md)
+- [x] 20. Rogue poisons, per hand (`d05f0ed`). The off-hand slot and charges still need a Rogue in game (see TESTING.md)
 - [x] Turn on luacheck's unused-variable warnings (`57415f3`)
 - [x] Remove dead code, including the `PLAYER_LOGOUT` handler (`57415f3`, `b056b5f`)
 - [x] Hide Icon, and Hide Text in place of Show Suggestion List (`3ec0e15`)
