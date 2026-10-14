@@ -39,6 +39,13 @@ Design notes, for after the robustness work:
   button (`SetSize`, out of combat only), and the text changes the font
   size of the suggestion list. Both use the game's own slider, with no
   library.
+- 27. Profession trackers: remind gatherers to turn on Find Minerals or
+  Find Herbs (and Find Treasure for Dwarves) when no tracking is active.
+  Only one can be on at a time, so it needs a setting for which one, like
+  the Shaman imbue. Casting Find Minerals mid-flight fired `UNIT_AURA`, so
+  tracking may show up as an aura on Forever; probe that first, and fall
+  back to the tracking API if it doesn't. Hunter and Druid tracking could
+  use the same path later.
 
 ## Decided against
 
