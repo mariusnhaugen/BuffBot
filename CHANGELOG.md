@@ -2,8 +2,7 @@
 
 ## 2.1.0
 
-The first release for WoW Forever. The Classic Era version is no longer
-updated.
+Era/SOD version ported to Forever, Weapon buffs and internationalisation.
 
 ### New
 
@@ -30,10 +29,5 @@ updated.
 ### Known issues
 
 - Group buffs (Gift of the Wild, Arcane Brilliance and so on) are untested in
-  game, because the beta is capped below the level they're learned at.
-- The Rogue off-hand poison and the low-charges reminder are untested in
-  game.
-- Topping up a poison that's low on charges may ask you to confirm replacing
-  it.
-- Once, the first Rockbiter Weapon cast needed a second press before the
-  button moved on.
+  game, because the beta is levelcapped.
+- Rogue stuff may be jank. 
