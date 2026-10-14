@@ -1,5 +1,12 @@
 # BuffBot
 
+## 2.2.0
+
+### New
+
+- **Righteous Fury** for Paladin tanks: turn on "Recommend Righteous Fury"
+  in the settings. Off by default.
+
 ## 2.1.0
 
 Era/SOD version ported to Forever, Weapon buffs and internationalisation.

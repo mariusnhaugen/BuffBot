@@ -360,3 +360,11 @@ The Shaman imbue and the two Rogue poison dropdowns should show the chosen optio
 
 Result:
 Each shows the chosen option and lists the right names, picking one changes the button straight away, and they fit above the footer
+
+### Righteous Fury ID
+
+Should print Righteous Fury.
+
+`/run local i = C_Spell.GetSpellInfo(25780) print(25780, i and i.name)`
+
+Result:

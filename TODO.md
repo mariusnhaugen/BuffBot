@@ -46,9 +46,6 @@ Design notes, for after the robustness work:
   tracking may show up as an aura on Forever; probe that first, and fall
   back to the tracking API if it doesn't. Hunter and Druid tracking could
   use the same path later.
-- 28. Righteous Fury for Paladin tanks. It's a self-buff, but only tanks
-  want the extra threat, so it needs an opt-in setting (off by default),
-  like the Bloodrage one. Rank 1 is spell 25780, to check in game.
 
 ## Decided against
 
@@ -83,6 +80,7 @@ Design notes, for after the robustness work:
 - [x] Button stayed up on a flight path: re-check after the taxi state changes (`18aeb1d`)
 - [x] Shaman imbue setting is a dropdown (`8adf27a`)
 - [x] 20. Rogue poisons, per hand (`d05f0ed`). The off-hand slot and charges still need a Rogue in game (see TESTING.md)
+- [x] 28. Righteous Fury for Paladin tanks, opt-in (`fee1105`). Spell ID 25780 still to check in game
 - [x] Turn on luacheck's unused-variable warnings (`57415f3`)
 - [x] Remove dead code, including the `PLAYER_LOGOUT` handler (`57415f3`, `b056b5f`)
 - [x] Hide Icon, and Hide Text in place of Show Suggestion List (`3ec0e15`)

@@ -25,7 +25,7 @@ Made for **WoW Forever**. The Classic Era version is no longer updated.
 | Druid | Omen of Clarity, Mark of the Wild, Thorns |
 | Hunter | Trueshot Aura, Aspect of the Hawk (any other combat aspect also counts) |
 | Mage | Ice Armor or Frost Armor (Mage Armor in a raid), Arcane Intellect, Dampen Magic |
-| Paladin | An aura (Sanctity, Devotion or Retribution), Blessing of Might or Wisdom |
+| Paladin | An aura (Sanctity, Devotion or Retribution), Blessing of Might or Wisdom, Righteous Fury if you tank |
 | Priest | Power Word: Fortitude, Shadowform, Divine Spirit, Inner Fire |
 | Rogue | A poison on each weapon |
 | Shaman | Lightning Shield, a weapon imbue |
@@ -55,6 +55,7 @@ a poison running low on charges counts as missing.
 - **Skip Dampen Magic / Skip Thorns.**
 - **Always try Bloodrage out of combat:** casts Bloodrage before Battle Shout.
 - **Recommend Blessing of Wisdom:** instead of Blessing of Might.
+- **Recommend Righteous Fury:** for Paladin tanks. Off by default.
 - **Reminder to leave Cheetah:** shows Aspect of the Hawk while you're in
   Cheetah or Pack.
 - **Shaman weapon imbue:** Rockbiter, Flametongue, Frostbrand or Windfury.
