@@ -30,10 +30,6 @@ Design notes, for after the robustness work:
 
 - 18. Show only the current class's settings.
 - 19. Button feedback: dim when unusable, tooltip, cooldown swipe.
-- 20. Rogue poisons. Shaman imbues are done; poisons use the same check
-  (`BuffBot.HasWeaponEnchant`, any temporary enchant counts), but they're
-  items, not spells: the macro is `/use <poison>` then `/use 16`. Rogues
-  dual wield, so the off hand (weapon slot 1) needs checking too.
 - 26. Known issue: the first Rockbiter cast once needed a second press
   before the button moved on. Not reproduced since. A probe for
   `UNIT_INVENTORY_CHANGED` printed nothing, so the event may not always
@@ -75,6 +71,8 @@ Design notes, for after the robustness work:
 - [x] Show Battle Shout without rage, tinted blue and kept in sync (`d3804e0`)
 - [x] Hide the button when dead, a ghost or on a flight path (`a043b8c`)
 - [x] Button stayed up on a flight path: re-check after the taxi state changes (`18aeb1d`)
+- [x] Shaman imbue setting is a dropdown (`8adf27a`)
+- [x] 20. Rogue poisons, per hand (`d05f0ed`). The poison item IDs, the off-hand slot and charges still need a Rogue in game (see TESTING.md)
 - [x] Turn on luacheck's unused-variable warnings (`57415f3`)
 - [x] Remove dead code, including the `PLAYER_LOGOUT` handler (`57415f3`, `b056b5f`)
 - [x] Hide Icon, and Hide Text in place of Show Suggestion List (`3ec0e15`)

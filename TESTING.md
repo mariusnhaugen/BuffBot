@@ -140,6 +140,15 @@ Result:
 Result:
 `player false false` on gain, `player false true` on loss: not a full update, and `removedAuraInstanceIDs` is only set when an aura goes
 
+### Dropdown template
+
+The menu-based dropdown should exist, so settings can use it instead of the taint-prone `UIDropDownMenu`.
+
+`/dump MenuUtil ~= nil, Menu ~= nil` and `/run local ok, err = pcall(CreateFrame, "DropdownButton", nil, UIParent, "WowStyle1DropdownTemplate") print(ok, err)`
+
+Result:
+`true` for all three
+
 ### Settings panel
 
 `/bb` with BuffBot loaded
@@ -298,4 +307,55 @@ With no weapon enchant, the button should offer Rockbiter Weapon (after Lightnin
 Press the BuffBot button, then right-click the enchant icon by your buffs to remove it
 
 Result:
-Rockbiter Weapon is offered, the button moves on once it lands, and removing it brings it back. No main-hand weapon: not offered. Oils and stones untested, so `enchantType=2` is still unconfirmed
+Rockbiter Weapon is offered, the button moves on once it lands, and removing it brings it back. No main-hand weapon: not offered. A weightstone also counts: Rockbiter Weapon is no longer offered with it on. It reports `enchantType=2`, `charges=0` and `timeLeft` of 30 minutes, in the *first* entry of `C_Item.GetWeaponEnchantInfo(0)` (Rockbiter was in the second), so the entries aren't in a fixed order
+
+### Poison item IDs
+
+Should print each poison's name by rank: Instant Poison to Instant Poison VI, Deadly Poison to V, Crippling Poison and II, Mind-numbing Poison to III, and Wound Poison to IV. A `nil` can also mean the item isn't cached yet, so run it twice.
+
+`/run for _, id in ipairs({6947, 6949, 6950, 8926, 8927, 8928, 2892, 2893, 8984, 8985, 20844, 3775, 3776, 5237, 6951, 9186, 10918, 10920, 10921, 10922}) do print(id, C_Item.GetItemNameByID(id)) end`
+
+Result:
+
+### Item API (Rogue, with a poison in the bags)
+
+`C_Item.GetItemCount`, `C_Item.GetItemNameByID` and `C_Item.GetItemIconByID` should exist and return the count, the client's name and an icon.
+
+`/dump C_Item.GetItemCount(6947), C_Item.GetItemNameByID(6947), C_Item.GetItemIconByID(6947)`
+
+Result:
+Checked on a Shaman with a Rough Weightstone (3239) instead: `2`, `"Rough Weightstone"`, `135255`. All three calls exist and work
+
+### Item on a weapon by macro
+
+The poison macro uses an item by ID, then picks the weapon: one press should apply it. Checked with a weightstone, which is applied the same way.
+
+A macro with `/use item:3239` and `/use 16`, with a Rough Weightstone in the bags
+
+Result:
+One press applies the weightstone to the main hand after the cast
+
+### Poison enchant lookup (Rogue, dual wielding)
+
+Off hand is weapon slot 1. A poison should report `enchantType=2` (Temporary) with `charges` counting down as it procs.
+
+`/dump C_Item.GetWeaponEnchantInfo(0), C_Item.GetWeaponEnchantInfo(1)` with Instant Poison on each hand, then again after a few hits
+
+Result:
+
+### Rogue poisons on the button
+
+With Instant Poison in the bags and nothing on the weapons, one press should apply it to the main hand (a 3-second cast), and the next press to the off hand. Removing a poison, or running low on charges, should bring it back. With none in the bags, the button should skip poisons, and buying some should bring them back.
+
+Press the BuffBot button, then right-click the poison icons by your buffs to remove them
+
+Result:
+
+### Weapon dropdowns in the settings
+
+The Shaman imbue and the two Rogue poison dropdowns should show the chosen option, list the client's names, and change the button as soon as an option is picked. Check they fit above the footer.
+
+`/bb`, then pick an option in each dropdown
+
+Result:
+Each shows the chosen option and lists the right names, picking one changes the button straight away, and they fit above the footer
