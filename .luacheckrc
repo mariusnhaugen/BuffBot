@@ -21,6 +21,7 @@ read_globals = {
     "C_AddOns",
     "C_Item",
     "C_Spell",
+    "C_Timer",
     "C_UnitAuras",
     "CreateFrame",
     "GameTooltip",

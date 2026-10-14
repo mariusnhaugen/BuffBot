@@ -20,6 +20,7 @@ function State.new(class)
         group = false,
         raid = false,
         time = 1000,
+        timers = {}, -- { at = time, callback } from C_Timer.After
         printed = {},
         frames = {},
         templates = {},
@@ -78,8 +79,13 @@ function State:removeAura(name)
     self.auras[name] = nil
 end
 
+-- Moves the clock on and runs the timers that came due, in order
 function State:advance(seconds)
     self.time = self.time + seconds
+    table.sort(self.timers, function(a, b) return a.at < b.at end)
+    while self.timers[1] and self.timers[1].at <= self.time do
+        table.remove(self.timers, 1).callback()
+    end
 end
 
 function State:iconOf(name)

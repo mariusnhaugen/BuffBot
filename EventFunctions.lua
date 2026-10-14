@@ -57,12 +57,13 @@ function events:PLAYER_UNGHOST()
     BuffBot.CheckPlayerBuffs()
 end
 
+-- These fire before UnitOnTaxi changes, so re-check a moment later
 function events:PLAYER_CONTROL_LOST()
-    BuffBot.CheckPlayerBuffs()
+    C_Timer.After(0.5, BuffBot.CheckPlayerBuffs)
 end
 
 function events:PLAYER_CONTROL_GAINED()
-    BuffBot.CheckPlayerBuffs()
+    C_Timer.After(0.5, BuffBot.CheckPlayerBuffs)
 end
 
 -- Weapon enchants landing or dropping, and weapon swaps

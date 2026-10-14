@@ -87,14 +87,17 @@ function Harness:resurrect()
     self:fire("PLAYER_UNGHOST")
 end
 
+-- The control events fire before UnitOnTaxi changes, as in the probe
 function Harness:takeTaxi()
-    self.state.taxi = true
     self:fire("PLAYER_CONTROL_LOST")
+    self.state.taxi = true
+    self.state:advance(1)
 end
 
 function Harness:landTaxi()
-    self.state.taxi = false
     self:fire("PLAYER_CONTROL_GAINED")
+    self.state.taxi = false
+    self.state:advance(1)
 end
 
 -- type 2 for an oil or stone, 3 for an imbue; timeLeft in ms (default 1 hour)
