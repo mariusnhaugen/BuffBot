@@ -34,7 +34,7 @@ Design notes, for after the robustness work:
   before the button moved on. Not reproduced since. A probe for
   `UNIT_INVENTORY_CHANGED` printed nothing, so the event may not always
   fire, or `C_Item.GetWeaponEnchantInfo` may lag behind it.
-- 21. More Paladin buffs: Kings, Light, Sanctuary, Righteous Fury.
+- 21. More Paladin buffs: Kings, Light, Sanctuary.
 - 25. Size sliders for the icon and the text. The icon scales the 48px
   button (`SetSize`, out of combat only), and the text changes the font
   size of the suggestion list. Both use the game's own slider, with no
@@ -46,6 +46,9 @@ Design notes, for after the robustness work:
   tracking may show up as an aura on Forever; probe that first, and fall
   back to the tracking API if it doesn't. Hunter and Druid tracking could
   use the same path later.
+- 28. Righteous Fury for Paladin tanks. It's a self-buff, but only tanks
+  want the extra threat, so it needs an opt-in setting (off by default),
+  like the Bloodrage one. Rank 1 is spell 25780, to check in game.
 
 ## Decided against
 
