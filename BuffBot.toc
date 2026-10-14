@@ -5,6 +5,7 @@
 ## Notes: |cff00ccffBuffBot|r - Maintenance buffs made easy.
 ## DefaultState: enabled
 ## SavedVariables: BuffBotConfig
+## X-Curse-Project-ID: 1078765
 
 
 HelperFunctions.lua
