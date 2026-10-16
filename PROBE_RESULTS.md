@@ -322,3 +322,33 @@ The Shaman imbue and the two Rogue poison dropdowns should show the chosen optio
 
 Result:
 Each shows the chosen option and lists the right names, picking one changes the button straight away, and they fit above the footer
+
+## Old template tooltips
+
+`InterfaceOptionsCheckButtonTemplate` and `UIPanelButtonTemplate` with `tooltipText`, `tooltipRequirement` or `newbieText` set, hovered in the settings panel
+
+Result:
+No tooltip: the templates don't read these fields on Forever. Fixed with `OnEnter`/`OnLeave` scripts that use `GameTooltip` (`38cd20b`)
+
+## Settings API functions
+
+`/dump Settings.RegisterVerticalLayoutCategory ~= nil, Settings.RegisterAddOnSetting ~= nil, Settings.CreateCheckbox ~= nil, Settings.CreateDropdown ~= nil`
+
+Result:
+`true`, `true`, `true`, `true`
+
+## Settings API checkbox
+
+A vertical-layout category with one add-on setting bound to a table, and a checkbox for it:
+
+`/run BBc=Settings.RegisterVerticalLayoutCategory("BBProbe") BBt={} BBs=Settings.RegisterAddOnSetting(BBc,"BBPROBE_X","X",BBt,Settings.VarType and Settings.VarType.Boolean or "boolean","Probe box",false) print(BBs)`, then `/run Settings.CreateCheckbox(BBc,BBs,"Probe tooltip") Settings.RegisterAddOnCategory(BBc) Settings.OpenToCategory(BBc:GetID())`. Hover over the checkbox, tick it, then `/dump BBt.X`
+
+Result:
+`RegisterAddOnSetting` takes the 11.0 arguments (category, variable, key, table, type, name, default) and returns a setting. The page opens with the checkbox, hovering shows "Probe tooltip", and ticking it sets `BBt.X` to `true`
+
+## Settings API initializers
+
+`/dump CreateSettingsButtonInitializer ~= nil, CreateSettingsListSectionHeaderInitializer ~= nil`
+
+Result:
+`true`, `true`: a vertical layout can hold the Reset Button Position button and the class headings
