@@ -15,12 +15,12 @@ InitalClassBuffLists.SHAMAN = { "Lightning Shield", "Imbue" }
 InitalClassBuffLists.WARLOCK = { "Unique" }
 InitalClassBuffLists.WARRIOR = { "Battle Shout" }
 
-local UniqueBuffs = {}
-BuffBot.UniqueBuffs = {}
-UniqueBuffs.HUNTER = { "Aspect of the Hawk", "Aspect of the Monkey", "Aspect of the Wild", "Aspect of the Beast" }
-UniqueBuffs.MAGE = { "Mage Armor", "Frost Armor", "Ice Armor" }
-UniqueBuffs.WARLOCK = { "Demon Skin", "Demon Armor" }
-UniqueBuffs.PALADIN = { "Devotion Aura", "Sanctity Aura", "Concentration Aura", "Retribution Aura",
+-- Buffs that cover each other: with any one up, the others aren't missing
+local UniqueBuffsByClass = {}
+UniqueBuffsByClass.HUNTER = { "Aspect of the Hawk", "Aspect of the Monkey", "Aspect of the Wild", "Aspect of the Beast" }
+UniqueBuffsByClass.MAGE = { "Mage Armor", "Frost Armor", "Ice Armor" }
+UniqueBuffsByClass.WARLOCK = { "Demon Skin", "Demon Armor" }
+UniqueBuffsByClass.PALADIN = { "Devotion Aura", "Sanctity Aura", "Concentration Aura", "Retribution Aura",
     "Frost Resistance Aura", "Shadow Resistance Aura", "Fire Resistance Aura" }
 
 -- Weapon enchants rather than auras, checked with BuffBot.HasWeaponEnchant
@@ -77,7 +77,7 @@ end
 
 -- Auras every Paladin in the group can provide; only the player's own count
 BuffBot.OwnOnlyBuffs = {}
-for _, aura in ipairs(UniqueBuffs.PALADIN) do
+for _, aura in ipairs(UniqueBuffsByClass.PALADIN) do
     BuffBot.OwnOnlyBuffs[aura] = true
 end
 
@@ -182,31 +182,21 @@ function BuffBot.CheckSpellAvailable(spellString)
     return info ~= nil and C_Spell.GetSpellInfo(info.name) ~= nil
 end
 
+-- The player's unique buffs under the current settings
+BuffBot.uniqueBuffs = {}
 local function FilterUniqueBuffs()
-    if class == "WARLOCK" then
-        BuffBot.UniqueBuffs.WARLOCK = UniqueBuffs.WARLOCK
-    end
-    if class == "PALADIN" then
-        BuffBot.UniqueBuffs.PALADIN = UniqueBuffs.PALADIN
-    end
-
-    if class == "HUNTER" then
+    local buffs = UniqueBuffsByClass[class] or {}
+    if class == "HUNTER" and not BuffBot.config.CHEETAH_REMINDER then
         -- Copy so the base list is never mutated between rebuilds
-        local aspects = { unpack(UniqueBuffs.HUNTER) }
-        if not BuffBot.config.CHEETAH_REMINDER then
-            table.insert(aspects, "Aspect of the Cheetah")
-            table.insert(aspects, "Aspect of the Pack")
-        end
-        BuffBot.UniqueBuffs.HUNTER = aspects
+        buffs = { unpack(buffs) }
+        table.insert(buffs, "Aspect of the Cheetah")
+        table.insert(buffs, "Aspect of the Pack")
     end
-
-    if class == "MAGE" then
-        if BuffBot.config.STRICT_ARMOR then
-            BuffBot.UniqueBuffs.MAGE = nil
-        else
-            BuffBot.UniqueBuffs.MAGE = UniqueBuffs.MAGE
-        end
+    -- Strict armors: only the recommended armor counts
+    if class == "MAGE" and BuffBot.config.STRICT_ARMOR then
+        buffs = {}
     end
+    BuffBot.uniqueBuffs = buffs
 end
 
 local function RecommendUniqueBuff()

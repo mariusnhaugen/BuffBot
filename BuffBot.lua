@@ -1,7 +1,6 @@
 local _, BuffBot = ...
 
 local class = BuffBot.playerclass
-local classBuffs = {}
 local assignedBuff = ""
 local REMINDER_DURA_MULTIPLIER = 0.2 -- aura.Duration * REMINDER_DURA_MULTIPLIER to get reminder duration
 
@@ -10,13 +9,12 @@ local REMINDER_DURA_MULTIPLIER = 0.2 -- aura.Duration * REMINDER_DURA_MULTIPLIER
 function BuffBot.UpdateClassBuffList()
     BuffBot.debug("UpdateClassBuffList")
     BuffBot.FilterInitialList()
-    classBuffs = BuffBot.classBuffList
     BuffBot.CheckPlayerBuffs()
 end
 
 function BuffBot.HasUniqueClassBuff()
-    for i = 1, #BuffBot.UniqueBuffs[class], 1 do
-        if BuffBot.UnitHasAssignedBuff("player", BuffBot.UniqueBuffs[class][i]) then
+    for i = 1, #BuffBot.uniqueBuffs, 1 do
+        if BuffBot.UnitHasAssignedBuff("player", BuffBot.uniqueBuffs[i]) then
             return true
         end
     end
@@ -44,10 +42,8 @@ local function ShouldSkipBuff(buffString)
     if poison and not (GetInventoryItemID("player", poison.invSlot) and BuffBot.PoisonItem(buffString)) then
         return true
     end
-    if (BuffBot.UniqueBuffs[class] ~= nil) then
-        if BuffBot.IndexOf(buffString, BuffBot.UniqueBuffs[class]) then
-            if BuffBot.HasUniqueClassBuff() then return true end -- check auras and armors
-        end
+    if BuffBot.IndexOf(buffString, BuffBot.uniqueBuffs) and BuffBot.HasUniqueClassBuff() then
+        return true -- check auras and armors
     end
     local groupVersions = BuffBot.GroupVersions[buffString]
     if groupVersions then
@@ -63,6 +59,7 @@ function BuffBot.MissingBuffs()
     local missing = {}
     if InCombatLockdown() then return missing end
     if UnitIsDeadOrGhost("player") or UnitOnTaxi("player") then return missing end
+    local classBuffs = BuffBot.classBuffList
     if classBuffs == nil then return missing end
 
     for i = 1, #classBuffs do

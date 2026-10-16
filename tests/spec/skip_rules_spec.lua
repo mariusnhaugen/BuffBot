@@ -149,19 +149,19 @@ describe("skip rules", function()
                 config = { CHEETAH_REMINDER = false },
             })
             h:fire("SPELLS_CHANGED")
-            local size = #h.ns.UniqueBuffs.HUNTER
+            local size = #h.ns.uniqueBuffs
             for _ = 1, 3 do h:fire("SPELLS_CHANGED") end
-            assert.equal(size, #h.ns.UniqueBuffs.HUNTER)
+            assert.equal(size, #h.ns.uniqueBuffs)
         end)
 
         it("toggling the setting on and off round-trips", function()
             local h = Addon.load({ class = "HUNTER", known = { "Aspect of the Hawk" } })
-            local sizeOn = #h.ns.UniqueBuffs.HUNTER
+            local sizeOn = #h.ns.uniqueBuffs
             h:setting("CHEETAH_REMINDER", false)
-            local sizeOff = #h.ns.UniqueBuffs.HUNTER
+            local sizeOff = #h.ns.uniqueBuffs
             h:setting("CHEETAH_REMINDER", true)
             assert.equal(sizeOn + 2, sizeOff)
-            assert.equal(sizeOn, #h.ns.UniqueBuffs.HUNTER)
+            assert.equal(sizeOn, #h.ns.uniqueBuffs)
         end)
     end)
 
