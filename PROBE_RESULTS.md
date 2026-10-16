@@ -220,6 +220,8 @@ Press the BuffBot button twice
 Result:
 First press casts Bloodrage, second casts Battle Shout. In combat the button hides and the keybind gives plain Battle Shout with no "Not ready yet"
 
+Why the option ignores rage: rage drains without an event, so a macro picked by the current rage goes stale. Bloodrage is always tried first out of combat, and the next press falls through to Battle Shout. The Bloodrage line is `[nocombat]`, so keybind presses in combat don't error on its cooldown.
+
 ## Button when dead or a ghost
 
 With a buff missing, die, release, then resurrect. The button should hide on death, stay hidden as a ghost, and come back once alive.
@@ -264,6 +266,8 @@ Casts work with the German names, the button moves on as buffs land, and the sug
 
 Result:
 Without: both entries have `hasEnchant=false`. With Rockbiter: the second entry has `hasEnchant=true`, `enchantType=3` (Imbue), `enchantID=29` and `timeLeft` in ms (an hour on Forever). `UNIT_INVENTORY_CHANGED` fires when it lands and when it drops.
+
+The numbers in `BuffBot.lua` come from the client enums. The argument is `Enum.WeaponSlot`: 0 main hand, 1 off hand, 2 ranged. `enchantType` is `Enum.ItemEnchantType`: 2 is Temporary (oils, stones and poisons) and 3 is Imbue (Shaman). Permanent enchants don't count. Poisons need both numbers per hand: `invSlot` (16, 17) for `GetInventoryItemID` and `/use`, and `weaponSlot` (0, 1) for `C_Item.GetWeaponEnchantInfo`.
 
 ## Shaman imbue IDs
 
