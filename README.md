@@ -65,6 +65,7 @@ a poison running low on charges counts as missing.
 
 ## Development
 
-See [TESTING.md](TESTING.md) for the tests and the in-game checks, and
+See [TESTING.md](TESTING.md) for the tests and the open in-game checks,
+[PROBE_RESULTS.md](PROBE_RESULTS.md) for the finished ones, and
 [TODO.md](TODO.md) for open work. Releases are built from a `v*` tag by the
 BigWigs packager, with notes from [CHANGELOG.md](CHANGELOG.md).

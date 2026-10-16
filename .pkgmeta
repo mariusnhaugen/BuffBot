@@ -7,5 +7,6 @@ manual-changelog:
 ignore:
   - tests
   - TESTING.md
+  - PROBE_RESULTS.md
   - TODO.md
   - deploy.sh

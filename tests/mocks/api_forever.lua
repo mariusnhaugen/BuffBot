@@ -1,6 +1,6 @@
 -- WoW Forever API surface: the C_Spell namespace that replaced the global
 -- spell functions, and the Interface Options checkbox template. Behaviour
--- follows the client probe in TESTING.md.
+-- follows the client probe results in PROBE_RESULTS.md.
 local Spells = require("mocks.spells")
 local Items = require("mocks.items")
 
