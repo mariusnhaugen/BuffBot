@@ -81,6 +81,16 @@ for _, aura in ipairs(UniqueBuffs.PALADIN) do
     BuffBot.OwnOnlyBuffs[aura] = true
 end
 
+-- Group versions that cover a single-target buff
+BuffBot.GroupVersions = {
+    ["Mark of the Wild"] = { "Gift of the Wild" },
+    ["Arcane Intellect"] = { "Arcane Brilliance" },
+    ["Power Word: Fortitude"] = { "Prayer of Fortitude" },
+    ["Divine Spirit"] = { "Prayer of Spirit" },
+    ["Blessing of Might"] = { "Greater Blessing of Might" },
+    ["Blessing of Wisdom"] = { "Greater Blessing of Wisdom" },
+}
+
 -- Every spell the add-on names, by rank 1 ID. The English names are only
 -- keys: BuffBot.SpellName turns them into the client's names.
 local spellIDTable = {

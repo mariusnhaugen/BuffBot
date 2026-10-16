@@ -5,16 +5,6 @@ local classBuffs = {}
 local assignedBuff = ""
 local REMINDER_DURA_MULTIPLIER = 0.2 -- aura.Duration * REMINDER_DURA_MULTIPLIER to get reminder duration
 
--- Group versions that cover a single-target buff
-local GROUP_VERSIONS = {
-    ["Mark of the Wild"] = { "Gift of the Wild" },
-    ["Arcane Intellect"] = { "Arcane Brilliance" },
-    ["Power Word: Fortitude"] = { "Prayer of Fortitude" },
-    ["Divine Spirit"] = { "Prayer of Spirit" },
-    ["Blessing of Might"] = { "Greater Blessing of Might" },
-    ["Blessing of Wisdom"] = { "Greater Blessing of Wisdom" },
-}
-
 --------------- MAIN FUNCTIONS ----------------
 
 function BuffBot.UpdateClassBuffList()
@@ -59,7 +49,7 @@ local function ShouldSkipBuff(buffString)
             if BuffBot.HasUniqueClassBuff() then return true end -- check auras and armors
         end
     end
-    local groupVersions = GROUP_VERSIONS[buffString]
+    local groupVersions = BuffBot.GroupVersions[buffString]
     if groupVersions then
         for i = 1, #groupVersions do
             if BuffBot.UnitHasAssignedBuff("player", groupVersions[i]) then return true end
