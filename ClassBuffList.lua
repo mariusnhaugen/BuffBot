@@ -31,14 +31,12 @@ BuffBot.WeaponImbues = {
     ["Windfury Weapon"] = true,
 }
 
--- Poisons are items, one per hand, and checked like imbues. invSlot is the
--- equipment slot, weaponSlot the slot for C_Item.GetWeaponEnchantInfo.
 BuffBot.WeaponPoisons = {
     ["Main Hand Poison"] = { invSlot = 16, weaponSlot = 0, setting = "ROGUE_POISON_MAINHAND" },
     ["Off Hand Poison"] = { invSlot = 17, weaponSlot = 1, setting = "ROGUE_POISON_OFFHAND" },
 }
 
--- Also the fallback order when the chosen poison runs out
+-- Fallback order when the chosen poison runs out
 BuffBot.PoisonTypes = { "Instant Poison", "Deadly Poison", "Crippling Poison", "Mind-numbing Poison", "Wound Poison" }
 
 -- Item IDs for each poison by rank, lowest first

@@ -21,11 +21,7 @@ function BuffBot.HasUniqueClassBuff()
     return false
 end
 
--- With the option on, Battle Shout always tries Bloodrage first out of combat,
--- whatever the rage: rage drains without an event, so a macro picked by rage
--- goes stale. The next press falls through to Battle Shout. In combat the
--- Bloodrage line is skipped, so keybind presses don't error on its cooldown.
-local function BloodrageFirst(buffString)
+local function ShouldBloodrageFirst(buffString)
     if class ~= "WARRIOR" or buffString ~= "Battle Shout" then return false end
     return BuffBot.config.BLOODRAGE and BuffBot.CheckSpellAvailable("Bloodrage")
 end
@@ -90,7 +86,7 @@ function BuffBot.CheckPlayerBuffs()
     if poison then
         BuffBot.UpdateItemMacro(BuffBot.PoisonItem(assignedBuff), poison.invSlot)
     else
-        BuffBot.UpdateMacro(assignedBuff, "player", BloodrageFirst(assignedBuff) and "Bloodrage" or nil)
+        BuffBot.UpdateMacro(assignedBuff, "player", ShouldBloodrageFirst(assignedBuff) and "Bloodrage" or nil)
     end
 
     if BuffBot.config.SUGGESTION_LIST then
@@ -98,14 +94,11 @@ function BuffBot.CheckPlayerBuffs()
     end
 end
 
--- Enum.WeaponSlot.MainHand, and Enum.ItemEnchantType's Temporary (oils,
--- stones and poisons) and Imbue (Shaman). Permanent enchants don't count.
-local WEAPON_MAINHAND = 0
-local ENCHANT_TEMPORARY, ENCHANT_IMBUE = 2, 3
+local WEAPON_MAINHAND = 0                     --0,1,2 are mh,oh,ranged
+local ENCHANT_TEMPORARY, ENCHANT_IMBUE = 2, 3 --enchantType
 local LOW_CHARGES = 10
 
--- Any temporary enchant counts, so an oil isn't overwritten with an imbue.
--- weaponSlot defaults to the main hand.
+-- Any temporary enchant counts, so an rsham oil isn't overwritten with an imbue.
 function BuffBot.HasWeaponEnchant(weaponSlot)
     for _, enchant in ipairs(C_Item.GetWeaponEnchantInfo(weaponSlot or WEAPON_MAINHAND) or {}) do
         local temporary = enchant.enchantType == ENCHANT_TEMPORARY or enchant.enchantType == ENCHANT_IMBUE
