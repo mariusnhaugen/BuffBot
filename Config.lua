@@ -166,85 +166,37 @@ local function PaintSettingsFrame()
     classSettings:SetText("Class Settings")
     classSettings:SetPoint("TOPLEFT", configPanel, 15, -135)
 
-    local buttonStrictArmor = createCheckbox(
-        "Strict Mage Armors",
-        "Disallow any armor being valid when recommending a Mage armor buff. \n \n Open World:  Ice Armor \n In Raid:         Mage Armor",
-        function(_, checkboxValue)
-            BuffBot.debug("Strict Armor changed - ", checkboxValue)
-            BuffBot.config.STRICT_ARMOR = checkboxValue
+    -- { label, tooltip, config key, gap above }
+    local classToggles = {
+        { "Strict Mage Armors",
+            "Disallow any armor being valid when recommending a Mage armor buff. \n \n Open World:  Ice Armor \n In Raid:         Mage Armor",
+            "STRICT_ARMOR", -25 },
+        { "Skip Dampen Magic", "Skip recommending Dampen Magic.", "IGNORE_DAMPEN", -25 },
+        { "Always try Bloodrage out of combat",
+            "Cast Bloodrage before Battle Shout out of combat. \n\nCan cause error spam while Bloodrage is on cooldown.",
+            "BLOODRAGE", -40 },
+        { "Recommend Blessing of Wisdom", "Cast Blessing of Wisdom over Blessing of Might.", "WISDOM_SELF", -40 },
+        { "Recommend Righteous Fury", "Cast Righteous Fury, for tanking.", "RIGHTEOUS_FURY", -25 },
+        { "Skip Thorns", "Skip recommending Thorns.", "IGNORE_THORNS", -40 },
+        { "Reminder to leave Cheetah", "Shows Aspect of the Hawk if you are in Aspect of the Cheetah/Pack",
+            "CHEETAH_REMINDER", -40 },
+    }
+    local lastToggle
+    for _, toggle in ipairs(classToggles) do
+        local label, tooltip, setting, gap = unpack(toggle)
+        local check = createCheckbox(label, tooltip, function(_, checkboxValue)
+            BuffBot.debug(label, " changed - ", checkboxValue)
+            BuffBot.config[setting] = checkboxValue
             BuffBot.UpdateClassBuffList()
         end)
-    buttonStrictArmor:SetPoint("TOPLEFT", classSettings, 15, -25)
-    buttonStrictArmor:SetChecked(BuffBot.config.STRICT_ARMOR)
-
-    local buttonIgnoreDampen = createCheckbox(
-        "Skip Dampen Magic",
-        "Skip recommending Dampen Magic.",
-        function(_, checkboxValue)
-            BuffBot.debug("Dampen changed - ", checkboxValue)
-            BuffBot.config.IGNORE_DAMPEN = checkboxValue
-            BuffBot.UpdateClassBuffList()
-        end)
-    buttonIgnoreDampen:SetPoint("TOPLEFT", buttonStrictArmor, 0, -25)
-    buttonIgnoreDampen:SetChecked(BuffBot.config.IGNORE_DAMPEN)
-
-
-    local buttonBloodrage = createCheckbox(
-        "Always try Bloodrage out of combat",
-        "Cast Bloodrage before Battle Shout out of combat. \n\nCan cause error spam while Bloodrage is on cooldown.",
-        function(_, checkboxValue)
-            BuffBot.debug("Bloodrage - ", checkboxValue)
-            BuffBot.config.BLOODRAGE = checkboxValue
-            BuffBot.UpdateClassBuffList()
-        end)
-    buttonBloodrage:SetPoint("TOPLEFT", buttonIgnoreDampen, 0, -40)
-    buttonBloodrage:SetChecked(BuffBot.config.BLOODRAGE)
-
-
-    local buttonBlessingOfWisdom = createCheckbox(
-        "Recommend Blessing of Wisdom",
-        "Cast Blessing of Wisdom over Blessing of Might.",
-        function(_, checkBoxValue)
-            BuffBot.debug("Wisdom changed - ", checkBoxValue)
-            BuffBot.config.WISDOM_SELF = checkBoxValue
-            BuffBot.UpdateClassBuffList()
-        end)
-    buttonBlessingOfWisdom:SetPoint("TOPLEFT", buttonBloodrage, 0, -40)
-    buttonBlessingOfWisdom:SetChecked(BuffBot.config.WISDOM_SELF)
-
-    local buttonRighteousFury = createCheckbox(
-        "Recommend Righteous Fury",
-        "Cast Righteous Fury, for tanking.",
-        function(_, checkBoxValue)
-            BuffBot.debug("Righteous Fury changed - ", checkBoxValue)
-            BuffBot.config.RIGHTEOUS_FURY = checkBoxValue
-            BuffBot.UpdateClassBuffList()
-        end)
-    buttonRighteousFury:SetPoint("TOPLEFT", buttonBlessingOfWisdom, 0, -25)
-    buttonRighteousFury:SetChecked(BuffBot.config.RIGHTEOUS_FURY)
-
-
-    local buttonIgnoreThorns = createCheckbox(
-        "Skip Thorns",
-        "Skip recommending Thorns.",
-        function(_, checkBoxValue)
-            BuffBot.debug("Thorns changed - ", checkBoxValue)
-            BuffBot.config.IGNORE_THORNS = checkBoxValue
-            BuffBot.UpdateClassBuffList()
-        end)
-    buttonIgnoreThorns:SetPoint("TOPLEFT", buttonRighteousFury, 0, -40)
-    buttonIgnoreThorns:SetChecked(BuffBot.config.IGNORE_THORNS)
-
-    local buttonCheetahReminder = createCheckbox(
-        "Reminder to leave Cheetah",
-        "Shows Aspect of the Hawk if you are in Aspect of the Cheetah/Pack",
-        function(_, checkboxValue)
-            BuffBot.debug("Cheetah reminder changed - ", checkboxValue)
-            BuffBot.config.CHEETAH_REMINDER = checkboxValue
-            BuffBot.UpdateClassBuffList()
-        end)
-    buttonCheetahReminder:SetPoint("TOPLEFT", buttonIgnoreThorns, 0, -40)
-    buttonCheetahReminder:SetChecked(BuffBot.config.CHEETAH_REMINDER)
+        if lastToggle then
+            check:SetPoint("TOPLEFT", lastToggle, 0, gap)
+        else
+            check:SetPoint("TOPLEFT", classSettings, 15, gap)
+        end
+        check:SetChecked(BuffBot.config[setting])
+        lastToggle = check
+    end
 
     -- Weapon enchants, by the client's names
     local imbues = {}
@@ -252,7 +204,7 @@ local function PaintSettingsFrame()
         table.insert(imbues, { text = BuffBot.SpellName(imbue), value = imbue })
     end
     local imbueLabel = createDropdown("ShamanImbue", "Shaman weapon imbue:", "SHAMAN_IMBUE", imbues)
-    imbueLabel:SetPoint("TOPLEFT", buttonCheetahReminder, 0, -40)
+    imbueLabel:SetPoint("TOPLEFT", lastToggle, 0, -40)
 
     local poisons = {}
     for _, poison in ipairs(BuffBot.PoisonTypes) do
