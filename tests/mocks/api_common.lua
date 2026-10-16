@@ -1,5 +1,5 @@
 -- WoW API surface shared by every client flavor: units, auras, group state,
--- frames and the Settings panel. api_forever adds the C_Spell functions and
+-- frames and the Settings API. api_forever adds the C_Spell functions and
 -- frame templates.
 local Spells = require("mocks.spells")
 
@@ -200,37 +200,62 @@ return function(state, env)
         return name ~= nil and state:knows(name)
     end
 
-    -- Settings panel
+    -- Settings API, vertical layout. Settings are kept by their label in
+    -- state.settings, and what the page shows in each category's initializers.
+    local function newInitializer(category, init)
+        table.insert(category.initializers, init)
+        return init
+    end
+
     env.Settings = {
-        RegisterCanvasLayoutCategory = function(frame, name)
-            local category = { frame = frame, name = name, ID = name }
+        VarType = { Boolean = "boolean", String = "string" },
+        RegisterVerticalLayoutCategory = function(name)
+            local category = { name = name, ID = name, initializers = {} }
             function category:GetID() return self.ID end
 
+            local layout = {}
+            function layout:AddInitializer(init) newInitializer(category, init) end
+
             state.categories[name] = category
-            return category
+            return category, layout
         end,
-        RegisterAddOnCategory = function() end,
-        OpenToCategory = function(id)
-            state.openedCategory = id
-            for _, category in pairs(state.categories) do
-                if category.ID == id then
-                    local onShow = category.frame:GetScript("OnShow")
-                    if onShow then onShow(category.frame) end
-                end
+        RegisterAddOnSetting = function(_, variable, key, tbl, varType, name, default)
+            assert(type(default) == varType, "default for " .. variable .. " is not a " .. varType)
+            if tbl[key] == nil then tbl[key] = default end
+            local setting = { variable = variable, name = name, default = default }
+            function setting:GetValue() return tbl[key] end
+            function setting:SetValue(value)
+                tbl[key] = value
+                if self.callback then self.callback(self, value) end
             end
+            function setting:SetValueChangedCallback(callback) self.callback = callback end
+            state.settings[name] = setting
+            return setting
         end,
+        CreateCheckbox = function(category, setting, tooltip)
+            return newInitializer(category, { kind = "checkbox", setting = setting, tooltip = tooltip })
+        end,
+        CreateDropdown = function(category, setting, options, tooltip)
+            return newInitializer(category,
+                { kind = "dropdown", setting = setting, options = options, tooltip = tooltip })
+        end,
+        CreateControlTextContainer = function()
+            local container = { data = {} }
+            function container:Add(value, label) table.insert(self.data, { value = value, label = label }) end
+            function container:GetData() return self.data end
+            return container
+        end,
+        RegisterAddOnCategory = function(category) category.registered = true end,
+        OpenToCategory = function(id) state.openedCategory = id end,
     }
 
-    -- Records what the last hover showed
-    env.GameTooltip = {
-        lines = {},
-        shown = false,
-        SetOwner = function(self, owner) self.owner, self.lines = owner, {} end,
-        SetText = function(self, text) self.lines = { text } end,
-        AddLine = function(self, text) table.insert(self.lines, text) end,
-        Show = function(self) self.shown = true end,
-        Hide = function(self) self.shown = false end,
-    }
+    function env.CreateSettingsButtonInitializer(name, buttonText, onClick, tooltip)
+        return { kind = "button", name = name, buttonText = buttonText, onClick = onClick, tooltip = tooltip }
+    end
+
+    function env.CreateSettingsListSectionHeaderInitializer(name)
+        return { kind = "header", name = name }
+    end
 
     -- Misc
     env.SlashCmdList = {}

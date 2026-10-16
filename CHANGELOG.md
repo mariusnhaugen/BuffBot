@@ -7,6 +7,11 @@
 - **Righteous Fury** for Paladin tanks: turn on "Recommend Righteous Fury"
   in the settings. Off by default.
 
+### Changed
+
+- The settings page uses the game's own settings controls and tooltips.
+  Your settings carry over.
+
 ## 2.1.0
 
 Era/SOD version ported to Forever, Weapon buffs and internationalisation.

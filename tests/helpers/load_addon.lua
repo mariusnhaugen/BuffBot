@@ -190,30 +190,45 @@ function Harness:buffUp()
     error("buffUp did not converge: " .. table.concat(cast, ", "))
 end
 
--- A settings dropdown's radio options: { text, selected, pick }
-function Harness:dropdown(name)
-    local dropdown = assert(self.env["BuffBotDropdown" .. name], "missing dropdown " .. name)
-    local options = {}
-    local rootDescription = {}
-    function rootDescription:CreateRadio(text, isSelected, setSelected, data)
-        table.insert(options, { text = text, selected = isSelected(data), pick = function() setSelected(data) end })
+-- A setting on the BuffBot settings page, by its label
+function Harness:settingNamed(label)
+    return assert(self.state.settings[label], "missing setting " .. label)
+end
+
+-- What the settings page shows for a label: its checkbox or dropdown
+function Harness:control(label)
+    for _, init in ipairs(self.state.categories.BuffBot.initializers) do
+        if init.setting and init.setting.name == label then return init end
     end
-    dropdown.menuGenerator(dropdown, rootDescription)
+    error("no control for " .. label)
+end
+
+-- A settings dropdown's options: { text, selected, pick }
+function Harness:dropdown(label)
+    local control = self:control(label)
+    local options = {}
+    for _, option in ipairs(control.options()) do
+        table.insert(options, {
+            text = option.label,
+            selected = control.setting:GetValue() == option.value,
+            pick = function() control.setting:SetValue(option.value) end,
+        })
+    end
     return options
 end
 
 -- The text of the selected option, or nil
-function Harness:selected(name)
-    for _, option in ipairs(self:dropdown(name)) do
+function Harness:selected(label)
+    for _, option in ipairs(self:dropdown(label)) do
         if option.selected then return option.text end
     end
 end
 
-function Harness:choose(name, text)
-    for _, option in ipairs(self:dropdown(name)) do
+function Harness:choose(label, text)
+    for _, option in ipairs(self:dropdown(label)) do
         if option.text == text then return option.pick() end
     end
-    error("no option " .. text .. " in " .. name)
+    error("no option " .. text .. " in " .. label)
 end
 
 function Harness:printed(pattern)

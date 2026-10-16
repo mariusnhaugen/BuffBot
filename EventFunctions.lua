@@ -90,6 +90,11 @@ function events:ADDON_LOADED(arg1)
     if BuffBotConfig == nil then
         BuffBotConfig = {}
     end
+    -- Before 2.2.0, Hide Text was saved as its opposite
+    if BuffBotConfig.SUGGESTION_LIST ~= nil then
+        BuffBotConfig.HIDE_TEXT = not BuffBotConfig.SUGGESTION_LIST
+        BuffBotConfig.SUGGESTION_LIST = nil
+    end
     -- Fill in settings added since the config was saved
     for key, value in pairs(BuffBot.GetDefaultConfig()) do
         if BuffBotConfig[key] == nil then
@@ -97,6 +102,7 @@ function events:ADDON_LOADED(arg1)
         end
     end
     BuffBot.config = BuffBotConfig
+    BuffBot.RegisterSettings()
 
 
     local debugString = ""

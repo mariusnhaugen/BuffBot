@@ -138,7 +138,7 @@ function BuffBot.UpdateSuggestionList()
         BuffBot.suggestionList[i]:Hide()
     end
 
-    if not BuffBot.config.SUGGESTION_LIST then return end
+    if BuffBot.config.HIDE_TEXT then return end
     -- Same list and skip rules as the button, so they always agree
     local missing = BuffBot.MissingBuffs()
     for i = 1, math.min(#missing, 5) do

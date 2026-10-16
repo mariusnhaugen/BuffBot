@@ -92,18 +92,6 @@ return function(state, env)
         end,
     }
 
-    -- Label is exposed as the global <name>Text.
-    state.templates.InterfaceOptionsCheckButtonTemplate = function(frame)
-        local label = frame:CreateFontString(frame:GetName() and (frame:GetName() .. "Text"))
-        frame.Text = label
-    end
-
-    -- The menu-based dropdown: SetupMenu stores the generator, which the
-    -- harness runs to read and pick the options
-    state.templates.WowStyle1DropdownTemplate = function(frame)
-        function frame:SetupMenu(generator) self.menuGenerator = generator end
-    end
-
     state.templates.UICheckButtonTemplate = function(frame)
         frame.text = frame:CreateFontString(frame:GetName() and (frame:GetName() .. "Text"))
     end

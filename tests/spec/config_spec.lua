@@ -5,7 +5,7 @@ describe("saved config", function()
         local h = Addon.load()
         assert.same({
             HIDE_ICON = false,
-            SUGGESTION_LIST = true,
+            HIDE_TEXT = false,
             DEBUG_MODE = false,
             BLOODRAGE = false,
             WISDOM_SELF = false,
@@ -29,15 +29,24 @@ describe("saved config", function()
     end)
 
     it("uses the saved config when present", function()
-        local saved = { SUGGESTION_LIST = false, DEBUG_MODE = false }
+        local saved = { HIDE_TEXT = true, DEBUG_MODE = false }
         local h = Addon.load({ saved = saved })
         assert.equal(saved, h.ns.config)
-        assert.is_false(h.ns.config.SUGGESTION_LIST)
+        assert.is_true(h.ns.config.HIDE_TEXT)
+    end)
+
+    it("turns an old SUGGESTION_LIST into HIDE_TEXT", function()
+        local h = Addon.load({ saved = { SUGGESTION_LIST = false } })
+        assert.is_true(h.ns.config.HIDE_TEXT)
+        assert.is_nil(h.ns.config.SUGGESTION_LIST)
+        h = Addon.load({ saved = { SUGGESTION_LIST = true } })
+        assert.is_false(h.ns.config.HIDE_TEXT)
+        assert.is_nil(h.ns.config.SUGGESTION_LIST)
     end)
 
     it("fills in settings missing from an older saved config", function()
-        local h = Addon.load({ saved = { SUGGESTION_LIST = false, CHEETAH_REMINDER = false } })
-        assert.is_false(h.ns.config.SUGGESTION_LIST)
+        local h = Addon.load({ saved = { HIDE_TEXT = true, CHEETAH_REMINDER = false } })
+        assert.is_true(h.ns.config.HIDE_TEXT)
         assert.is_false(h.ns.config.CHEETAH_REMINDER)
         assert.is_false(h.ns.config.IGNORE_THORNS)
         assert.is_false(h.ns.config.BLOODRAGE)
@@ -47,7 +56,7 @@ describe("saved config", function()
         local h = Addon.load({
             class = "HUNTER",
             known = { "Aspect of the Hawk" },
-            saved = { SUGGESTION_LIST = true },
+            saved = { HIDE_TEXT = false },
         })
         assert.is_true(h.ns.config.CHEETAH_REMINDER)
         h.state:giveAura("Aspect of the Cheetah")
@@ -131,18 +140,9 @@ describe("slash commands", function()
 end)
 
 describe("settings panel", function()
-    local function openPanel(opts)
-        local h = Addon.load(opts)
-        h:slash("")
-        return h
-    end
-
-    local function checkbox(h, label)
-        return assert(h.env["BuffBotCheckbox" .. label], "missing checkbox " .. label)
-    end
-
     local checkboxes = {
         ["Hide Icon"] = "HIDE_ICON",
+        ["Hide Text"] = "HIDE_TEXT",
         ["Strict Mage Armors"] = "STRICT_ARMOR",
         ["Skip Dampen Magic"] = "IGNORE_DAMPEN",
         ["Always try Bloodrage out of combat"] = "BLOODRAGE",
@@ -153,77 +153,74 @@ describe("settings panel", function()
     }
 
     for label, key in pairs(checkboxes) do
-        it("'" .. label .. "' reflects and toggles " .. key, function()
-            local h = openPanel()
-            local check = checkbox(h, label)
+        it("'" .. label .. "' is a checkbox bound to " .. key, function()
+            local h = Addon.load()
+            local control = h:control(label)
+            assert.equal("checkbox", control.kind)
+            assert.is_not_nil(control.tooltip)
+            local setting = control.setting
+            assert.equal(h.ns.GetDefaultConfig()[key], setting.default)
             local initial = h.ns.config[key]
-            assert.equal(initial, check:GetChecked())
-            check:Click()
+            assert.equal(initial, setting:GetValue())
+            setting:SetValue(not initial)
             assert.equal(not initial, h.ns.config[key])
-            check:Click()
-            assert.equal(initial, h.ns.config[key])
+            assert.equal(not initial, h.env.BuffBotConfig[key])
         end)
     end
 
-    it("hovering a checkbox shows its label and description", function()
-        local h = openPanel()
-        local check = checkbox(h, "Skip Thorns")
-        check:GetScript("OnEnter")(check)
-        local tooltip = h.env.GameTooltip
-        assert.is_true(tooltip.shown)
-        assert.equal("Skip Thorns", tooltip.lines[1])
-        assert.is_not_nil(tooltip.lines[2])
-        check:GetScript("OnLeave")(check)
-        assert.is_false(tooltip.shown)
-    end)
-
-    it("'Hide Text' is the opposite of SUGGESTION_LIST", function()
-        local h = openPanel()
-        local check = checkbox(h, "Hide Text")
-        assert.is_true(h.ns.config.SUGGESTION_LIST)
-        assert.is_false(check:GetChecked())
-        check:Click()
-        assert.is_false(h.ns.config.SUGGESTION_LIST)
-        check:Click()
-        assert.is_true(h.ns.config.SUGGESTION_LIST)
+    it("registers the page once, after the saved config loads", function()
+        local h = Addon.load({ saved = { IGNORE_THORNS = true } })
+        assert.is_true(h.state.categories.BuffBot.registered)
+        assert.is_true(h:settingNamed("Skip Thorns"):GetValue())
     end)
 
     it("toggling a class setting takes effect immediately", function()
-        local h = openPanel({ class = "DRUID", known = { "Thorns" } })
+        local h = Addon.load({ class = "DRUID", known = { "Thorns" } })
         assert.equal("Thorns", h:shown())
-        checkbox(h, "Skip Thorns"):Click()
+        h:settingNamed("Skip Thorns"):SetValue(true)
         assert.is_nil(h:shown())
     end)
 
-    it("reset button moves the cast button back to the default position", function()
-        local h = openPanel()
-        h.button:SetPoint("TOPLEFT", h.env.UIParent, "TOPLEFT", 1, 1)
-        local reset
-        for _, frame in ipairs(h.state.frames) do
-            if frame:GetText() == "Reset Button Position" then reset = frame end
+    it("'Hide Text' hides the suggestion list straight away", function()
+        local h = Addon.load({ class = "PRIEST", known = { "Power Word: Fortitude", "Inner Fire" } })
+        assert.are_not.same({}, h:suggestions())
+        h:settingNamed("Hide Text"):SetValue(true)
+        assert.same({}, h:suggestions())
+    end)
+
+    it("puts the class settings under a header", function()
+        local h = Addon.load()
+        local kinds = {}
+        for _, init in ipairs(h.state.categories.BuffBot.initializers) do
+            if init.kind == "header" then
+                assert.equal("Class Settings", init.name)
+                assert.equal("button", kinds[#kinds])
+            end
+            table.insert(kinds, init.kind)
         end
-        assert.is_not_nil(reset)
-        reset:Click()
+        assert.is_true(#kinds > 0)
+    end)
+
+    local function resetButton(h)
+        for _, init in ipairs(h.state.categories.BuffBot.initializers) do
+            if init.kind == "button" and init.buttonText == "Reset Button Position" then return init end
+        end
+        error("no reset button")
+    end
+
+    it("reset button moves the cast button back to the default position", function()
+        local h = Addon.load()
+        h.button:SetPoint("TOPLEFT", h.env.UIParent, "TOPLEFT", 1, 1)
+        resetButton(h).onClick()
         assert.same({ "CENTER", h.env.UIParent, "CENTER", 100, 0 }, { h.button:GetPoint() })
     end)
 
     it("reset button does nothing in combat", function()
-        local h = openPanel()
+        local h = Addon.load()
         h.button:SetPoint("TOPLEFT", h.env.UIParent, "TOPLEFT", 1, 1)
-        local reset
-        for _, frame in ipairs(h.state.frames) do
-            if frame:GetText() == "Reset Button Position" then reset = frame end
-        end
         h:enterCombat()
-        reset:Click()
+        resetButton(h).onClick()
         assert.same({ "TOPLEFT", h.env.UIParent, "TOPLEFT", 1, 1 }, { h.button:GetPoint() })
         assert.is_true(h:printed("can't move the button in combat"))
-    end)
-
-    it("is painted only once", function()
-        local h = openPanel()
-        local count = #h.state.frames
-        h:slash("")
-        assert.equal(count, #h.state.frames)
     end)
 end)

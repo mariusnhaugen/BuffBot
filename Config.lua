@@ -1,10 +1,6 @@
 local _, BuffBot = ...
 
-local configPanel = CreateFrame("Frame")
-configPanel.name = "BuffBot"
-
-local category = Settings.RegisterCanvasLayoutCategory(configPanel,"BuffBot")
-Settings.RegisterAddOnCategory(category)
+local category
 
 SLASH_BUFFBOTSETTINGS1 = "/bb";
 SLASH_BUFFBOTSETTINGS2 = "/buffbot";
@@ -34,7 +30,7 @@ end
 function BuffBot.GetDefaultConfig()
     local defaultConfig = {}
     defaultConfig.HIDE_ICON = false
-    defaultConfig.SUGGESTION_LIST = true
+    defaultConfig.HIDE_TEXT = false
     defaultConfig.DEBUG_MODE = false
 
     defaultConfig.BLOODRAGE = false
@@ -51,102 +47,48 @@ function BuffBot.GetDefaultConfig()
     return defaultConfig
 end
 
-local function PaintSettingsFrame()
-    -- The templates don't show tooltipText on hover on Forever
-    local function addTooltip(frame, title, text)
-        frame:SetScript("OnEnter", function(self)
-            GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-            GameTooltip:SetText(title, 1, 1, 1)
-            GameTooltip:AddLine(text, nil, nil, nil, true)
-            GameTooltip:Show()
+-- The settings page, built by the Settings API. Each setting reads and writes
+-- BuffBotConfig directly, so it runs on ADDON_LOADED once the defaults are in.
+function BuffBot.RegisterSettings()
+    local layout
+    category, layout = Settings.RegisterVerticalLayoutCategory("BuffBot")
+    local defaults = BuffBot.GetDefaultConfig()
+
+    local function addSetting(key, varType, label, onChange)
+        local setting = Settings.RegisterAddOnSetting(category, "BuffBot_" .. key, key, BuffBot.config,
+            varType, label, defaults[key])
+        setting:SetValueChangedCallback(function(_, value)
+            BuffBot.debug(label, " changed - ", value)
+            onChange()
         end)
-        frame:SetScript("OnLeave", function()
-            GameTooltip:Hide()
-        end)
+        return setting
     end
 
-    local function createCheckbox(label, description, onClick)
-        local check = CreateFrame("CheckButton", "BuffBotCheckbox" .. label, configPanel,
-            "InterfaceOptionsCheckButtonTemplate")
-        check:SetScript("OnClick", function(self)
-            local tick = self:GetChecked()
-            onClick(self, tick and true or false)
-        end)
-        check.label = _G[check:GetName() .. "Text"]
-        check.label:SetText(label)
-        addTooltip(check, label, description)
-        return check
+    local function addCheckbox(key, label, tooltip, onChange)
+        local setting = addSetting(key, Settings.VarType.Boolean, label, onChange or BuffBot.UpdateClassBuffList)
+        Settings.CreateCheckbox(category, setting, tooltip)
     end
 
-    -- A labelled dropdown that sets config[setting] to one of options' values
-    local function createDropdown(name, labelText, setting, options)
-        local label = configPanel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
-        label:SetText(labelText)
-        local dropdown = CreateFrame("DropdownButton", "BuffBotDropdown" .. name, configPanel,
-            "WowStyle1DropdownTemplate")
-        dropdown:SetWidth(180)
-        dropdown:SetPoint("TOPLEFT", label, "BOTTOMLEFT", 0, -5)
-        dropdown:SetupMenu(function(_, rootDescription)
-            for _, option in ipairs(options) do
-                rootDescription:CreateRadio(option.text,
-                    function() return BuffBot.config[setting] == option.value end,
-                    function()
-                        BuffBot.debug(name, " changed - ", option.value)
-                        BuffBot.config[setting] = option.value
-                        BuffBot.UpdateClassBuffList()
-                    end)
+    -- options: { value, English name } pairs; nameOf gives the client's name
+    local function addDropdown(key, label, tooltip, values, nameOf)
+        local setting = addSetting(key, Settings.VarType.String, label, BuffBot.UpdateClassBuffList)
+        local function options()
+            local container = Settings.CreateControlTextContainer()
+            for _, value in ipairs(values) do
+                container:Add(value, nameOf(value))
             end
-        end)
-        return label
+            return container:GetData()
+        end
+        Settings.CreateDropdown(category, setting, options, tooltip)
     end
 
-    -- ############### Title
-    local title = configPanel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
-    title:SetPoint("TOPLEFT", configPanel, 15, -15)
-    title:SetText(configPanel.name .. " Settings")
+    addCheckbox("HIDE_ICON", "Hide Icon",
+        "Hides the button icon for text-only buffing. The keybind (Key Bindings > AddOns) and the text still work.",
+        BuffBot.UpdateIconVisibility)
+    addCheckbox("HIDE_TEXT", "Hide Text", "Hides the list of upcoming buffs under the button.",
+        BuffBot.UpdateSuggestionList)
 
-    -- ############### Description
-
-
-    local mainDescription = configPanel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
-    mainDescription:SetPoint("TOPLEFT", title, 10, -30)
-    mainDescription:SetText(
-        "For best experience, Set a keybind in Blizzard Keybindings>AddOns to configure a spammable macro button.")
-    
-    local slashCommandDescription = configPanel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
-    slashCommandDescription:SetPoint("TOPLEFT", mainDescription, 0, -20)
-    slashCommandDescription:SetText("/bb, /buffbot to open this page. Alt+Drag to move the main button.")
-
-    -- ############### Top Checkboxes
-    local checkboxHideIcon = createCheckbox(
-        "Hide Icon",
-        "Hides the button icon for text-only buffing. The keybind and the text still work.",
-        function(_, checkboxValue)
-            BuffBot.debug("Hide Icon - ", checkboxValue)
-            BuffBot.config.HIDE_ICON = checkboxValue
-            BuffBot.UpdateIconVisibility()
-        end)
-    checkboxHideIcon:SetPoint("TOPLEFT", mainDescription, 0, -50)
-    checkboxHideIcon:SetChecked(BuffBot.config.HIDE_ICON)
-
-    -- Saved as SUGGESTION_LIST, so the checkbox is its opposite
-    local checkboxHideText = createCheckbox(
-        "Hide Text",
-        "Hides the list of upcoming buffs under the button.",
-        function(_, checkboxValue)
-            BuffBot.debug("Hide Text - ", checkboxValue)
-            BuffBot.config.SUGGESTION_LIST = not checkboxValue
-            BuffBot.UpdateSuggestionList()
-        end)
-    checkboxHideText:SetPoint("TOPLEFT", checkboxHideIcon, 120, 0)
-    checkboxHideText:SetChecked(not BuffBot.config.SUGGESTION_LIST)
-
-    local buttonResetPosition = CreateFrame("Button", nil, configPanel, "UIPanelButtonTemplate")
-    buttonResetPosition:SetPoint("TOPLEFT", checkboxHideIcon, 320, 0)
-    buttonResetPosition:SetText("Reset Button Position")
-    buttonResetPosition:SetWidth(140)
-    buttonResetPosition:SetHeight(28)
-    buttonResetPosition:SetScript("OnClick", function()
+    layout:AddInitializer(CreateSettingsButtonInitializer("Button Position", "Reset Button Position", function()
         -- Moving the secure button is blocked in combat
         if InCombatLockdown() then
             print("BuffBot: can't move the button in combat.")
@@ -154,74 +96,27 @@ local function PaintSettingsFrame()
         end
         BuffBot.debug("Macro button position reset ")
         BuffBot.SetMacroButtonDefaultPosition()
-    end)
-    addTooltip(buttonResetPosition, "Resets Main Button Position",
-        "You can move the button by holding Alt and dragging.")
+    end, "Moves the button back to the middle of the screen. You can move it by holding Alt and dragging.", true))
 
+    layout:AddInitializer(CreateSettingsListSectionHeaderInitializer("Class Settings"))
 
-    -- ############### CLASS SETTINGS
-    -- Gap between classes : -40
-    -- Gap within classes: -25
-    local classSettings = configPanel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
-    classSettings:SetText("Class Settings")
-    classSettings:SetPoint("TOPLEFT", configPanel, 15, -135)
+    addCheckbox("STRICT_ARMOR", "Strict Mage Armors",
+        "Disallow any armor being valid when recommending a Mage armor buff. \n \n Open World:  Ice Armor \n In Raid:         Mage Armor")
+    addCheckbox("IGNORE_DAMPEN", "Skip Dampen Magic", "Skip recommending Dampen Magic.")
+    addCheckbox("BLOODRAGE", "Always try Bloodrage out of combat",
+        "Cast Bloodrage before Battle Shout out of combat. \n\nCan cause error spam while Bloodrage is on cooldown.")
+    addCheckbox("WISDOM_SELF", "Recommend Blessing of Wisdom", "Cast Blessing of Wisdom over Blessing of Might.")
+    addCheckbox("RIGHTEOUS_FURY", "Recommend Righteous Fury", "Cast Righteous Fury, for tanking.")
+    addCheckbox("IGNORE_THORNS", "Skip Thorns", "Skip recommending Thorns.")
+    addCheckbox("CHEETAH_REMINDER", "Reminder to leave Cheetah",
+        "Shows Aspect of the Hawk if you are in Aspect of the Cheetah/Pack")
 
-    -- { label, tooltip, config key, gap above }
-    local classToggles = {
-        { "Strict Mage Armors",
-            "Disallow any armor being valid when recommending a Mage armor buff. \n \n Open World:  Ice Armor \n In Raid:         Mage Armor",
-            "STRICT_ARMOR", -25 },
-        { "Skip Dampen Magic", "Skip recommending Dampen Magic.", "IGNORE_DAMPEN", -25 },
-        { "Always try Bloodrage out of combat",
-            "Cast Bloodrage before Battle Shout out of combat. \n\nCan cause error spam while Bloodrage is on cooldown.",
-            "BLOODRAGE", -40 },
-        { "Recommend Blessing of Wisdom", "Cast Blessing of Wisdom over Blessing of Might.", "WISDOM_SELF", -40 },
-        { "Recommend Righteous Fury", "Cast Righteous Fury, for tanking.", "RIGHTEOUS_FURY", -25 },
-        { "Skip Thorns", "Skip recommending Thorns.", "IGNORE_THORNS", -40 },
-        { "Reminder to leave Cheetah", "Shows Aspect of the Hawk if you are in Aspect of the Cheetah/Pack",
-            "CHEETAH_REMINDER", -40 },
-    }
-    local lastToggle
-    for _, toggle in ipairs(classToggles) do
-        local label, tooltip, setting, gap = unpack(toggle)
-        local check = createCheckbox(label, tooltip, function(_, checkboxValue)
-            BuffBot.debug(label, " changed - ", checkboxValue)
-            BuffBot.config[setting] = checkboxValue
-            BuffBot.UpdateClassBuffList()
-        end)
-        if lastToggle then
-            check:SetPoint("TOPLEFT", lastToggle, 0, gap)
-        else
-            check:SetPoint("TOPLEFT", classSettings, 15, gap)
-        end
-        check:SetChecked(BuffBot.config[setting])
-        lastToggle = check
-    end
+    addDropdown("SHAMAN_IMBUE", "Shaman weapon imbue", "The imbue the button puts on your main hand.",
+        { "Rockbiter Weapon", "Flametongue Weapon", "Frostbrand Weapon", "Windfury Weapon" }, BuffBot.SpellName)
+    addDropdown("ROGUE_POISON_MAINHAND", "Rogue main hand poison",
+        "The poison for your main hand. Another poison is used if you run out.", BuffBot.PoisonTypes, BuffBot.PoisonName)
+    addDropdown("ROGUE_POISON_OFFHAND", "Rogue off hand poison",
+        "The poison for your off hand. Another poison is used if you run out.", BuffBot.PoisonTypes, BuffBot.PoisonName)
 
-    -- Weapon enchants, by the client's names
-    local imbues = {}
-    for _, imbue in ipairs({ "Rockbiter Weapon", "Flametongue Weapon", "Frostbrand Weapon", "Windfury Weapon" }) do
-        table.insert(imbues, { text = BuffBot.SpellName(imbue), value = imbue })
-    end
-    local imbueLabel = createDropdown("ShamanImbue", "Shaman weapon imbue:", "SHAMAN_IMBUE", imbues)
-    imbueLabel:SetPoint("TOPLEFT", lastToggle, 0, -40)
-
-    local poisons = {}
-    for _, poison in ipairs(BuffBot.PoisonTypes) do
-        table.insert(poisons, { text = BuffBot.PoisonName(poison), value = poison })
-    end
-    local mainHandLabel = createDropdown("RogueMainHand", "Rogue main hand poison:", "ROGUE_POISON_MAINHAND", poisons)
-    mainHandLabel:SetPoint("TOPLEFT", imbueLabel, 0, -60)
-    local offHandLabel = createDropdown("RogueOffHand", "Rogue off hand poison:", "ROGUE_POISON_OFFHAND", poisons)
-    offHandLabel:SetPoint("TOPLEFT", mainHandLabel, 220, 0)
-
-    -- FOOTER --
-    local t = configPanel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
-    t:SetText("Addon Author: Smiil  -  Discord: smiil")
-    t:SetPoint("BOTTOMLEFT", configPanel, 25, 30)
+    Settings.RegisterAddOnCategory(category)
 end
-
-configPanel:SetScript("OnShow", function()
-    PaintSettingsFrame()
-    configPanel:SetScript("OnShow", nil)
-end)

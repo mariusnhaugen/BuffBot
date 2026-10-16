@@ -89,7 +89,7 @@ function BuffBot.CheckPlayerBuffs()
         BuffBot.UpdateMacro(assignedBuff, "player", ShouldBloodrageFirst(assignedBuff) and "Bloodrage" or nil)
     end
 
-    if BuffBot.config.SUGGESTION_LIST then
+    if not BuffBot.config.HIDE_TEXT then
         BuffBot.UpdateSuggestionList()
     end
 end

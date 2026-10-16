@@ -28,6 +28,7 @@ function State.new(class)
         frames = {},
         templates = {},
         categories = {},
+        settings = {}, -- label -> setting
         openedCategory = nil,
     }, State)
 end

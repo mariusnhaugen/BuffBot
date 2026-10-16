@@ -99,15 +99,15 @@ describe("suggestion list", function()
         assert.same({ "Trueshot Aura" }, h:suggestions())
     end)
 
-    it("is cleared when SUGGESTION_LIST is turned off", function()
+    it("is cleared when HIDE_TEXT is turned on", function()
         local h = Addon.load({ class = "PRIEST", known = known })
-        h.ns.config.SUGGESTION_LIST = false
+        h.ns.config.HIDE_TEXT = true
         h.ns.UpdateSuggestionList()
         assert.same({}, h:suggestions())
     end)
 
-    it("is not built when SUGGESTION_LIST is off from the start", function()
-        local h = Addon.load({ class = "PRIEST", known = known, config = { SUGGESTION_LIST = false } })
+    it("is not built when HIDE_TEXT is on from the start", function()
+        local h = Addon.load({ class = "PRIEST", known = known, config = { HIDE_TEXT = true } })
         assert.same({}, h:suggestions())
     end)
 end)

@@ -53,3 +53,11 @@ Should print Righteous Fury.
 `/run local i = C_Spell.GetSpellInfo(25780) print(25780, i and i.name)`
 
 Result:
+
+### Settings page on the Settings API
+
+The probes covered checkboxes. Still unchecked: the change callbacks (`setting:SetValueChangedCallback`), the dropdowns (`Settings.CreateDropdown` with `Settings.CreateControlTextContainer`), the button and the header added through the layout. Every control should show its tooltip and change the button straight away, and the values should survive a `/reload`. A config saved by 2.1.0 with Hide Text on should open with Hide Text still ticked.
+
+`/bb`, then hover and change each setting, press Reset Button Position in and out of combat, and `/reload`
+
+Result:
