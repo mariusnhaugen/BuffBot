@@ -1,0 +1,5 @@
+# These files are kept with CRLF line endings on checkout.
+Config.lua text eol=crlf
+HelperFunctions.lua text eol=crlf
+Bindings.xml text eol=crlf
+.gitignore text eol=crlf
