@@ -408,3 +408,49 @@ With tracking off: `/run C_Timer.After(5,function() print("combat:",InCombatLock
 
 Result:
 Tracking comes on in combat. It also showed 18 errors, `EventFunctions.lua:5: attempt to perform boolean test on field 'isFullUpdate' (a secret boolean value, while execution tainted by 'BuffBot')`: in combat, `UNIT_AURA` payloads can be secret. The handler read `isFullUpdate` before checking the unit; it now returns for other units first, and checks `issecretvalue` for the player
+
+## Tracking spell IDs
+
+Each should print its name: Track Beasts, Humanoids, Undead, Hidden, Elementals, Demons, Giants, Dragonkin.
+
+`/run for _,i in ipairs({1494,19883,19884,19885,19880,19878,19882,19879}) do local s=C_Spell.GetSpellInfo(i) print(i,s and s.name) end`
+
+Result:
+All eight print their names, in order: the Classic IDs are right on Forever
+
+## Cast checks used by tracking
+
+Should print `true true true` and then a table with `startTime` and `duration`.
+
+`/run print(UnitCastingInfo~=nil, UnitChannelInfo~=nil, C_Spell.GetSpellCooldown~=nil)`, then `/dump C_Spell.GetSpellCooldown(2580)`
+
+Result:
+`true true true`, and `GetSpellCooldown` returns a table with `startTime` and `duration`
+
+## Does death drop tracking
+
+With tracking on, die, release and run back. Is tracking still on before BuffBot casts it? Run with BuffBot disabled, or read the chat for a cast.
+
+Result:
+Yes: tracking is off after death, and BuffBot puts it back
+
+## Tracking on login and after a res
+
+On a gatherer, `/reload` with tracking off: it should come on. Die and run back: it should come on after you're alive. Turning it off by hand should stick. Then spam an ability straight after a res: tracking should still come on, without "Spell is not ready yet" errors.
+
+Result:
+Comes on after `/reload` and after a res, stays off when turned off by hand, and comes on while spamming an ability after a res, with no errors
+
+## Tracking dropdown
+
+`/bb`: the Tracking dropdown should list "Default (…)", only the trackers this character knows, and Off. Picking one should switch tracking straight away. Log on another character: its own choice, not this one's. `/reload`: the choice is kept.
+
+Result:
+Lists Default, only the character's trackers, and Off. Picking switches straight away, each character keeps its own choice, and it survives `/reload`
+
+## Find Treasure (Dwarf)
+
+On a Dwarf gatherer, `/reload` with tracking off: the gathering tracker comes on, then Find Treasure about 1.5 seconds later.
+
+Result:
+The gathering tracker comes on, then Find Treasure after the global cooldown
