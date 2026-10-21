@@ -39,12 +39,25 @@ Design notes, for after the robustness work:
   size of the suggestion list. Both use the game's own slider, with no
   library.
 - 27. Profession trackers: remind gatherers to turn on Find Minerals or
-  Find Herbs (and Find Treasure for Dwarves) when no tracking is active.
-  Only one can be on at a time, so it needs a setting for which one, like
-  the Shaman imbue. Casting Find Minerals mid-flight fired `UNIT_AURA`, so
-  tracking may show up as an aura on Forever; probe that first, and fall
-  back to the tracking API if it doesn't. Hunter and Druid tracking could
-  use the same path later.
+  Find Herbs when no tracking is active. A known spell (2580, 2383) means
+  the profession. Only one of the two can be on at a time, so a player
+  with both needs a setting for which one, like the Shaman imbue. On
+  Forever, the Dwarf racial Find Treasure (2481) stacks with profession
+  tracking, so it is its own suggestion, outside that choice. Tracking is
+  a player aura on Forever, so it is checked like any buff.
+  `CastSpellByID` works for tracking from add-on code, so BuffBot can turn
+  it on by itself (after `PLAYER_UNGHOST`/`PLAYER_ALIVE` and on login)
+  instead of offering it on the button. Each cast triggers the global
+  cooldown and fails during one, which also happens when the player
+  starts casting straight after a res. So casting is a retry loop, not a
+  single call: check the auras, and stop when every wanted tracker is on.
+  On a GCD, wait out `C_Spell.GetSpellCooldown` with `C_Timer.After`.
+  Otherwise, cast one missing tracker and check again shortly after. Give
+  up after a few tries, or on death. Find Treasure falls out of the same
+  loop. Untested: whether it works in combat. Show the
+  dropdown only to players with both, with `initializer:AddShownPredicate`
+  (also wanted for 18). Hunter and Druid tracking could use the same path
+  later.
 
 ## Decided against
 

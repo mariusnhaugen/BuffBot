@@ -373,3 +373,38 @@ Tick Hide Text on 2.1.0 and log out, then install 2.2 and open `/bb`
 
 Result:
 Hide Text is still ticked: the `SUGGESTION_LIST` to `HIDE_TEXT` migration keeps the 2.1.0 setting
+
+## Settings shown predicate
+
+`/run local i=CreateSettingsListSectionHeaderInitializer("x") print(i.AddShownPredicate ~= nil)`
+
+Result:
+`true`: initializers can be hidden per player, for the tracking dropdown (27) and class-only settings (18)
+
+## Tracking as an aura
+
+With Find Minerals on: `/run for i=1,40 do local a=C_UnitAuras.GetAuraDataByIndex("player",i) if a then print(i,a.spellId,a.name) end end`, then the same with Find Treasure on as well (Dwarf)
+
+Result:
+The tracker is listed as a player aura, so the add-on can check it like any other buff. Find Treasure and Find Minerals both show, as separate auras
+
+## Tracking texture
+
+`/dump GetTrackingTexture and GetTrackingTexture()`
+
+Result:
+`nil`: `GetTrackingTexture` doesn't exist on Forever. Not needed, since tracking is an aura
+
+## Tracking cast without a key press
+
+With tracking off: `/run C_Timer.After(3,function() CastSpellByID(2383) end)`
+
+Result:
+Tracking comes on: `CastSpellByID` isn't blocked for tracking spells, so add-on code can turn tracking on from an event, without the button. The cast triggers a global cooldown, so a second tracker (Find Treasure for Dwarves) has to wait for it to end
+
+## Tracking cast in combat
+
+With tracking off: `/run C_Timer.After(5,function() print("combat:",InCombatLockdown()) CastSpellByID(2580) end)`, then pull a mob
+
+Result:
+Tracking comes on in combat. It also showed 18 errors, `EventFunctions.lua:5: attempt to perform boolean test on field 'isFullUpdate' (a secret boolean value, while execution tainted by 'BuffBot')`: in combat, `UNIT_AURA` payloads can be secret. The handler read `isFullUpdate` before checking the unit; it now returns for other units first, and checks `issecretvalue` for the player
