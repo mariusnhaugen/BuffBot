@@ -28,8 +28,7 @@ Design notes, for after the robustness work:
 
 ## Feature ideas
 
-- 18. Show only the current class's settings.
-- 19. Button feedback: dim when unusable, tooltip, cooldown swipe.
+- 18. Settings page cleanup. Show only the current class's settings. General UX. Make paladin prio?
 - 26. Known issue: the first Rockbiter cast once needed a second press
   before the button moved on. Not reproduced since. A probe for
   `UNIT_INVENTORY_CHANGED` printed nothing, so the event may not always
@@ -58,6 +57,9 @@ Design notes, for after the robustness work:
   player's own short buff list, so dozens of them while a raid fills cost
   nothing noticeable. The group coverage re-scan is scheduled with
   `C_Timer.After`, which covers it once rebuilds scan every member.
+- **Button tooltip and cooldown swipe (19).** More distracting than
+  useful. The icon dims along with the blue tint when out of mana or rage
+  instead.
 
 ## Done
 
