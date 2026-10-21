@@ -17,8 +17,20 @@ describe("saved config", function()
             SHAMAN_IMBUE = "Rockbiter Weapon",
             ROGUE_POISON_MAINHAND = "Instant Poison",
             ROGUE_POISON_OFFHAND = "Instant Poison",
+            TRACK_TREASURE = true,
         }, h.ns.config)
         assert.equal(h.ns.config, h.env.BuffBotConfig)
+    end)
+
+    it("keeps the tracker per character, unpicked on first load", function()
+        local h = Addon.load()
+        assert.same({ TRACKER = "" }, h.ns.charConfig)
+        assert.equal(h.ns.charConfig, h.env.BuffBotCharConfig)
+    end)
+
+    it("loads a saved tracker", function()
+        local h = Addon.load({ charSaved = { TRACKER = "Find Herbs" } })
+        assert.equal("Find Herbs", h:settingNamed("Auto tracking"):GetValue())
     end)
 
     it("prints the load message and the drag hint on first load", function()
@@ -150,6 +162,7 @@ describe("settings panel", function()
         ["Recommend Righteous Fury"] = "RIGHTEOUS_FURY",
         ["Skip Thorns"] = "IGNORE_THORNS",
         ["Reminder to leave Cheetah"] = "CHEETAH_REMINDER",
+        ["Auto Find Treasure"] = "TRACK_TREASURE",
     }
 
     for label, key in pairs(checkboxes) do
@@ -188,17 +201,19 @@ describe("settings panel", function()
         assert.same({}, h:suggestions())
     end)
 
-    it("puts the class settings under a header", function()
+    it("puts tracking, then the class settings, under headers after the button", function()
         local h = Addon.load()
-        local kinds = {}
+        local order = {}
         for _, init in ipairs(h.state.categories.BuffBot.initializers) do
             if init.kind == "header" then
-                assert.equal("Class Settings", init.name)
-                assert.equal("button", kinds[#kinds])
+                table.insert(order, init.name)
+            elseif init.kind == "button" then
+                table.insert(order, "button")
+            elseif init.setting.name == "Auto tracking" or init.setting.name == "Auto Find Treasure" then
+                table.insert(order, init.setting.name)
             end
-            table.insert(kinds, init.kind)
         end
-        assert.is_true(#kinds > 0)
+        assert.same({ "button", "Tracking", "Auto tracking", "Auto Find Treasure", "Class Settings" }, order)
     end)
 
     local function resetButton(h)

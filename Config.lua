@@ -43,8 +43,16 @@ function BuffBot.GetDefaultConfig()
     defaultConfig.SHAMAN_IMBUE = "Rockbiter Weapon"
     defaultConfig.ROGUE_POISON_MAINHAND = "Instant Poison"
     defaultConfig.ROGUE_POISON_OFFHAND = "Instant Poison"
+    defaultConfig.TRACK_TREASURE = true
 
     return defaultConfig
+end
+
+-- Saved per character, in BuffBotCharConfig
+function BuffBot.GetDefaultCharConfig()
+    -- "" until the player picks a tracker, so the default follows what the
+    -- character knows
+    return { TRACKER = "" }
 end
 
 -- The settings page, built by the Settings API. Each setting reads and writes
@@ -54,9 +62,11 @@ function BuffBot.RegisterSettings()
     category, layout = Settings.RegisterVerticalLayoutCategory("BuffBot")
     local defaults = BuffBot.GetDefaultConfig()
 
-    local function addSetting(key, varType, label, onChange)
-        local setting = Settings.RegisterAddOnSetting(category, "BuffBot_" .. key, key, BuffBot.config,
-            varType, label, defaults[key])
+    -- tbl and default are for settings outside BuffBot.config
+    local function addSetting(key, varType, label, onChange, tbl, default)
+        if default == nil then default = defaults[key] end
+        local setting = Settings.RegisterAddOnSetting(category, "BuffBot_" .. key, key, tbl or BuffBot.config,
+            varType, label, default)
         setting:SetValueChangedCallback(function(_, value)
             BuffBot.debug(label, " changed - ", value)
             onChange()
@@ -97,6 +107,30 @@ function BuffBot.RegisterSettings()
         BuffBot.debug("Macro button position reset ")
         BuffBot.SetMacroButtonDefaultPosition()
     end, "Moves the button back to the middle of the screen. You can move it by holding Alt and dragging.", true))
+
+    layout:AddInitializer(CreateSettingsListSectionHeaderInitializer("Tracking"))
+
+    -- Picking a tracker, or Default, switches to it now; Off turns nothing off
+    local tracker = addSetting("TRACKER", Settings.VarType.String, "Auto tracking", function()
+        local value = BuffBot.charConfig.TRACKER
+        if value == "Off" then return end
+        BuffBot.UpdateTracking(value ~= "" and value or BuffBot.DefaultTracker())
+    end, BuffBot.charConfig, BuffBot.GetDefaultCharConfig().TRACKER)
+    local function trackerOptions()
+        local container = Settings.CreateControlTextContainer()
+        local default = BuffBot.DefaultTracker()
+        container:Add("", "Default (" .. (default and BuffBot.SpellName(default) or "Off") .. ")")
+        for _, key in ipairs(BuffBot.Trackers) do
+            if BuffBot.KnowsTracker(key) then container:Add(key, BuffBot.SpellName(key)) end
+        end
+        container:Add("Off", "Off")
+        return container:GetData()
+    end
+    Settings.CreateDropdown(category, tracker, trackerOptions,
+        "Turned back on after you die or log in. Default will pick up when you learn a profession. Prio list: Find Minerals > Herbs > Track Beasts. Saved per character. Triggers a global cooldown.")
+    addCheckbox("TRACK_TREASURE", "Auto Find Treasure",
+        "For Dwarves: Automatically cast Find Treasure. Triggers a 2nd global cooldown.",
+        function() BuffBot.UpdateTracking() end)
 
     layout:AddInitializer(CreateSettingsListSectionHeaderInitializer("Class Settings"))
 

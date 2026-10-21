@@ -24,6 +24,7 @@ end
 
 function events:SPELLS_CHANGED()
     BuffBot.UpdateClassBuffList()
+    BuffBot.TrackingSpellsChanged()
 end
 
 -- Fires on most power changes, so only re-tint while the button is up
@@ -39,10 +40,17 @@ end
 
 function events:PLAYER_ALIVE()
     BuffBot.CheckPlayerBuffs()
+    BuffBot.UpdateTracking()
 end
 
 function events:PLAYER_UNGHOST()
     BuffBot.CheckPlayerBuffs()
+    BuffBot.UpdateTracking()
+end
+
+-- Zoning, which includes leaving a battleground, where tracking isn't cast
+function events:PLAYER_ENTERING_WORLD()
+    BuffBot.UpdateTracking()
 end
 
 -- These fire before UnitOnTaxi changes, so re-check a moment later
@@ -66,6 +74,7 @@ end
 
 function events:PLAYER_REGEN_ENABLED()
     BuffBot.CheckPlayerBuffs()
+    BuffBot.ResumeTracking()
 end
 
 function events:PLAYER_REGEN_DISABLED()
@@ -90,6 +99,15 @@ function events:ADDON_LOADED(arg1)
         end
     end
     BuffBot.config = BuffBotConfig
+    if BuffBotCharConfig == nil then
+        BuffBotCharConfig = {}
+    end
+    for key, value in pairs(BuffBot.GetDefaultCharConfig()) do
+        if BuffBotCharConfig[key] == nil then
+            BuffBotCharConfig[key] = value
+        end
+    end
+    BuffBot.charConfig = BuffBotCharConfig
     BuffBot.RegisterSettings()
 
 
@@ -123,6 +141,7 @@ events:RegisterEvent("BAG_UPDATE_DELAYED")
 events:RegisterEvent("PLAYER_DEAD")
 events:RegisterEvent("PLAYER_ALIVE")
 events:RegisterEvent("PLAYER_UNGHOST")
+events:RegisterEvent("PLAYER_ENTERING_WORLD")
 events:RegisterEvent("PLAYER_CONTROL_LOST")
 events:RegisterEvent("PLAYER_CONTROL_GAINED")
 

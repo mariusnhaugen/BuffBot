@@ -30,12 +30,41 @@ return function(state, env)
             return state:isUsable(english), state.unusable[english] == true
         end,
 
+        -- Only the global cooldown is modelled
+        GetSpellCooldown = function()
+            if state.gcdUntil > state.time then
+                return { startTime = state.gcdUntil - 1.5, duration = 1.5, isEnabled = true, modRate = 1 }
+            end
+            return { startTime = 0, duration = 0, isEnabled = true, modRate = 1 }
+        end,
+
         GetSpellTexture = function(spell)
             local name = type(spell) == "number" and Spells.nameOf(spell) or state:englishName(spell)
             if name and state:knows(name) then return Spells.iconOf(name) end
             return nil
         end,
     }
+
+    -- Tracking that replaces any other: every tracker but Find Treasure
+    local function exclusiveTracker(name)
+        return name ~= "Find Treasure" and (name:find("^Find ") or name:find("^Track ")) ~= nil
+    end
+
+    -- Casts tracking without a key press, as in the probe. Fails during the
+    -- global cooldown or another cast; otherwise the aura goes on and the
+    -- global cooldown starts.
+    function env.CastSpellByID(id)
+        local name = Spells.nameOf(id)
+        table.insert(state.casts, name)
+        if state.gcdUntil > state.time or state.casting or not state:knows(name) then return end
+        if exclusiveTracker(name) then
+            for other in pairs(state.auras) do
+                if exclusiveTracker(other) then state.auras[other] = nil end
+            end
+        end
+        state:giveAura(name, { duration = 0 })
+        state.gcdUntil = state.time + 1.5
+    end
 
     env.C_Item = {
         -- Two entries, like the probe. In game the enchant can be in either

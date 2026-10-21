@@ -61,3 +61,9 @@ Result:
 Fight a mob that puts a debuff on you, with `/console scriptErrors 1`, and let a buff run out or cast one mid-fight
 
 Result:
+
+### Tracking in battlegrounds and combat
+
+Die in a battleground: nothing is cast there. Tracking comes back on after leaving. Get resurrected in combat: tracking waits until combat ends.
+
+Result:

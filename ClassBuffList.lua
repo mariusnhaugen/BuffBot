@@ -145,7 +145,23 @@ local spellIDTable = {
     -- WARRIOR
     ["Battle Shout"] = 6673,
     ["Bloodrage"] = 2687,
+    -- TRACKING
+    ["Find Minerals"] = 2580,
+    ["Find Herbs"] = 2383,
+    ["Find Treasure"] = 2481,
+    ["Track Beasts"] = 1494,
+    ["Track Humanoids"] = 19883,
+    ["Track Undead"] = 19884,
+    ["Track Hidden"] = 19885,
+    ["Track Elementals"] = 19880,
+    ["Track Demons"] = 19878,
+    ["Track Giants"] = 19882,
+    ["Track Dragonkin"] = 19879,
 }
+
+function BuffBot.SpellID(spellString)
+    return spellIDTable[spellString]
+end
 
 
 -- The client's name for a spell key. ID lookups resolve on every client and

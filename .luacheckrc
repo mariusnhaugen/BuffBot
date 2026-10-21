@@ -13,6 +13,7 @@ globals = {
     "SLASH_BUFFBOTSETTINGS1",
     "SLASH_BUFFBOTSETTINGS2",
     "BuffBotConfig",
+    "BuffBotCharConfig",
 }
 
 -- WoW API available on the Forever client. GetSpellInfo, GetSpellTexture and
@@ -23,6 +24,7 @@ read_globals = {
     "C_Spell",
     "C_Timer",
     "C_UnitAuras",
+    "CastSpellByID",
     "CreateFrame",
     "CreateSettingsButtonInitializer",
     "CreateSettingsListSectionHeaderInitializer",
@@ -32,6 +34,7 @@ read_globals = {
     "InCombatLockdown",
     "IsAltKeyDown",
     "IsInGroup",
+    "IsInInstance",
     "IsInRaid",
     "IsPlayerSpell",
     "issecretvalue",
@@ -39,6 +42,8 @@ read_globals = {
     "Settings",
     "UIParent",
     "UnitClass",
+    "UnitCastingInfo",
+    "UnitChannelInfo",
     "UnitInRaid",
     "UnitIsDeadOrGhost",
     "UnitLevel",

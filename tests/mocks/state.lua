@@ -18,6 +18,10 @@ function State.new(class)
         dead = false,
         ghost = false,
         taxi = false,
+        instanceType = "none", -- "pvp" in a battleground
+        casting = false, -- mid-cast, so a cast now fails
+        gcdUntil = 0, -- time the global cooldown ends
+        casts = {}, -- spell names from CastSpellByID, including failed casts
         mainHand = 2361, -- equipped main-hand item ID, nil for none
         offHand = nil, -- equipped off-hand item ID
         -- By weapon slot (0 main hand, 1 off hand): { type = 2 or 3, timeLeft = ms, charges }
@@ -86,13 +90,19 @@ function State:removeAura(name)
     self.auras[name] = nil
 end
 
--- Moves the clock on and runs the timers that came due, in order
+-- Moves the clock on and runs the timers that came due, in order, each at
+-- its own time, including timers they start
 function State:advance(seconds)
-    self.time = self.time + seconds
-    table.sort(self.timers, function(a, b) return a.at < b.at end)
-    while self.timers[1] and self.timers[1].at <= self.time do
-        table.remove(self.timers, 1).callback()
+    local target = self.time + seconds
+    while true do
+        table.sort(self.timers, function(a, b) return a.at < b.at end)
+        local timer = self.timers[1]
+        if not timer or timer.at > target then break end
+        table.remove(self.timers, 1)
+        self.time = math.max(self.time, timer.at)
+        timer.callback()
     end
+    self.time = target
 end
 
 function State:iconOf(name)

@@ -5,6 +5,7 @@
 ## Notes: |cff00ccffBuffBot|r - Maintenance buffs made easy.
 ## DefaultState: enabled
 ## SavedVariables: BuffBotConfig
+## SavedVariablesPerCharacter: BuffBotCharConfig
 ## X-Curse-Project-ID: 1078765
 
 
@@ -13,4 +14,5 @@ EventFunctions.lua
 ClassBuffList.lua
 Interface.lua
 BuffBot.lua
+Tracking.lua
 Config.lua

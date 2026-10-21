@@ -244,6 +244,7 @@ local M = {}
 --   class   player class token (default WARRIOR)
 --   known   list of known spell names
 --   saved   BuffBotConfig SavedVariables value before load (default nil)
+--   charSaved  BuffBotCharConfig value before load (default nil)
 --   config  config overrides applied after ADDON_LOADED
 --   raid    start in a raid
 --   translate  function mapping English spell names to the client's names
@@ -259,6 +260,7 @@ function M.load(opts)
     require("mocks.api_common")(state, env)
     require("mocks.api_forever")(state, env)
     env.BuffBotConfig = opts.saved
+    env.BuffBotCharConfig = opts.charSaved
 
     local ns = {}
     for _, file in ipairs(tocFiles(ADDON_NAME .. ".toc")) do

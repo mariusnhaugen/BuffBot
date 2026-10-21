@@ -6,6 +6,10 @@
 
 - **Righteous Fury** for Paladin tanks: turn on "Recommend Righteous Fury"
   in the settings. Off by default.
+- **Tracking** comes back on by itself after you die and when you log in:
+  Find Minerals, Find Herbs or a Hunter track, picked per character in the
+  settings. Dwarves also get Find Treasure. Never in combat or in
+  battlegrounds.
 
 ### Changed
 

@@ -163,6 +163,16 @@ return function(state, env)
 
     function env.UnitOnTaxi(unit) return unit == "player" and state.taxi end
 
+    function env.IsInInstance()
+        return state.instanceType ~= "none", state.instanceType
+    end
+
+    function env.UnitCastingInfo(unit)
+        if unit == "player" and state.casting then return "Hearthstone" end
+    end
+
+    function env.UnitChannelInfo() return nil end
+
     function env.IsInGroup() return state.group or state.raid end
 
     function env.IsInRaid() return state.raid end
