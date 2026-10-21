@@ -46,18 +46,10 @@ Press the BuffBot button, then right-click the poison icons by your buffs to rem
 
 Result:
 
-### Righteous Fury ID
+### Righteous Fury on the button (Paladin)
 
-Should print Righteous Fury.
+With "Recommend Righteous Fury" ticked, the button should offer Righteous Fury after the blessing.
 
-`/run local i = C_Spell.GetSpellInfo(25780) print(25780, i and i.name)`
-
-Result:
-
-### Settings page on the Settings API
-
-The probes covered checkboxes. Still unchecked: the change callbacks (`setting:SetValueChangedCallback`), the dropdowns (`Settings.CreateDropdown` with `Settings.CreateControlTextContainer`), the button and the header added through the layout. Every control should show its tooltip and change the button straight away, and the values should survive a `/reload`. A config saved by 2.1.0 with Hide Text on should open with Hide Text still ticked.
-
-`/bb`, then hover and change each setting, press Reset Button Position in and out of combat, and `/reload`
+Tick the setting in `/bb`, then press the BuffBot button until the blessing is up
 
 Result:

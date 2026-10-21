@@ -352,3 +352,24 @@ Result:
 
 Result:
 `true`, `true`: a vertical layout can hold the Reset Button Position button and the class headings
+
+## Righteous Fury ID
+
+`/run local i = C_Spell.GetSpellInfo(25780) print(25780, i and i.name)`
+
+Result:
+Prints Righteous Fury: 25780 is the right ID on Forever
+
+## Settings page on the Settings API
+
+`/bb`, then hover and change each setting (checkboxes and both weapon dropdowns), press Reset Button Position in and out of combat, and `/reload`
+
+Result:
+Every control shows its tooltip and changes the button straight away, so `setting:SetValueChangedCallback` fires. The dropdowns built with `Settings.CreateControlTextContainer` work, and the Class Settings header and the Reset button show through `layout:AddInitializer`. Reset is refused in combat. The values survive `/reload`
+
+## Hide Text kept from 2.1.0
+
+Tick Hide Text on 2.1.0 and log out, then install 2.2 and open `/bb`
+
+Result:
+Hide Text is still ticked: the `SUGGESTION_LIST` to `HIDE_TEXT` migration keeps the 2.1.0 setting
