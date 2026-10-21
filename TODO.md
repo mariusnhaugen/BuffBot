@@ -38,26 +38,6 @@ Design notes, for after the robustness work:
   button (`SetSize`, out of combat only), and the text changes the font
   size of the suggestion list. Both use the game's own slider, with no
   library.
-- 27. Profession trackers: remind gatherers to turn on Find Minerals or
-  Find Herbs when no tracking is active. A known spell (2580, 2383) means
-  the profession. Only one of the two can be on at a time, so a player
-  with both needs a setting for which one, like the Shaman imbue. On
-  Forever, the Dwarf racial Find Treasure (2481) stacks with profession
-  tracking, so it is its own suggestion, outside that choice. Tracking is
-  a player aura on Forever, so it is checked like any buff.
-  `CastSpellByID` works for tracking from add-on code, so BuffBot can turn
-  it on by itself (after `PLAYER_UNGHOST`/`PLAYER_ALIVE` and on login)
-  instead of offering it on the button. Each cast triggers the global
-  cooldown and fails during one, which also happens when the player
-  starts casting straight after a res. So casting is a retry loop, not a
-  single call: check the auras, and stop when every wanted tracker is on.
-  On a GCD, wait out `C_Spell.GetSpellCooldown` with `C_Timer.After`.
-  Otherwise, cast one missing tracker and check again shortly after. Give
-  up after a few tries, or on death. Find Treasure falls out of the same
-  loop. Untested: whether it works in combat. Show the
-  dropdown only to players with both, with `initializer:AddShownPredicate`
-  (also wanted for 18). Hunter and Druid tracking could use the same path
-  later.
 
 ## Decided against
 
@@ -76,6 +56,7 @@ Design notes, for after the robustness work:
 
 ## Done
 
+- [x] Turn tracking back on automatically after death and login (`5e871be`)
 - [x] Fill in settings missing from an older saved config (`4ba4a0b`)
 - [x] Re-check buffs on a full aura update outside a raid (`aa27924`)
 - [x] Group range checks added to the probe table (`ffaeffe`)
