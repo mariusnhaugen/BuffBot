@@ -5,6 +5,9 @@ local Spells = require("mocks.spells")
 local State = {}
 State.__index = State
 
+-- A unique value that the issecretvalue mock reports as secret
+State.SECRET = setmetatable({}, { __tostring = function() return "<secret>" end })
+
 function State.new(class)
     return setmetatable({
         class = class or "WARRIOR",

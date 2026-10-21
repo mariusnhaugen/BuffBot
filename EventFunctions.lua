@@ -1,28 +1,16 @@
 local addonName, BuffBot = ...
 local events = CreateFrame("Frame")
 
+-- In combat the payload can hold secrets, which add-on code can't test, so
+-- check the unit before reading it
 function events:UNIT_AURA(unit, info)
-    if info.isFullUpdate then
-        -- triggers when people join party or player zones through instance
-        if (unit == "player") then
-            if UnitInRaid("player") then
-                BuffBot.UpdateClassBuffList()
-            else
-                BuffBot.CheckPlayerBuffs()
-            end
-        end
-        return
-    end
-    if info.removedAuraInstanceIDs then
-        if (unit == "player") then
-            BuffBot.CheckPlayerBuffs()
-        end
-        return
-    end
-
-    if (unit == "player") then
+    if unit ~= "player" then return end
+    -- A full update triggers when people join party or player zones through instance
+    local fullUpdate = info.isFullUpdate
+    if not issecretvalue(fullUpdate) and fullUpdate and UnitInRaid("player") then
+        BuffBot.UpdateClassBuffList()
+    else
         BuffBot.CheckPlayerBuffs()
-        return
     end
 end
 

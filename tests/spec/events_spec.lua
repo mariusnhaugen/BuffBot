@@ -22,6 +22,21 @@ describe("event handling", function()
         assert.equal("Arcane Intellect", h:shown())
     end)
 
+    it("UNIT_AURA for another unit doesn't read its payload, which can be secret in combat", function()
+        local h = mage()
+        local payload = setmetatable({}, { __index = function() error("payload read") end })
+        h:fire("UNIT_AURA", "target", payload)
+    end)
+
+    it("UNIT_AURA with a secret full update re-checks without rebuilding", function()
+        local h = mage({ raid = true })
+        local before = h.ns.classBuffList
+        h.state:giveAura("Arcane Intellect")
+        h:fire("UNIT_AURA", "player", { isFullUpdate = h.state.SECRET })
+        assert.equal(before, h.ns.classBuffList)
+        assert.equal("Dampen Magic", h:shown())
+    end)
+
     it("UNIT_AURA with removed auras re-checks", function()
         local h = mage()
         h:give("Arcane Intellect")

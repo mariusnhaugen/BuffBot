@@ -14,6 +14,10 @@
 - The button dims a little, as well as turning blue, when you're out of
   mana or rage.
 
+### Fixed
+
+- Lua errors about a "secret boolean value" in combat.
+
 ## 2.1.0
 
 Era/SOD version ported to Forever, Weapon buffs and internationalisation.

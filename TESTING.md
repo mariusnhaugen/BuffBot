@@ -53,3 +53,11 @@ With "Recommend Righteous Fury" ticked, the button should offer Righteous Fury a
 Tick the setting in `/bb`, then press the BuffBot button until the blessing is up
 
 Result:
+
+### No aura errors in combat
+
+`UNIT_AURA` payloads can be secret in combat. The handler should now ignore other units' payloads, and the button should keep updating in combat.
+
+Fight a mob that puts a debuff on you, with `/console scriptErrors 1`, and let a buff run out or cast one mid-fight
+
+Result:

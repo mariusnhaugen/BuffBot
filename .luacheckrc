@@ -34,6 +34,7 @@ read_globals = {
     "IsInGroup",
     "IsInRaid",
     "IsPlayerSpell",
+    "issecretvalue",
     "LE_PARTY_CATEGORY_HOME",
     "Settings",
     "UIParent",

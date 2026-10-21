@@ -69,6 +69,11 @@ return function(state, env)
         end,
     }
 
+    -- state.SECRET stands in for a secret value
+    function env.issecretvalue(value)
+        return value == state.SECRET
+    end
+
     env.C_Timer = {
         After = function(seconds, callback)
             table.insert(state.timers, { at = state.time + seconds, callback = callback })
