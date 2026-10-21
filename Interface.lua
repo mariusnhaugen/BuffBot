@@ -7,8 +7,17 @@ local LEFTBUTTON = 'LeftButton';
 _G["BINDING_NAME_" .. "CLICK BUFFBOT_MacroButton:LeftButton"] = "BuffBot Cast"
 
 --################### Public Functions ##########################
--- Blue when out of mana or rage, like the action bars. Not for a firstSpell
--- macro, which makes its own rage.
+-- Hide Icon wins over the dimming from the tint
+local function UpdateIconAlpha(icon)
+    if BuffBot.config.HIDE_ICON then
+        icon:SetAlpha(0)
+    else
+        icon:SetAlpha(macroButton.noPower and 0.6 or 1)
+    end
+end
+
+-- Blue and dimmed when out of mana or rage, like the action bars. Not for a
+-- firstSpell macro, which makes its own rage.
 function BuffBot.UpdateTint()
     local icon = macroButton:GetNormalTexture()
     if not icon then return end
@@ -16,11 +25,13 @@ function BuffBot.UpdateTint()
     if macroButton.spell then
         noPower = select(2, C_Spell.IsSpellUsable(BuffBot.SpellName(macroButton.spell)))
     end
-    if noPower and not macroButton.hasFirstSpell then
+    macroButton.noPower = noPower and not macroButton.hasFirstSpell
+    if macroButton.noPower then
         icon:SetVertexColor(0.5, 0.5, 1.0)
     else
         icon:SetVertexColor(1.0, 1.0, 1.0)
     end
+    UpdateIconAlpha(icon)
 end
 
 -- Hide Icon leaves the suggestion list, which is attached to the button, and
@@ -30,7 +41,7 @@ function BuffBot.UpdateIconVisibility()
     local hidden = BuffBot.config.HIDE_ICON
     local icon = macroButton:GetNormalTexture()
     if icon then
-        icon:SetAlpha(hidden and 0 or 1)
+        UpdateIconAlpha(icon)
     end
     if not InCombatLockdown() then
         macroButton:EnableMouse(not hidden)

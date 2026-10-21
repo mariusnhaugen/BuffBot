@@ -11,6 +11,8 @@
 
 - The settings page uses the game's own settings controls and tooltips.
   Your settings carry over.
+- The button dims a little, as well as turning blue, when you're out of
+  mana or rage.
 
 ## 2.1.0
 
