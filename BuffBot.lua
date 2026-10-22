@@ -10,30 +10,24 @@ local RANGE_POLL = 2 -- seconds between range re-checks in a group
 local polling = false
 local function PollRange()
     polling = false
-    if InCombatLockdown() or not IsInGroup() or not BuffBot.config.GROUP_BUFFING then return end
+    if InCombatLockdown() then return end
     BuffBot.CheckPlayerBuffs()
-    polling = true
-    C_Timer.After(RANGE_POLL, PollRange)
 end
 
--- No event says a member came into range, so re-check every few seconds while
--- in a group, out of combat, with a group buff in the list. Stops on its own.
-function BuffBot.StartRangePoll()
+-- No event says a member came into spell range, so re-check every few seconds
+-- while a member in view is missing a buff and out of range. Members out of
+-- view are left to the UNIT_AURA they fire on coming into view. Stops on its
+-- own.
+local function StartRangePoll()
     if polling then return end
-    for _, buff in ipairs(BuffBot.classBuffList or {}) do
-        if BuffBot.GroupBuffs[buff] then
-            polling = true
-            C_Timer.After(RANGE_POLL, PollRange)
-            return
-        end
-    end
+    polling = true
+    C_Timer.After(RANGE_POLL, PollRange)
 end
 
 function BuffBot.UpdateClassBuffList()
     BuffBot.debug("UpdateClassBuffList")
     BuffBot.FilterInitialList()
     BuffBot.CheckPlayerBuffs()
-    BuffBot.StartRangePoll()
 end
 
 function BuffBot.HasUniqueClassBuff()
@@ -76,15 +70,19 @@ local function UnitMissing(unit, buffString)
     return true
 end
 
--- A member the buff would help who can take it now. The class check comes
--- first, so classes the buff does nothing for never cost a range check.
-local function CanBuffUnit(unit, buffString)
+-- A member the buff would help, alive and in view. The class check comes
+-- first, so classes the buff does nothing for never cost an aura or range
+-- check.
+local function CanSeeUnit(unit, buffString)
     if unit == "player" then return true end
     local skip = BuffBot.SkipOnClass[buffString]
     if skip and skip[select(2, UnitClass(unit))] then return false end
     return UnitExists(unit) and UnitIsConnected(unit) and UnitIsVisible(unit)
         and not UnitIsDeadOrGhost(unit)
-        and C_Spell.IsSpellInRange(BuffBot.SpellName(buffString), unit) == true
+end
+
+local function InRange(unit, buffString)
+    return unit == "player" or C_Spell.IsSpellInRange(BuffBot.SpellName(buffString), unit) == true
 end
 
 -- The units to buff, as subgroups: the player's own first, starting with the
@@ -132,29 +130,36 @@ end
 
 -- One subgroup's entries for a group buff: the group version when two or
 -- more who'd benefit are missing it and it can be cast, else one per member.
--- Blessings are always single-target.
+-- Blessings are always single-target. True when a member in view is missing
+-- it out of range.
 local function AddGroupBuff(missing, buffString, units)
-    local targets = {}
+    local targets, outOfRange = {}, false
     for _, unit in ipairs(units) do
         local buff = BuffForUnit(buffString, unit)
-        if buff and CanBuffUnit(unit, buff) and UnitMissing(unit, buff) then
-            table.insert(targets, { buff = buff, unit = unit })
+        if buff and CanSeeUnit(unit, buff) and UnitMissing(unit, buff) then
+            if InRange(unit, buff) then
+                table.insert(targets, { buff = buff, unit = unit })
+            else
+                outOfRange = true
+            end
         end
     end
     local groupVersion = #targets >= 2 and not BuffBot.Blessings[buffString]
         and BuffBot.CastableGroupVersion(buffString)
     if groupVersion then
         table.insert(missing, { buff = groupVersion, unit = targets[1].unit })
-        return
+        return outOfRange
     end
     for _, target in ipairs(targets) do
         table.insert(missing, target)
     end
+    return outOfRange
 end
 
 -- Every cast the button would make, in order, as { buff, unit } entries. The
 -- button casts the first, and the suggestion list shows them all. A group
--- buff goes on everyone before the next buff starts.
+-- buff goes on everyone before the next buff starts. The second result is
+-- true when a member in view is missing a buff out of range.
 function BuffBot.MissingBuffs()
     local missing = {}
     if InCombatLockdown() then return missing end
@@ -162,25 +167,26 @@ function BuffBot.MissingBuffs()
     local classBuffs = BuffBot.classBuffList
     if classBuffs == nil then return missing end
 
-    local subgroups = GroupUnits()
+    local subgroups, outOfRange = GroupUnits(), false
     for i = 1, #classBuffs do
         local currentBuff = classBuffs[i]
         if BuffBot.GroupBuffs[currentBuff] then
             for _, units in ipairs(subgroups) do
-                AddGroupBuff(missing, currentBuff, units)
+                outOfRange = AddGroupBuff(missing, currentBuff, units) or outOfRange
             end
         elseif not ShouldSkipBuff(currentBuff) and UnitMissing("player", currentBuff) then
             table.insert(missing, { buff = currentBuff, unit = "player" })
         end
     end
-    return missing
+    return missing, outOfRange
 end
 
 -- The last entry logged, so the range poll doesn't repeat it every few seconds
 local lastLogged
 
 function BuffBot.CheckPlayerBuffs()
-    local missing = BuffBot.MissingBuffs()
+    local missing, outOfRange = BuffBot.MissingBuffs()
+    if outOfRange then StartRangePoll() end
     local entry = missing[1]
     if not entry then
         lastLogged = nil

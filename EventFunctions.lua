@@ -93,7 +93,6 @@ end
 
 function events:PLAYER_REGEN_ENABLED()
     BuffBot.CheckPlayerBuffs()
-    BuffBot.StartRangePoll()
     BuffBot.ResumeTracking()
 end
 
