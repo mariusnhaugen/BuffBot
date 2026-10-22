@@ -67,12 +67,14 @@ Result:
 The button buffs you, then each member who is missing the buff and in range, and the text shows their name. Warriors and Rogues never get Arcane Intellect or Divine Spirit. A member out of range drops off the list and comes back within a couple of seconds of walking back. No errors in combat.
 
 Result:
+Works as a Paladin with a Rogue in the party: the button offers Blessing of Might on them. Still to check: a caster class (Arcane Intellect skipping a Warrior or Rogue), walking out of and back into range, and combat
 
 ### Paladin blessings on the party
 
 Blessing of Might on Warriors and Rogues, Blessing of Kings on Hunters and Paladins (level 20+; Wisdom before that), Blessing of Wisdom on everyone else, and your own blessing from the "Paladin blessing on yourself" dropdown. An old "Recommend Blessing of Wisdom" setting should carry over as Wisdom. Blessings last 60 minutes on Forever, so they're only due again when a member drops one or has under 5 minutes left. A member with another Paladin's blessing isn't buffed again.
 
 Result:
+A Rogue in the party gets Blessing of Might. Still to check: Wisdom on a caster, the dropdown and the old setting carrying over, and Kings at level 20+
 
 ### Group versions and reagents (at the level of the group buffs)
 
