@@ -3,30 +3,12 @@
 Open work for the Forever branch. Tick items off as they land, and note the
 commit.
 
-## Later: group coverage
-
-Design notes, for after the robustness work:
-
-- Keep `UNIT_AURA` registered for all units. `RegisterUnitEvent` takes two
-  units at most, so it can't cover a raid.
-- In the handler: return in combat, accept only `player`, `partyN` and
-  `raidN`, then mark a change and schedule one re-scan with `C_Timer.After`.
-- `GROUP_ROSTER_UPDATE` also schedules a re-scan, since unit IDs shift when
-  the roster changes. New members' auras arrive as `UNIT_AURA` for their
-  unit.
-- Re-scan with `GetAuraDataBySpellName` per unit. There's no need to track
-  auras one by one.
-- Buff the player first, then members in a fixed order, so pressing the
-  button repeatedly buffs the group. Skip members who are dead, offline or
-  out of range.
-- Range: check `C_Spell.IsSpellInRange(spell, unit)` when picking a target,
-  and on a slow out-of-combat check to notice range changes. It returns
-  plain values in and out of combat. `UNIT_IN_RANGE_UPDATE` never fires on
-  Forever, and `UnitInRange` only returns secret values.
-- Raids: limit to your own party, or recommend the group versions that cost
-  reagents.
-
 ## Feature ideas
+
+- 29. Paladin blessings on others, assigned automatically between the group's
+  Paladins over add-on messages, so each Paladin covers one blessing.
+  Linked to 21. Paladins only buff themselves until then.
+- 30. Optional skip: Blessing of Might on Hunters (SKIP_LIST.md, "Optional").
 
 - 18. Settings page cleanup. Show only the current class's settings. General UX. Make paladin prio?
 - 26. Known issue: the first Rockbiter cast once needed a second press
@@ -56,6 +38,7 @@ Design notes, for after the robustness work:
 
 ## Done
 
+- [x] Group buffing: party, own raid subgroup and optional whole raid, with group versions and the class skip list (`7fc9031`)
 - [x] Turn tracking back on automatically after death and login (`5e871be`)
 - [x] Fill in settings missing from an older saved config (`4ba4a0b`)
 - [x] Re-check buffs on a full aura update outside a raid (`aa27924`)
