@@ -211,6 +211,48 @@ Result:
 Result:
 `true` near, `false` far, as plain values (not secrets), in and out of combat
 
+## Party aura lookup (in a party, out of combat)
+
+`/dump C_UnitAuras.GetAuraDataBySpellName("party1", "Blessing of Might")` with Blessing of Might on party1
+
+Result:
+A readable table, with plain `duration` and `expirationTime`
+
+## Party aura secret check (in a party)
+
+`/run local a=C_UnitAuras.GetAuraDataBySpellName("party1","Blessing of Might") print(a and issecretvalue(a.duration), a and issecretvalue(a.expirationTime))` out of combat, then in combat
+
+Result:
+`false false` out of combat. `nil nil` in combat: the lookup returns nothing for a party member in combat, even with the buff on. Group buffing is out-of-combat only, so this doesn't matter
+
+## Party unit state (in a party)
+
+`/run local t={UnitExists("party1"),UnitIsConnected("party1"),UnitIsDeadOrGhost("party1"),UnitIsVisible("party1")} for i=1,4 do print(i,t[i],issecretvalue(t[i])) end` out of combat, then in combat
+
+Result:
+`true`, `true`, `false`, `true`, none of them secret, in and out of combat
+
+## Party class and identity (in a party)
+
+`/run local _,c=UnitClass("party1") print(c,issecretvalue(c),UnitIsUnit("party1","player"))`
+
+Result:
+The class token, `false`, `false`: the class is plain
+
+## `UNIT_AURA` for party members (in a party)
+
+`/run local f=CreateFrame("Frame") f:RegisterEvent("UNIT_AURA") f:SetScript("OnEvent",function(_,_,u) if u~="player" then print("UNIT_AURA",u) end end)`, then cast Blessing of Might on party1
+
+Result:
+`UNIT_AURA` fired for `party1`, `target` and `softfriend`. It fires for party members, and the same change also arrives under the other unit IDs that point at them, so the handler filters to `partyN` and `raidN`
+
+## Raid subgroup (in a raid)
+
+`/run local n,_,g=GetRaidRosterInfo(1) print(n,g,issecretvalue(g))`
+
+Result:
+The name, `1`, `false`: the subgroup is plain
+
 ## Bloodrage then Battle Shout (Warrior, "Always try Bloodrage out of combat" on)
 
 With Battle Shout missing and no rage, the first press out of combat should cast Bloodrage. The second press should cast Battle Shout. Bloodrage does not start combat on Forever.
