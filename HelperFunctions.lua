@@ -11,6 +11,8 @@ function BuffBot.IndexOf(value, table)
     return nil
 end
 
+-- Replaced by the saved config on ADDON_LOADED; empty until then so debug() works
+BuffBot.config = {}
 function BuffBot.debug(...)
     if BuffBot.config.DEBUG_MODE then
         print(...)

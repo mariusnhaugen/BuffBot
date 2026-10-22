@@ -1,8 +1,6 @@
 local _, BuffBot = ...
-BuffBot.config = {}
 local class = BuffBot.playerclass
-local function debug() end
-debug = BuffBot.debug
+local debug = BuffBot.debug
 
 local InitalClassBuffLists = {}
 InitalClassBuffLists.DRUID = { "Omen of Clarity", "Mark of the Wild", "Thorns" }
