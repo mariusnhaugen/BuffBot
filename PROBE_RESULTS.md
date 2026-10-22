@@ -281,6 +281,13 @@ Node 110309, entry 136871, spell ID 1225503, "Reagent Economy", current rank 1
 Result:
 `true false 1` with the perk, `false 605102 0 0` without it. `IsPlayerSpell(1225503)` tells them apart, so no trait lookup is needed. The Legacy config ID differs per account (2444392, 605102). A first try at "without" (refunding the perk without saving) gave `true false 0`: the perk was still learned, and `currentRank` showed the unsaved refund
 
+## Blessing of Kings IDs
+
+`/dump C_Spell.GetSpellInfo(20217), C_Spell.GetSpellInfo(25898)`, on a character without Kings. A lookup by ID resolves any spell, known or not
+
+Result:
+Both resolve, to Blessing of Kings and Greater Blessing of Kings. In Forever Kings is a trained spell from level 20, not a talent. BuffBot only uses the ID to get the client's name, then works by name, so the trained spell is found even if its own ID differs
+
 ## Bloodrage then Battle Shout (Warrior, "Always try Bloodrage out of combat" on)
 
 With Battle Shout missing and no rage, the first press out of combat should cast Bloodrage. The second press should cast Battle Shout. Bloodrage does not start combat on Forever.
