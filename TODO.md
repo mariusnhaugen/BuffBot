@@ -5,17 +5,20 @@ commit.
 
 ## Feature ideas
 
-- 29. Paladin blessings on others, assigned automatically between the group's
-  Paladins over add-on messages, so each Paladin covers one blessing.
-  Linked to 21. Paladins only buff themselves until then.
-- 30. Optional skip: Blessing of Might on Hunters (SKIP_LIST.md, "Optional").
+- 29. Blessings shared out between the group's Paladins over add-on
+  messages, so each Paladin covers one blessing, plus Greater Blessings
+  (Symbol of Kings or Reagent Economy). Linked to 21. Until then each
+  Paladin gives Might to Warriors and Rogues, Kings to Hunters and
+  Paladins, and Wisdom to everyone else,
+  and skips members who already have that blessing from another Paladin.
 
 - 18. Settings page cleanup. Show only the current class's settings. General UX. Make paladin prio?
 - 26. Known issue: the first Rockbiter cast once needed a second press
   before the button moved on. Not reproduced since. A probe for
   `UNIT_INVENTORY_CHANGED` printed nothing, so the event may not always
   fire, or `C_Item.GetWeaponEnchantInfo` may lag behind it.
-- 21. More Paladin buffs: Kings, Light, Sanctuary.
+- 21. More Paladin buffs: Light, Sanctuary. Kings is done: on yourself
+  through the blessing dropdown, and on Hunters and Paladins in the party.
 - 25. Size sliders for the icon and the text. The icon scales the 48px
   button (`SetSize`, out of combat only), and the text changes the font
   size of the suggestion list. Both use the game's own slider, with no

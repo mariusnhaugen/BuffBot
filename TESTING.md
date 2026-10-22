@@ -68,6 +68,12 @@ The button buffs you, then each member who is missing the buff and in range, and
 
 Result:
 
+### Paladin blessings on the party
+
+Blessing of Might on Warriors and Rogues, Blessing of Kings on Hunters and Paladins (level 20+; Wisdom before that), Blessing of Wisdom on everyone else, and your own blessing from the "Paladin blessing on yourself" dropdown. An old "Recommend Blessing of Wisdom" setting should carry over as Wisdom. Blessings last 60 minutes on Forever, so they're only due again when a member drops one or has under 5 minutes left. A member with another Paladin's blessing isn't buffed again.
+
+Result:
+
 ### Group versions and reagents (at the level of the group buffs)
 
 Untestable while the beta is capped. With two or more party members missing a buff and the reagent in the bags (or Reagent Economy), the button casts the group version on the first of them, and it covers the party. Without either it casts single-target. The reagent check takes any reagent for the buff, so a rank 2 caster holding only the rank 1 reagent (Wild Berries, Holy Candle) may get "Missing reagent".

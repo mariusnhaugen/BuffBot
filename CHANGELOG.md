@@ -14,9 +14,17 @@
 - **Group versions** (Gift of the Wild, Arcane Brilliance, Prayer of
   Fortitude, Prayer of Spirit) when two or more in the party are missing a
   buff and you have the Reagent Economy talent or the reagent.
+- **Paladin blessings** on the party: Blessing of Might on Warriors and
+  Rogues, Blessing of Kings on Hunters and Paladins once you have it,
+  Blessing of Wisdom on everyone else. No Greater Blessings yet.
 - In a raid, your own subgroup is buffed. "Buff the whole raid" carries on
   through the other subgroups. Off by default.
 - The text under the button shows who a buff is for.
+
+### Changed
+
+- "Recommend Blessing of Wisdom" is now a "Paladin blessing on yourself"
+  dropdown with Might, Wisdom and Kings. Your choice carries over.
 
 ## 2.2.0
 
