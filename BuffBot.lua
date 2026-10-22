@@ -1,7 +1,6 @@
 local _, BuffBot = ...
 
 local class = BuffBot.playerclass
-local assignedBuff = ""
 local REMINDER_DURA_MULTIPLIER = 0.2 -- aura.Duration * REMINDER_DURA_MULTIPLIER to get reminder duration
 
 --------------- MAIN FUNCTIONS ----------------
@@ -67,31 +66,23 @@ function BuffBot.MissingBuffs()
     return missing
 end
 
-function BuffBot.FindNextBuffInList()
-    local buff = BuffBot.MissingBuffs()[1]
-    if not buff then return "done" end
-    BuffBot.debug(buff, " Missing.")
-    return buff
-end
-
 function BuffBot.CheckPlayerBuffs()
-    local buff = BuffBot.FindNextBuffInList()
-    if buff == "done" then
+    local missing = BuffBot.MissingBuffs()
+    local buff = missing[1]
+    if not buff then
         if InCombatLockdown() then return end
         BuffBot.macroButton:Hide()
         return
     end
-    assignedBuff = buff
-    local poison = BuffBot.WeaponPoisons[assignedBuff]
+    BuffBot.debug(buff, " Missing.")
+    local poison = BuffBot.WeaponPoisons[buff]
     if poison then
-        BuffBot.UpdateItemMacro(BuffBot.PoisonItem(assignedBuff), poison.invSlot)
+        BuffBot.UpdateItemMacro(BuffBot.PoisonItem(buff), poison.invSlot)
     else
-        BuffBot.UpdateMacro(assignedBuff, "player", ShouldBloodrageFirst(assignedBuff) and "Bloodrage" or nil)
+        BuffBot.UpdateMacro(buff, "player", ShouldBloodrageFirst(buff) and "Bloodrage" or nil)
     end
 
-    if not BuffBot.config.HIDE_TEXT then
-        BuffBot.UpdateSuggestionList()
-    end
+    BuffBot.UpdateSuggestionList(missing)
 end
 
 local WEAPON_MAINHAND = 0                     --0,1,2 are mh,oh,ranged

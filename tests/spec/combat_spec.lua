@@ -15,7 +15,7 @@ describe("combat", function()
 
     it("finds nothing to cast in combat", function()
         h:enterCombat()
-        assert.equal("done", h.ns.FindNextBuffInList())
+        assert.same({}, h.ns.MissingBuffs())
     end)
 
     it("does not touch the secure button in combat", function()

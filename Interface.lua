@@ -143,7 +143,8 @@ end)
 
 
 BuffBot.suggestionList = {}
-function BuffBot.UpdateSuggestionList()
+-- missing: the list the button just used; built here when called on its own
+function BuffBot.UpdateSuggestionList(missing)
     for i = 1, #BuffBot.suggestionList, 1 do
         BuffBot.suggestionList[i]:SetText("")
         BuffBot.suggestionList[i]:Hide()
@@ -151,7 +152,7 @@ function BuffBot.UpdateSuggestionList()
 
     if BuffBot.config.HIDE_TEXT then return end
     -- Same list and skip rules as the button, so they always agree
-    local missing = BuffBot.MissingBuffs()
+    missing = missing or BuffBot.MissingBuffs()
     for i = 1, math.min(#missing, 5) do
         if not BuffBot.suggestionList[i] then
             BuffBot.suggestionList[i] = macroButton:CreateFontString(nil, "OVERLAY", "GameTooltipText")
