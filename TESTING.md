@@ -62,6 +62,26 @@ Fight a mob that puts a debuff on you, with `/console scriptErrors 1`, and let a
 
 Result:
 
+### Reagent Economy detection
+
+BuffBot looks for the Legacy talent by name, as a known spell or as an aura on the player. One of these should find it; note its spell ID so the lookup can go by ID, which works in every client language.
+
+`/dump C_Spell.GetSpellInfo("Reagent Economy")`, then `/dump C_UnitAuras.GetAuraDataBySpellName("player","Reagent Economy")`
+
+Result:
+
+### Group buffing on the button (in a party)
+
+The button buffs you, then each member who is missing the buff and in range, and the text shows their name. Warriors and Rogues never get Arcane Intellect or Divine Spirit. A member out of range drops off the list and comes back within a couple of seconds of walking back. No errors in combat.
+
+Result:
+
+### Group versions and reagents (at the level of the group buffs)
+
+Untestable while the beta is capped. With two or more party members missing a buff and the reagent in the bags (or Reagent Economy), the button casts the group version on the first of them, and it covers the party. Without either it casts single-target. The reagent check takes any reagent for the buff, so a rank 2 caster holding only the rank 1 reagent (Wild Berries, Holy Candle) may get "Missing reagent".
+
+Result:
+
 ### Tracking in battlegrounds and combat
 
 Die in a battleground: nothing is cast there. Tracking comes back on after leaving. Get resurrected in combat: tracking waits until combat ends.

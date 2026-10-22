@@ -35,6 +35,15 @@ Made for **WoW Forever**. The Classic Era version is no longer updated.
 Buffs you haven't learned are skipped, and a single-target buff is skipped
 while its group version (such as Gift of the Wild) is on you.
 
+**Group buffing:** Mark of the Wild, Arcane Intellect, Power Word: Fortitude
+and Divine Spirit also go on your party, one press per member, after you.
+Members who are dead, offline or out of range are skipped, and so are
+classes a buff does nothing for (see [SKIP_LIST.md](SKIP_LIST.md)). When two
+or more are missing a buff and you have the Reagent Economy talent or the
+reagent, the button casts the group version instead. In a raid it buffs your
+own subgroup, or the whole raid if you turn that on. Pets can't be buffed in
+Forever.
+
 **Weapon buffs:** an oil or a sharpening stone on the weapon also counts, so
 BuffBot won't ask you to overwrite it. Rogues get the highest rank of the
 chosen poison in their bags, or another poison if they have none of it, and
@@ -51,6 +60,9 @@ a poison running low on charges counts as missing.
 
 - **Hide Icon / Hide Text:** text-only or icon-only buffing.
 - **Reset Button Position.**
+- **Buff your party:** group buffing, on by default.
+- **Buff the whole raid:** after your subgroup, the rest of the raid. Off by
+  default.
 - **Strict Mage Armors:** only the recommended armor counts.
 - **Skip Dampen Magic / Skip Thorns.**
 - **Always try Bloodrage out of combat:** casts Bloodrage before Battle Shout.

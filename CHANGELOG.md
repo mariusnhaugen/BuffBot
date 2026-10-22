@@ -1,5 +1,23 @@
 # BuffBot
 
+## 2.3.0 (unreleased)
+
+### New
+
+- **Group buffing.** The button also buffs party members who are missing
+  Mark of the Wild, Arcane Intellect, Power Word: Fortitude or Divine
+  Spirit, one press each. It buffs you first, then each member, one buff at
+  a time.
+- No mana wasted: members are skipped when they're dead, offline, out of
+  range, or a class the buff does nothing for (no Arcane Intellect or Divine
+  Spirit on Warriors and Rogues).
+- **Group versions** (Gift of the Wild, Arcane Brilliance, Prayer of
+  Fortitude, Prayer of Spirit) when two or more in the party are missing a
+  buff and you have the Reagent Economy talent or the reagent.
+- In a raid, your own subgroup is buffed. "Buff the whole raid" carries on
+  through the other subgroups. Off by default.
+- The text under the button shows who a buff is for.
+
 ## 2.2.0
 
 ### New
