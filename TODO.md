@@ -41,6 +41,7 @@ commit.
 
 ## Done
 
+- [x] Paladin blessings on the party by class, Kings, and a self-blessing dropdown (`7e411d7`)
 - [x] Group buffing: party, own raid subgroup and optional whole raid, with group versions and the class skip list (`7fc9031`)
 - [x] Turn tracking back on automatically after death and login (`5e871be`)
 - [x] Fill in settings missing from an older saved config (`4ba4a0b`)
