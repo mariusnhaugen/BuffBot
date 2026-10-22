@@ -113,11 +113,10 @@ local reagents = {
     ["Prayer of Spirit"] = { 17029 },           -- Sacred Candle
 }
 
--- The account-wide Legacy talent that removes reagent costs. Looked up by
--- name until its ID is probed in game (TESTING.md).
+-- The account-wide Legacy talent that removes reagent costs. It's a trait,
+-- not a spellbook spell or an aura, but IsPlayerSpell sees it (PROBE_RESULTS.md).
 function BuffBot.HasReagentEconomy()
-    return C_Spell.GetSpellInfo("Reagent Economy") ~= nil
-        or C_UnitAuras.GetAuraDataBySpellName("player", "Reagent Economy") ~= nil
+    return IsPlayerSpell(1225503)
 end
 
 local function HasReagent(groupVersion)
