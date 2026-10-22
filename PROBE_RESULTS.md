@@ -253,6 +253,34 @@ Result:
 Result:
 The name, `1`, `false`: the subgroup is plain
 
+## Reagent Economy by name
+
+`/dump C_Spell.GetSpellInfo("Reagent Economy")`, then `/dump C_UnitAuras.GetAuraDataBySpellName("player","Reagent Economy")`, on a character with the Legacy perk
+
+Result:
+`nil` both times. It isn't in the spellbook (a search for "reag"/"econ" finds nothing) and it isn't an aura (listing every buff on the player doesn't show it)
+
+## Legacy tree (trait config)
+
+`/run for s=1,100 do local c=C_Traits.GetConfigIDBySystemID(s) if c and c>0 then local i=C_Traits.GetConfigInfo(c) print(s,c,i and i.name,i and i.treeIDs and i.treeIDs[1]) end end`, then `/run for t=1,3000 do local c=C_Traits.GetConfigIDByTreeID(t) if c and c>0 then print(t,c) end end`
+
+Result:
+`45 2444392 1118`, then trees 1118, 1187, 1188 and 1189, all on config 2444392. The Legacy perks are a trait config of their own, trait system 45, separate from the class talent config (`C_ClassTalents.GetActiveConfigID()` gave 2444389). Look the config ID up with `GetConfigIDBySystemID(45)` rather than storing it
+
+## Reagent Economy node
+
+Walk the nodes of the four trees with `C_Traits.GetTreeNodes`, `GetNodeInfo`, `GetEntryInfo` and `GetDefinitionInfo`, and print any spell whose name contains "Reag"
+
+Result:
+Node 110309, entry 136871, spell ID 1225503, "Reagent Economy", current rank 1
+
+## Reagent Economy detection
+
+`/run print(IsPlayerSpell(1225503), IsSpellKnown and IsSpellKnown(1225503), C_Traits.GetNodeInfo(C_Traits.GetConfigIDBySystemID(45),110309).currentRank)` with the perk, then `/run local c=C_Traits.GetConfigIDBySystemID(45) local i=c and C_Traits.GetNodeInfo(c,110309) print(IsPlayerSpell(1225503), c, i and i.activeRank, i and i.currentRank)` on an account that never learned it
+
+Result:
+`true false 1` with the perk, `false 605102 0 0` without it. `IsPlayerSpell(1225503)` tells them apart, so no trait lookup is needed. The Legacy config ID differs per account (2444392, 605102). A first try at "without" (refunding the perk without saving) gave `true false 0`: the perk was still learned, and `currentRank` showed the unsaved refund
+
 ## Bloodrage then Battle Shout (Warrior, "Always try Bloodrage out of combat" on)
 
 With Battle Shout missing and no rage, the first press out of combat should cast Bloodrage. The second press should cast Battle Shout. Bloodrage does not start combat on Forever.
