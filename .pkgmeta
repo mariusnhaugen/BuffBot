@@ -9,4 +9,5 @@ ignore:
   - TESTING.md
   - PROBE_RESULTS.md
   - TODO.md
+  - SKIP_LIST.md
   - deploy.sh
