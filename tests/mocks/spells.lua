@@ -65,6 +65,8 @@ local byName = {
     ["Track Demons"] = 19878,
     ["Track Giants"] = 19882,
     ["Track Dragonkin"] = 19879,
+    -- LEGACY: the real ID is still to be probed
+    ["Reagent Economy"] = 990001,
 }
 
 local byID = {}

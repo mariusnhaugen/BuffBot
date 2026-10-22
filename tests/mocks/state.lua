@@ -29,6 +29,10 @@ function State.new(class)
         bags = {}, -- item ID -> count
         group = false,
         raid = false,
+        -- Other group members by unit ("party1", or "raid2" on: the player is
+        -- raid1): { name, class, subgroup, dead, offline, visible, inRange, auras }
+        members = {},
+        playerSubgroup = 1,
         time = 1000,
         timers = {}, -- { at = time, callback } from C_Timer.After
         printed = {},
@@ -72,12 +76,27 @@ function State:isUsable(name)
     return self:knows(name) and not self.unusable[name]
 end
 
--- opts: duration (seconds, 0 = permanent), remaining (seconds), fromPlayer (default true)
+-- The player's own unit in a raid
+function State:resolve(unit)
+    if self.raid and unit == "raid1" then return "player" end
+    return unit
+end
+
+-- A unit's aura table, or nil for a unit that isn't there
+function State:aurasOf(unit)
+    unit = self:resolve(unit)
+    if unit == "player" then return self.auras end
+    local member = self.members[unit]
+    return member and member.auras
+end
+
+-- opts: duration (seconds, 0 = permanent), remaining (seconds), fromPlayer
+-- (default true), unit (default player)
 function State:giveAura(name, opts)
     opts = opts or {}
     local duration = opts.duration or 1800
     local remaining = opts.remaining or duration
-    self.auras[name] = {
+    self:aurasOf(opts.unit or "player")[name] = {
         name = name,
         spellId = Spells.idOf(name),
         duration = duration,
@@ -86,8 +105,20 @@ function State:giveAura(name, opts)
     }
 end
 
-function State:removeAura(name)
-    self.auras[name] = nil
+function State:removeAura(name, unit)
+    self:aurasOf(unit or "player")[name] = nil
+end
+
+-- Units in the same subgroup as unit, the player included
+function State:subgroupOf(unit)
+    unit = self:resolve(unit)
+    local subgroup = unit == "player" and self.playerSubgroup or self.members[unit].subgroup
+    local units = {}
+    if not self.raid or subgroup == self.playerSubgroup then table.insert(units, "player") end
+    for other, member in pairs(self.members) do
+        if not self.raid or member.subgroup == subgroup then table.insert(units, other) end
+    end
+    return units
 end
 
 -- Moves the clock on and runs the timers that came due, in order, each at

@@ -148,18 +148,79 @@ return function(state, env)
     env.UIParent = newRegion(env, "Frame", "UIParent")
 
     -- Units, group and combat
-    function env.UnitClass()
-        local class = state.class
+    local function member(unit)
+        return state.members[unit]
+    end
+
+    function env.UnitClass(unit)
+        local m = unit and member(unit)
+        local class = m and m.class or state.class
         return class:sub(1, 1) .. class:sub(2):lower(), class, 1
     end
 
     function env.GetUnitName() return "Tester" end
 
+    function env.UnitName(unit)
+        if state:resolve(unit) == "player" then return "Tester" end
+        local m = member(unit)
+        return m and m.name
+    end
+
+    function env.UnitExists(unit)
+        return state:resolve(unit) == "player" or member(unit) ~= nil
+    end
+
+    function env.UnitIsConnected(unit)
+        local m = member(unit)
+        if m then return not m.offline end
+        return state:resolve(unit) == "player"
+    end
+
+    function env.UnitIsVisible(unit)
+        local m = member(unit)
+        if m then return m.visible ~= false end
+        return state:resolve(unit) == "player"
+    end
+
+    function env.UnitIsUnit(a, b)
+        return state:resolve(a) == state:resolve(b)
+    end
+
+    local function memberCount()
+        local count = 0
+        for _ in pairs(state.members) do count = count + 1 end
+        return count
+    end
+
+    function env.GetNumGroupMembers()
+        if not (state.group or state.raid) then return 0 end
+        return 1 + memberCount()
+    end
+
+    function env.GetNumSubgroupMembers()
+        if state.raid or not state.group then return 0 end
+        return memberCount()
+    end
+
+    -- name, rank, subgroup, level, class, fileName
+    function env.GetRaidRosterInfo(index)
+        if not state.raid then return nil end
+        if index == 1 then
+            return "Tester", 0, state.playerSubgroup, 60, state.class, state.class
+        end
+        local m = member("raid" .. index)
+        if m then return m.name, 0, m.subgroup, 60, m.class, m.class end
+    end
+
     function env.UnitLevel() return 60 end
 
     function env.InCombatLockdown() return state.combat end
 
-    function env.UnitIsDeadOrGhost(unit) return unit == "player" and (state.dead or state.ghost) end
+    function env.UnitIsDeadOrGhost(unit)
+        local m = member(unit)
+        if m then return m.dead == true end
+        return state:resolve(unit) == "player" and (state.dead or state.ghost)
+    end
 
     function env.UnitOnTaxi(unit) return unit == "player" and state.taxi end
 
@@ -188,12 +249,13 @@ return function(state, env)
 
     env.LE_PARTY_CATEGORY_HOME = 1
 
-    -- Auras (only the player is tracked)
+    -- Auras, for the player and the group members
     env.C_UnitAuras = {
         GetAuraDataBySpellName = function(unit, name, filter)
-            if unit ~= "player" then return nil end
+            local auras = state:aurasOf(unit)
+            if not auras then return nil end
             local english = state:englishName(name)
-            local aura = english and state.auras[english]
+            local aura = english and auras[english]
             if not aura then return nil end
             -- The PLAYER filter only returns auras the player cast
             if filter and filter:find("PLAYER") and not aura.isFromPlayerOrPlayerPet then return nil end

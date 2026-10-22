@@ -1,4 +1,5 @@
--- Item name <-> ID table for the fake game: the poisons, every rank.
+-- Item name <-> ID table for the fake game: the poisons, every rank, and
+-- the group buff reagents.
 local byName = {
     ["Instant Poison"] = 6947,
     ["Instant Poison II"] = 6949,
@@ -20,6 +21,12 @@ local byName = {
     ["Wound Poison II"] = 10920,
     ["Wound Poison III"] = 10921,
     ["Wound Poison IV"] = 10922,
+    -- Reagents for the group buffs
+    ["Wild Berries"] = 17021,
+    ["Thornroot"] = 17026,
+    ["Arcane Powder"] = 17020,
+    ["Holy Candle"] = 17028,
+    ["Sacred Candle"] = 17029,
 }
 
 local byID = {}

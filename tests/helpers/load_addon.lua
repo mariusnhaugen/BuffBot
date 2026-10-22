@@ -58,11 +58,20 @@ function Harness:give(name, opts)
         return self:enchantWeapon(3)
     end
     self.state:giveAura(english, opts)
-    self:refresh()
+    self:auraChanged(opts and opts.unit)
 end
 
-function Harness:remove(name)
-    self.state:removeAura(name)
+-- Another unit's change goes through the scheduled re-check, so the clock
+-- moves on past it
+function Harness:auraChanged(unit)
+    if not unit or self.state:resolve(unit) == "player" then return self:refresh() end
+    self:fire("UNIT_AURA", unit, {})
+    self.state:advance(0.5)
+end
+
+function Harness:remove(name, unit)
+    self.state:removeAura(name, unit)
+    if unit and unit ~= "player" then return self:auraChanged(unit) end
     self:fire("UNIT_AURA", "player", { removedAuraInstanceIDs = { 1 } })
 end
 
@@ -141,14 +150,46 @@ function Harness:leaveCombat()
     self:fire("PLAYER_REGEN_ENABLED")
 end
 
-function Harness:joinRaid()
+-- A member: { name, class, subgroup, dead, offline, visible, inRange };
+-- class defaults to WARRIOR
+local function addMembers(state, members, prefix, first)
+    state.members = {}
+    for i, m in ipairs(members or {}) do
+        m.class = m.class or "WARRIOR"
+        m.name = m.name or (prefix .. (first + i - 1))
+        m.subgroup = m.subgroup or 1
+        m.auras = {}
+        state.members[prefix .. (first + i - 1)] = m
+    end
+end
+
+function Harness:joinParty(members)
+    self.state.group, self.state.raid = true, false
+    addMembers(self.state, members, "party", 1)
+    self:fire("GROUP_ROSTER_UPDATE")
+end
+
+-- The player is raid1, in subgroup playerSubgroup (default 1); members are
+-- raid2 on
+function Harness:joinRaid(members, playerSubgroup)
     self.state.group, self.state.raid = true, true
+    self.state.playerSubgroup = playerSubgroup or 1
+    addMembers(self.state, members, "raid", 2)
     self:fire("GROUP_ROSTER_UPDATE")
 end
 
 function Harness:leaveGroup()
     self.state.group, self.state.raid = false, false
+    self.state.members = {}
     self:fire("GROUP_LEFT")
+end
+
+-- Changes a member, then lets the range poll notice
+function Harness:setMember(unit, fields)
+    for key, value in pairs(fields) do
+        self.state.members[unit][key] = value
+    end
+    self.state:advance(2)
 end
 
 function Harness:setting(key, value)
@@ -167,7 +208,29 @@ function Harness:shown()
     if itemID then
         return Items.nameOf(tonumber(itemID)) .. " on " .. invSlot
     end
-    return macro:match("^/cast %[target=player%](.+)$")
+    return macro:match("^/cast %[target=[^%]]+%](.+)$")
+end
+
+-- The unit the button casts on, or nil
+function Harness:target()
+    if not self.button:IsShown() then return nil end
+    return (self.button:GetAttribute("macrotext1") or ""):match("^/cast %[target=([^%]]+)%]")
+end
+
+-- Who a cast lands on: a group version reaches the target's whole subgroup,
+-- apart from members who are dead, offline or out of range
+function Harness:landsOn(buff, unit)
+    local isGroupVersion = false
+    for _, versions in pairs(self.ns.GroupVersions) do
+        if versions[1] == (self.state:englishName(buff) or buff) then isGroupVersion = true end
+    end
+    if not isGroupVersion then return { unit } end
+    local units = {}
+    for _, other in ipairs(self.state:subgroupOf(unit)) do
+        local m = self.state.members[other]
+        if not m or not (m.dead or m.offline or m.inRange == false) then table.insert(units, other) end
+    end
+    return units
 end
 
 function Harness:suggestions()
@@ -179,13 +242,24 @@ function Harness:suggestions()
 end
 
 -- Presses the button until nothing is left, returning the buffs in cast order.
+-- Casts on someone other than the player read "<buff> > <unit>".
 function Harness:buffUp()
     local cast = {}
     for _ = 1, 20 do
-        local buff = self:shown()
+        local buff, unit = self:shown(), self:target()
         if not buff then return cast end
-        table.insert(cast, buff)
-        self:give(buff)
+        local landsOn = self:landsOn(buff, unit or "player")
+        if #landsOn == 1 and self.state:resolve(landsOn[1]) == "player" then
+            table.insert(cast, buff)
+            self:give(buff)
+        else
+            table.insert(cast, unit == "player" and buff or (buff .. " > " .. unit))
+            for _, other in ipairs(landsOn) do
+                self.state:giveAura(self.state:englishName(buff) or buff, { unit = other })
+            end
+            self:auraChanged(unit)
+            self:refresh()
+        end
     end
     error("buffUp did not converge: " .. table.concat(cast, ", "))
 end

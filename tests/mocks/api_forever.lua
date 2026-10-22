@@ -30,6 +30,14 @@ return function(state, env)
             return state:isUsable(english), state.unusable[english] == true
         end,
 
+        -- Plain true/false, as in the probe. Members are in range unless
+        -- set otherwise.
+        IsSpellInRange = function(_, unit)
+            local member = state.members[unit]
+            if member then return member.inRange ~= false end
+            return state:resolve(unit) == "player"
+        end,
+
         -- Only the global cooldown is modelled
         GetSpellCooldown = function()
             if state.gcdUntil > state.time then
