@@ -531,3 +531,10 @@ On a Dwarf gatherer, `/reload` with tracking off: the gathering tracker comes on
 
 Result:
 The gathering tracker comes on, then Find Treasure after the global cooldown
+
+## Range events for group members
+
+In a group, `/etrace` while a member walks from out of view into buff range. Does `UNIT_IN_RANGE_UPDATE` fire? What does `UnitInRange("party1")` return?
+
+Result:
+`UNIT_IN_RANGE_UPDATE` never fires, and `UnitInRange` returns secret values. Only `C_Spell.IsSpellInRange` works, so range changes need the poll
