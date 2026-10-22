@@ -18,6 +18,8 @@ describe("saved config", function()
             ROGUE_POISON_MAINHAND = "Instant Poison",
             ROGUE_POISON_OFFHAND = "Instant Poison",
             TRACK_TREASURE = true,
+            GROUP_BUFFING = true,
+            RAID_BUFFING = false,
         }, h.ns.config)
         assert.equal(h.ns.config, h.env.BuffBotConfig)
     end)
@@ -201,7 +203,7 @@ describe("settings panel", function()
         assert.same({}, h:suggestions())
     end)
 
-    it("puts tracking, then the class settings, under headers after the button", function()
+    it("puts tracking, group, then the class settings, under headers after the button", function()
         local h = Addon.load()
         local order = {}
         for _, init in ipairs(h.state.categories.BuffBot.initializers) do
@@ -209,11 +211,13 @@ describe("settings panel", function()
                 table.insert(order, init.name)
             elseif init.kind == "button" then
                 table.insert(order, "button")
-            elseif init.setting.name == "Auto tracking" or init.setting.name == "Auto Find Treasure" then
+            elseif init.setting.name == "Auto tracking" or init.setting.name == "Auto Find Treasure"
+                or init.setting.name == "Buff your party" or init.setting.name == "Buff the whole raid" then
                 table.insert(order, init.setting.name)
             end
         end
-        assert.same({ "button", "Tracking", "Auto tracking", "Auto Find Treasure", "Class Settings" }, order)
+        assert.same({ "button", "Tracking", "Auto tracking", "Auto Find Treasure", "Group", "Buff your party",
+            "Buff the whole raid", "Class Settings" }, order)
     end)
 
     local function resetButton(h)

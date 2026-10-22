@@ -158,7 +158,12 @@ function BuffBot.UpdateSuggestionList(missing)
             BuffBot.suggestionList[i] = macroButton:CreateFontString(nil, "OVERLAY", "GameTooltipText")
             BuffBot.suggestionList[i]:SetPoint("TOPLEFT", macroButton, 0, -35 + (i * -15))
         end
-        BuffBot.suggestionList[i]:SetText(BuffBot.DisplayName(missing[i]))
+        local text = BuffBot.DisplayName(missing[i].buff)
+        -- "→" isn't in the game font
+        if missing[i].unit ~= "player" then
+            text = text .. " > " .. (UnitName(missing[i].unit) or missing[i].unit)
+        end
+        BuffBot.suggestionList[i]:SetText(text)
         BuffBot.suggestionList[i]:Show()
     end
 end

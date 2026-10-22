@@ -1,10 +1,29 @@
 local addonName, BuffBot = ...
 local events = CreateFrame("Frame")
 
+-- Members' auras change in bursts, so their events share one re-check
+local RESCAN_DELAY = 0.2
+local rescanPending = false
+local function ScheduleRescan()
+    if rescanPending then return end
+    rescanPending = true
+    C_Timer.After(RESCAN_DELAY, function()
+        rescanPending = false
+        BuffBot.CheckPlayerBuffs()
+    end)
+end
+
+local function IsGroupUnit(unit)
+    return unit:match("^party%d$") ~= nil or unit:match("^raid%d+$") ~= nil
+end
+
 -- In combat the payload can hold secrets, which add-on code can't test, so
--- check the unit before reading it
+-- check the unit before reading it. Other units' payloads are never read.
 function events:UNIT_AURA(unit, info)
-    if unit ~= "player" then return end
+    if unit ~= "player" then
+        if not InCombatLockdown() and IsGroupUnit(unit) then ScheduleRescan() end
+        return
+    end
     -- A full update triggers when people join party or player zones through instance
     local fullUpdate = info.isFullUpdate
     if not issecretvalue(fullUpdate) and fullUpdate and UnitInRaid("player") then
@@ -74,6 +93,7 @@ end
 
 function events:PLAYER_REGEN_ENABLED()
     BuffBot.CheckPlayerBuffs()
+    BuffBot.StartRangePoll()
     BuffBot.ResumeTracking()
 end
 

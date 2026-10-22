@@ -87,6 +87,55 @@ BuffBot.GroupVersions = {
     ["Blessing of Wisdom"] = { "Greater Blessing of Wisdom" },
 }
 
+-- Single-target buffs the button also casts on group members
+BuffBot.GroupBuffs = {
+    ["Mark of the Wild"] = true,
+    ["Arcane Intellect"] = true,
+    ["Power Word: Fortitude"] = true,
+    ["Divine Spirit"] = true,
+}
+
+-- Classes a buff does nothing for, so it's never cast on them (SKIP_LIST.md).
+-- The blessings wait for Paladin group buffing.
+BuffBot.SkipOnClass = {
+    ["Arcane Intellect"] = { WARRIOR = true, ROGUE = true },
+    ["Divine Spirit"] = { WARRIOR = true, ROGUE = true },
+    ["Blessing of Wisdom"] = { WARRIOR = true, ROGUE = true },
+    ["Blessing of Might"] = { MAGE = true, PRIEST = true, WARLOCK = true },
+}
+
+-- Reagent item IDs per group version, any of which will do. Each rank wants
+-- its own, but the button casts the highest rank known.
+local reagents = {
+    ["Gift of the Wild"] = { 17021, 17026 },    -- Wild Berries, Thornroot
+    ["Arcane Brilliance"] = { 17020 },          -- Arcane Powder
+    ["Prayer of Fortitude"] = { 17028, 17029 }, -- Holy Candle, Sacred Candle
+    ["Prayer of Spirit"] = { 17029 },           -- Sacred Candle
+}
+
+-- The account-wide Legacy talent that removes reagent costs. Looked up by
+-- name until its ID is probed in game (TESTING.md).
+function BuffBot.HasReagentEconomy()
+    return C_Spell.GetSpellInfo("Reagent Economy") ~= nil
+        or C_UnitAuras.GetAuraDataBySpellName("player", "Reagent Economy") ~= nil
+end
+
+local function HasReagent(groupVersion)
+    for _, itemID in ipairs(reagents[groupVersion] or {}) do
+        if C_Item.GetItemCount(itemID) > 0 then return true end
+    end
+    return false
+end
+
+-- The group version of a buff when the player can cast it, or nil
+function BuffBot.CastableGroupVersion(buffString)
+    local groupVersion = (BuffBot.GroupVersions[buffString] or {})[1]
+    if not groupVersion or not BuffBot.CheckSpellAvailable(groupVersion) then return nil end
+    if BuffBot.HasReagentEconomy() or HasReagent(groupVersion) then
+        return groupVersion
+    end
+end
+
 -- Every spell the add-on names, by rank 1 ID. The English names are only
 -- keys: BuffBot.SpellName turns them into the client's names.
 local spellIDTable = {

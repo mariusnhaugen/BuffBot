@@ -5,10 +5,35 @@ local REMINDER_DURA_MULTIPLIER = 0.2 -- aura.Duration * REMINDER_DURA_MULTIPLIER
 
 --------------- MAIN FUNCTIONS ----------------
 
+local RANGE_POLL = 2 -- seconds between range re-checks in a group
+
+local polling = false
+local function PollRange()
+    polling = false
+    if InCombatLockdown() or not IsInGroup() or not BuffBot.config.GROUP_BUFFING then return end
+    BuffBot.CheckPlayerBuffs()
+    polling = true
+    C_Timer.After(RANGE_POLL, PollRange)
+end
+
+-- No event says a member came into range, so re-check every few seconds while
+-- in a group, out of combat, with a group buff in the list. Stops on its own.
+function BuffBot.StartRangePoll()
+    if polling then return end
+    for _, buff in ipairs(BuffBot.classBuffList or {}) do
+        if BuffBot.GroupBuffs[buff] then
+            polling = true
+            C_Timer.After(RANGE_POLL, PollRange)
+            return
+        end
+    end
+end
+
 function BuffBot.UpdateClassBuffList()
     BuffBot.debug("UpdateClassBuffList")
     BuffBot.FilterInitialList()
     BuffBot.CheckPlayerBuffs()
+    BuffBot.StartRangePoll()
 end
 
 function BuffBot.HasUniqueClassBuff()
@@ -40,16 +65,85 @@ local function ShouldSkipBuff(buffString)
     if BuffBot.IndexOf(buffString, BuffBot.uniqueBuffs) and BuffBot.HasUniqueClassBuff() then
         return true -- check auras and armors
     end
-    local groupVersions = BuffBot.GroupVersions[buffString]
-    if groupVersions then
-        for i = 1, #groupVersions do
-            if BuffBot.UnitHasAssignedBuff("player", groupVersions[i]) then return true end
+end
+
+-- Missing the buff and any group version of it
+local function UnitMissing(unit, buffString)
+    if BuffBot.UnitHasAssignedBuff(unit, buffString) then return false end
+    for _, groupVersion in ipairs(BuffBot.GroupVersions[buffString] or {}) do
+        if BuffBot.UnitHasAssignedBuff(unit, groupVersion) then return false end
+    end
+    return true
+end
+
+-- A member the buff would help who can take it now. The class check comes
+-- first, so classes the buff does nothing for never cost a range check.
+local function CanBuffUnit(unit, buffString)
+    if unit == "player" then return true end
+    local skip = BuffBot.SkipOnClass[buffString]
+    if skip and skip[select(2, UnitClass(unit))] then return false end
+    return UnitExists(unit) and UnitIsConnected(unit) and UnitIsVisible(unit)
+        and not UnitIsDeadOrGhost(unit)
+        and C_Spell.IsSpellInRange(BuffBot.SpellName(buffString), unit) == true
+end
+
+-- The units to buff, as subgroups: the player's own first, starting with the
+-- player, then the rest of the raid when that's turned on. Pets can't be
+-- buffed in Forever.
+local function GroupUnits()
+    if not BuffBot.config.GROUP_BUFFING or not IsInGroup() then return { { "player" } } end
+    if not IsInRaid() then
+        local party = { "player" }
+        for i = 1, GetNumSubgroupMembers() do
+            table.insert(party, "party" .. i)
         end
+        return { party }
+    end
+    local subgroups, own = {}, 1
+    for i = 1, GetNumGroupMembers() do
+        local unit = "raid" .. i
+        local subgroup = select(3, GetRaidRosterInfo(i)) or 1
+        subgroups[subgroup] = subgroups[subgroup] or {}
+        if UnitIsUnit(unit, "player") then
+            own = subgroup
+            table.insert(subgroups[subgroup], 1, "player")
+        else
+            table.insert(subgroups[subgroup], unit)
+        end
+    end
+    local ordered = { subgroups[own] or { "player" } }
+    if BuffBot.config.RAID_BUFFING then
+        for subgroup = 1, 8 do
+            if subgroup ~= own and subgroups[subgroup] then
+                table.insert(ordered, subgroups[subgroup])
+            end
+        end
+    end
+    return ordered
+end
+
+-- One subgroup's entries for a group buff: the group version when two or
+-- more who'd benefit are missing it and it can be cast, else one per member
+local function AddGroupBuff(missing, buffString, units)
+    local targets = {}
+    for _, unit in ipairs(units) do
+        if CanBuffUnit(unit, buffString) and UnitMissing(unit, buffString) then
+            table.insert(targets, unit)
+        end
+    end
+    local groupVersion = #targets >= 2 and BuffBot.CastableGroupVersion(buffString)
+    if groupVersion then
+        table.insert(missing, { buff = groupVersion, unit = targets[1] })
+        return
+    end
+    for _, unit in ipairs(targets) do
+        table.insert(missing, { buff = buffString, unit = unit })
     end
 end
 
--- Every buff the button would cast, in order. The button casts the first, and
--- the suggestion list shows them all.
+-- Every cast the button would make, in order, as { buff, unit } entries. The
+-- button casts the first, and the suggestion list shows them all. A group
+-- buff goes on everyone before the next buff starts.
 function BuffBot.MissingBuffs()
     local missing = {}
     if InCombatLockdown() then return missing end
@@ -57,10 +151,15 @@ function BuffBot.MissingBuffs()
     local classBuffs = BuffBot.classBuffList
     if classBuffs == nil then return missing end
 
+    local subgroups = GroupUnits()
     for i = 1, #classBuffs do
         local currentBuff = classBuffs[i]
-        if not ShouldSkipBuff(currentBuff) and not BuffBot.UnitHasAssignedBuff("player", currentBuff) then
-            table.insert(missing, currentBuff)
+        if BuffBot.GroupBuffs[currentBuff] then
+            for _, units in ipairs(subgroups) do
+                AddGroupBuff(missing, currentBuff, units)
+            end
+        elseif not ShouldSkipBuff(currentBuff) and UnitMissing("player", currentBuff) then
+            table.insert(missing, { buff = currentBuff, unit = "player" })
         end
     end
     return missing
@@ -68,18 +167,19 @@ end
 
 function BuffBot.CheckPlayerBuffs()
     local missing = BuffBot.MissingBuffs()
-    local buff = missing[1]
-    if not buff then
+    local entry = missing[1]
+    if not entry then
         if InCombatLockdown() then return end
         BuffBot.macroButton:Hide()
         return
     end
-    BuffBot.debug(buff, " Missing.")
+    local buff = entry.buff
+    BuffBot.debug(buff, " Missing on ", entry.unit)
     local poison = BuffBot.WeaponPoisons[buff]
     if poison then
         BuffBot.UpdateItemMacro(BuffBot.PoisonItem(buff), poison.invSlot)
     else
-        BuffBot.UpdateMacro(buff, "player", ShouldBloodrageFirst(buff) and "Bloodrage" or nil)
+        BuffBot.UpdateMacro(buff, entry.unit, ShouldBloodrageFirst(buff) and "Bloodrage" or nil)
     end
 
     BuffBot.UpdateSuggestionList(missing)

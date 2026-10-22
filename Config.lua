@@ -44,6 +44,8 @@ function BuffBot.GetDefaultConfig()
     defaultConfig.ROGUE_POISON_MAINHAND = "Instant Poison"
     defaultConfig.ROGUE_POISON_OFFHAND = "Instant Poison"
     defaultConfig.TRACK_TREASURE = true
+    defaultConfig.GROUP_BUFFING = true
+    defaultConfig.RAID_BUFFING = false
 
     return defaultConfig
 end
@@ -131,6 +133,13 @@ function BuffBot.RegisterSettings()
     addCheckbox("TRACK_TREASURE", "Auto Find Treasure",
         "For Dwarves: Automatically cast Find Treasure. Triggers a 2nd global cooldown.",
         function() BuffBot.UpdateTracking() end)
+
+    layout:AddInitializer(CreateSettingsListSectionHeaderInitializer("Group"))
+
+    addCheckbox("GROUP_BUFFING", "Buff your party",
+        "Also buffs party members, or your raid subgroup, who are missing your buffs. Skips classes a buff does nothing for. Uses the group version when 2 or more are missing and you have Reagent Economy or the reagent.")
+    addCheckbox("RAID_BUFFING", "Buff the whole raid",
+        "After your own subgroup, buffs the rest of the raid, one subgroup at a time.")
 
     layout:AddInitializer(CreateSettingsListSectionHeaderInitializer("Class Settings"))
 
