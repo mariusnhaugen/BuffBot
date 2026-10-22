@@ -35,7 +35,7 @@ describe("skip rules", function()
         local h = Addon.load({
             class = "PALADIN",
             known = { "Blessing of Wisdom" },
-            config = { WISDOM_SELF = true },
+            config = { PALADIN_BLESSING = "Blessing of Wisdom" },
         })
         h:give("Greater Blessing of Wisdom")
         assert.same({}, h:buffUp())

@@ -112,6 +112,11 @@ function events:ADDON_LOADED(arg1)
         BuffBotConfig.HIDE_TEXT = not BuffBotConfig.SUGGESTION_LIST
         BuffBotConfig.SUGGESTION_LIST = nil
     end
+    -- Before 2.3.0, the self blessing was a Wisdom checkbox
+    if BuffBotConfig.WISDOM_SELF ~= nil then
+        BuffBotConfig.PALADIN_BLESSING = BuffBotConfig.WISDOM_SELF and "Blessing of Wisdom" or "Blessing of Might"
+        BuffBotConfig.WISDOM_SELF = nil
+    end
     -- Fill in settings added since the config was saved
     for key, value in pairs(BuffBot.GetDefaultConfig()) do
         if BuffBotConfig[key] == nil then

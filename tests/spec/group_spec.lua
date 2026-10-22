@@ -142,9 +142,122 @@ describe("group buffing", function()
             h:joinParty({ { class = "WARRIOR" } })
             assert.same({ "Mark of the Wild", "Mark of the Wild > party1", "Thorns" }, h:buffUp())
         end)
+    end)
 
-        it("keeps Paladin blessings on the player", function()
-            local h = Addon.load({ class = "PALADIN", known = { "Blessing of Might" } })
+    describe("Paladin blessings", function()
+        local function paladin(opts)
+            opts = opts or {}
+            opts.class = "PALADIN"
+            opts.known = opts.known or { "Blessing of Might", "Blessing of Wisdom" }
+            return Addon.load(opts)
+        end
+
+        it("gives Warriors and Rogues Might", function()
+            local h = paladin()
+            h:joinParty({ { class = "WARRIOR" }, { class = "ROGUE" } })
+            assert.same({ "Blessing of Might", "Blessing of Might > party1", "Blessing of Might > party2" },
+                h:buffUp())
+        end)
+
+        it("gives casters, Druids, Shamans, Hunters and other Paladins Wisdom", function()
+            local h = paladin()
+            h:joinParty({ { class = "MAGE" }, { class = "DRUID" }, { class = "SHAMAN" }, { class = "PALADIN" } })
+            h:give("Blessing of Might")
+            assert.same({ "Blessing of Wisdom > party1", "Blessing of Wisdom > party2", "Blessing of Wisdom > party3",
+                "Blessing of Wisdom > party4" }, h:buffUp())
+            local hunter = paladin()
+            hunter:joinParty({ { class = "HUNTER" } })
+            hunter:give("Blessing of Might")
+            assert.same({ "Blessing of Wisdom > party1" }, hunter:buffUp())
+        end)
+
+        it("gives Hunters and other Paladins Kings once it's learned", function()
+            local h = paladin({ known = { "Blessing of Might", "Blessing of Wisdom", "Blessing of Kings" } })
+            h:joinParty({ { class = "HUNTER" }, { class = "PALADIN" }, { class = "MAGE" }, { class = "WARRIOR" } })
+            assert.same({ "Blessing of Might", "Blessing of Kings > party1", "Blessing of Kings > party2",
+                "Blessing of Wisdom > party3", "Blessing of Might > party4" }, h:buffUp())
+        end)
+
+        it("gives Hunters Wisdom before Kings is learned, and Kings after", function()
+            local h = paladin()
+            h:joinParty({ { class = "HUNTER" } })
+            assert.same({ "Blessing of Might", "Blessing of Wisdom > party1" }, h:buffUp())
+            h:learn("Blessing of Kings")
+            assert.same({ "Blessing of Kings > party1" }, h:buffUp())
+        end)
+
+        it("counts a Greater Blessing of Kings", function()
+            local h = paladin({ known = { "Blessing of Might", "Blessing of Wisdom", "Blessing of Kings" } })
+            h:joinParty({ { class = "HUNTER" } })
+            h:give("Blessing of Might")
+            h:give("Greater Blessing of Kings", { unit = "party1" })
+            assert.is_nil(h:shown())
+        end)
+
+        it("puts Kings on the player when picked, and the class blessings on the party", function()
+            local h = paladin({ known = { "Blessing of Might", "Blessing of Wisdom", "Blessing of Kings" },
+                config = { PALADIN_BLESSING = "Blessing of Kings" } })
+            h:joinParty({ { class = "WARRIOR" }, { class = "PRIEST" } })
+            assert.same({ "Blessing of Kings", "Blessing of Might > party1", "Blessing of Wisdom > party2" },
+                h:buffUp())
+        end)
+
+        it("falls back to Might on the player until the picked blessing is learned", function()
+            local h = paladin({ known = { "Blessing of Might" }, config = { PALADIN_BLESSING = "Blessing of Kings" } })
+            assert.same({ "Blessing of Might" }, h:buffUp())
+            h:learn("Blessing of Kings")
+            assert.same({ "Blessing of Kings" }, h:buffUp())
+        end)
+
+        it("offers Might, Wisdom and Kings in the settings", function()
+            local h = paladin()
+            local texts = {}
+            for _, option in ipairs(h:dropdown("Paladin blessing on yourself")) do table.insert(texts, option.text) end
+            assert.same({ "Blessing of Might", "Blessing of Wisdom", "Blessing of Kings" }, texts)
+            h:choose("Paladin blessing on yourself", "Blessing of Wisdom")
+            assert.equal("Blessing of Wisdom", h.ns.config.PALADIN_BLESSING)
+            assert.equal("Blessing of Wisdom", h:shown())
+        end)
+
+        it("keeps the player's own blessing on the setting", function()
+            local h = paladin({ config = { PALADIN_BLESSING = "Blessing of Wisdom" } })
+            h:joinParty({ { class = "WARRIOR" }, { class = "PRIEST" } })
+            assert.same({ "Blessing of Wisdom", "Blessing of Might > party1", "Blessing of Wisdom > party2" },
+                h:buffUp())
+        end)
+
+        it("skips members whose blessing isn't learned yet", function()
+            local h = paladin({ known = { "Blessing of Might" } })
+            h:joinParty({ { class = "MAGE" }, { class = "WARRIOR" } })
+            assert.same({ "Blessing of Might", "Blessing of Might > party2" }, h:buffUp())
+        end)
+
+        it("counts another Paladin's blessing", function()
+            local h = paladin()
+            h:joinParty({ { class = "WARRIOR" } })
+            h:give("Blessing of Might")
+            h:give("Blessing of Might", { unit = "party1", fromPlayer = false })
+            assert.is_nil(h:shown())
+        end)
+
+        it("counts a Greater Blessing", function()
+            local h = paladin()
+            h:joinParty({ { class = "WARRIOR" } })
+            h:give("Blessing of Might")
+            h:give("Greater Blessing of Might", { unit = "party1" })
+            assert.is_nil(h:shown())
+        end)
+
+        it("never casts a Greater Blessing", function()
+            local h = paladin({ known = { "Blessing of Might", "Blessing of Wisdom", "Greater Blessing of Might" } })
+            h:learn("Reagent Economy")
+            h:joinParty({ { class = "WARRIOR" }, { class = "ROGUE" } })
+            assert.same({ "Blessing of Might", "Blessing of Might > party1", "Blessing of Might > party2" },
+                h:buffUp())
+        end)
+
+        it("is player-only with group buffing turned off", function()
+            local h = paladin({ config = { GROUP_BUFFING = false } })
             h:joinParty({ { class = "WARRIOR" } })
             assert.same({ "Blessing of Might" }, h:buffUp())
         end)

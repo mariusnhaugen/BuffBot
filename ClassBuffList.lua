@@ -34,6 +34,9 @@ BuffBot.WeaponPoisons = {
     ["Off Hand Poison"] = { invSlot = 17, weaponSlot = 1, setting = "ROGUE_POISON_OFFHAND" },
 }
 
+-- The blessings a Paladin can pick for themselves
+BuffBot.SelfBlessings = { "Blessing of Might", "Blessing of Wisdom", "Blessing of Kings" }
+
 -- Fallback order when the chosen poison runs out
 BuffBot.PoisonTypes = { "Instant Poison", "Deadly Poison", "Crippling Poison", "Mind-numbing Poison", "Wound Poison" }
 
@@ -85,6 +88,7 @@ BuffBot.GroupVersions = {
     ["Divine Spirit"] = { "Prayer of Spirit" },
     ["Blessing of Might"] = { "Greater Blessing of Might" },
     ["Blessing of Wisdom"] = { "Greater Blessing of Wisdom" },
+    ["Blessing of Kings"] = { "Greater Blessing of Kings" },
 }
 
 -- Single-target buffs the button also casts on group members
@@ -93,10 +97,27 @@ BuffBot.GroupBuffs = {
     ["Arcane Intellect"] = true,
     ["Power Word: Fortitude"] = true,
     ["Divine Spirit"] = true,
+    ["Blessing of Might"] = true,
+    ["Blessing of Wisdom"] = true,
+    ["Blessing of Kings"] = true,
 }
 
--- Classes a buff does nothing for, so it's never cast on them (SKIP_LIST.md).
--- The blessings wait for Paladin group buffing.
+-- Members get a blessing by class: Might for Warriors and Rogues, Kings for
+-- Hunters and Paladins once it's learned at 20, Wisdom for everyone else.
+-- The player's own is the one picked in the settings.
+-- Greater Blessings wait for Paladins to share out blessings over add-on
+-- messages.
+BuffBot.Blessings = { ["Blessing of Might"] = true, ["Blessing of Wisdom"] = true, ["Blessing of Kings"] = true }
+local mightClasses = { WARRIOR = true, ROGUE = true }
+local kingsClasses = { HUNTER = true, PALADIN = true }
+function BuffBot.BlessingFor(unit)
+    local class = select(2, UnitClass(unit))
+    if mightClasses[class] then return "Blessing of Might" end
+    if kingsClasses[class] and BuffBot.CheckSpellAvailable("Blessing of Kings") then return "Blessing of Kings" end
+    return "Blessing of Wisdom"
+end
+
+-- Classes a buff does nothing for, so it's never cast on them (SKIP_LIST.md)
 BuffBot.SkipOnClass = {
     ["Arcane Intellect"] = { WARRIOR = true, ROGUE = true },
     ["Divine Spirit"] = { WARRIOR = true, ROGUE = true },
@@ -170,6 +191,8 @@ local spellIDTable = {
     ["Blessing of Wisdom"] = 19742,
     ["Greater Blessing of Might"] = 25782,
     ["Greater Blessing of Wisdom"] = 25894,
+    ["Blessing of Kings"] = 20217,
+    ["Greater Blessing of Kings"] = 25898,
     ["Righteous Fury"] = 25780,
     -- PRIEST
     ["Power Word: Fortitude"] = 1243,
@@ -333,9 +356,9 @@ function BuffBot.FilterInitialList()
             end
         end
         if spellString == "Blessing" then
-            if BuffBot.config.WISDOM_SELF then
-                spellString = "Blessing of Wisdom"
-            else
+            -- The chosen blessing, or Might until it's learned
+            spellString = BuffBot.config.PALADIN_BLESSING
+            if not BuffBot.CheckSpellAvailable(spellString) then
                 spellString = "Blessing of Might"
             end
         end

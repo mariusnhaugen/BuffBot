@@ -34,7 +34,7 @@ function BuffBot.GetDefaultConfig()
     defaultConfig.DEBUG_MODE = false
 
     defaultConfig.BLOODRAGE = false
-    defaultConfig.WISDOM_SELF = false
+    defaultConfig.PALADIN_BLESSING = "Blessing of Might"
     defaultConfig.RIGHTEOUS_FURY = false
     defaultConfig.STRICT_ARMOR = false
     defaultConfig.IGNORE_THORNS = false
@@ -148,12 +148,14 @@ function BuffBot.RegisterSettings()
     addCheckbox("IGNORE_DAMPEN", "Skip Dampen Magic", "Skip recommending Dampen Magic.")
     addCheckbox("BLOODRAGE", "Always try Bloodrage out of combat",
         "Cast Bloodrage before Battle Shout out of combat. \n\nCan cause error spam while Bloodrage is on cooldown.")
-    addCheckbox("WISDOM_SELF", "Recommend Blessing of Wisdom", "Cast Blessing of Wisdom over Blessing of Might.")
     addCheckbox("RIGHTEOUS_FURY", "Recommend Righteous Fury", "Cast Righteous Fury, for tanking.")
     addCheckbox("IGNORE_THORNS", "Skip Thorns", "Skip recommending Thorns.")
     addCheckbox("CHEETAH_REMINDER", "Reminder to leave Cheetah",
         "Shows Aspect of the Hawk if you are in Aspect of the Cheetah/Pack")
 
+    addDropdown("PALADIN_BLESSING", "Paladin blessing on yourself",
+        "The blessing the button puts on you, or Might until it's learned. Party members get one by class: Might for Warriors and Rogues, Kings for Hunters and Paladins, Wisdom for everyone else.",
+        BuffBot.SelfBlessings, BuffBot.SpellName)
     addDropdown("SHAMAN_IMBUE", "Shaman weapon imbue", "The imbue the button puts on your main hand.",
         { "Rockbiter Weapon", "Flametongue Weapon", "Frostbrand Weapon", "Windfury Weapon" }, BuffBot.SpellName)
     addDropdown("ROGUE_POISON_MAINHAND", "Rogue main hand poison",

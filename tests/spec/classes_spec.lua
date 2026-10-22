@@ -64,11 +64,11 @@ describe("per-class buff priority (vanilla spells)", function()
             assert.same({ "Sanctity Aura" }, h:buffUp())
         end)
 
-        it("recommends Blessing of Wisdom when WISDOM_SELF is on", function()
+        it("recommends the blessing picked in the settings", function()
             local h = Addon.load({
                 class = "PALADIN",
                 known = { "Blessing of Might", "Blessing of Wisdom" },
-                config = { WISDOM_SELF = true },
+                config = { PALADIN_BLESSING = "Blessing of Wisdom" },
             })
             assert.same({ "Blessing of Wisdom" }, h:buffUp())
         end)

@@ -122,22 +122,33 @@ local function GroupUnits()
     return ordered
 end
 
+-- The buff a member gets: a blessing picked by their class, otherwise the
+-- player's own. nil when that blessing isn't learned yet.
+local function BuffForUnit(buffString, unit)
+    if unit == "player" or not BuffBot.Blessings[buffString] then return buffString end
+    local blessing = BuffBot.BlessingFor(unit)
+    if blessing == buffString or BuffBot.CheckSpellAvailable(blessing) then return blessing end
+end
+
 -- One subgroup's entries for a group buff: the group version when two or
--- more who'd benefit are missing it and it can be cast, else one per member
+-- more who'd benefit are missing it and it can be cast, else one per member.
+-- Blessings are always single-target.
 local function AddGroupBuff(missing, buffString, units)
     local targets = {}
     for _, unit in ipairs(units) do
-        if CanBuffUnit(unit, buffString) and UnitMissing(unit, buffString) then
-            table.insert(targets, unit)
+        local buff = BuffForUnit(buffString, unit)
+        if buff and CanBuffUnit(unit, buff) and UnitMissing(unit, buff) then
+            table.insert(targets, { buff = buff, unit = unit })
         end
     end
-    local groupVersion = #targets >= 2 and BuffBot.CastableGroupVersion(buffString)
+    local groupVersion = #targets >= 2 and not BuffBot.Blessings[buffString]
+        and BuffBot.CastableGroupVersion(buffString)
     if groupVersion then
-        table.insert(missing, { buff = groupVersion, unit = targets[1] })
+        table.insert(missing, { buff = groupVersion, unit = targets[1].unit })
         return
     end
-    for _, unit in ipairs(targets) do
-        table.insert(missing, { buff = buffString, unit = unit })
+    for _, target in ipairs(targets) do
+        table.insert(missing, target)
     end
 end
 
@@ -165,16 +176,23 @@ function BuffBot.MissingBuffs()
     return missing
 end
 
+-- The last entry logged, so the range poll doesn't repeat it every few seconds
+local lastLogged
+
 function BuffBot.CheckPlayerBuffs()
     local missing = BuffBot.MissingBuffs()
     local entry = missing[1]
     if not entry then
+        lastLogged = nil
         if InCombatLockdown() then return end
         BuffBot.macroButton:Hide()
         return
     end
     local buff = entry.buff
-    BuffBot.debug(buff, " Missing on ", entry.unit)
+    if lastLogged ~= buff .. entry.unit then
+        lastLogged = buff .. entry.unit
+        BuffBot.debug(buff, " Missing on ", entry.unit)
+    end
     local poison = BuffBot.WeaponPoisons[buff]
     if poison then
         BuffBot.UpdateItemMacro(BuffBot.PoisonItem(buff), poison.invSlot)

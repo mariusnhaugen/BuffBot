@@ -8,7 +8,7 @@ describe("saved config", function()
             HIDE_TEXT = false,
             DEBUG_MODE = false,
             BLOODRAGE = false,
-            WISDOM_SELF = false,
+            PALADIN_BLESSING = "Blessing of Might",
             RIGHTEOUS_FURY = false,
             STRICT_ARMOR = false,
             IGNORE_THORNS = false,
@@ -56,6 +56,15 @@ describe("saved config", function()
         h = Addon.load({ saved = { SUGGESTION_LIST = true } })
         assert.is_false(h.ns.config.HIDE_TEXT)
         assert.is_nil(h.ns.config.SUGGESTION_LIST)
+    end)
+
+    it("turns an old WISDOM_SELF into PALADIN_BLESSING", function()
+        local h = Addon.load({ saved = { WISDOM_SELF = true } })
+        assert.equal("Blessing of Wisdom", h.ns.config.PALADIN_BLESSING)
+        assert.is_nil(h.ns.config.WISDOM_SELF)
+        h = Addon.load({ saved = { WISDOM_SELF = false } })
+        assert.equal("Blessing of Might", h.ns.config.PALADIN_BLESSING)
+        assert.is_nil(h.ns.config.WISDOM_SELF)
     end)
 
     it("fills in settings missing from an older saved config", function()
@@ -160,7 +169,6 @@ describe("settings panel", function()
         ["Strict Mage Armors"] = "STRICT_ARMOR",
         ["Skip Dampen Magic"] = "IGNORE_DAMPEN",
         ["Always try Bloodrage out of combat"] = "BLOODRAGE",
-        ["Recommend Blessing of Wisdom"] = "WISDOM_SELF",
         ["Recommend Righteous Fury"] = "RIGHTEOUS_FURY",
         ["Skip Thorns"] = "IGNORE_THORNS",
         ["Reminder to leave Cheetah"] = "CHEETAH_REMINDER",
