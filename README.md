@@ -25,7 +25,7 @@ Made for **WoW Forever**. The Classic Era version is no longer updated.
 | Druid | Omen of Clarity, Mark of the Wild, Thorns |
 | Hunter | Trueshot Aura, Aspect of the Hawk (any other combat aspect also counts) |
 | Mage | Ice Armor or Frost Armor (Mage Armor in a raid), Arcane Intellect, Dampen Magic |
-| Paladin | An aura (Sanctity, Devotion or Retribution), Blessing of Might, Wisdom or Kings, Righteous Fury if you tank. Party members get Might, Kings or Wisdom by class |
+| Paladin | An aura (Sanctity, Devotion or Retribution), Blessing of Might, Wisdom or Kings, Righteous Fury if you tank. Party members get a blessing by class, shared out with other Paladins |
 | Priest | Power Word: Fortitude, Shadowform, Divine Spirit, Inner Fire |
 | Rogue | A poison on each weapon |
 | Shaman | Lightning Shield, a weapon imbue |
@@ -37,9 +37,12 @@ while its group version (such as Gift of the Wild) is on you.
 
 **Group buffing:** Mark of the Wild, Arcane Intellect, Power Word: Fortitude,
 Divine Spirit and Paladin blessings also go on your party, one press per
-member, after you. Warriors and Rogues get Blessing of Might, Hunters and
-Paladins Blessing of Kings from level 20, and everyone else Blessing of
-Wisdom.
+member, after you. Each class has a list of blessings, best first:
+Warriors and Rogues Might then Kings, Hunters and Paladins Kings then Wisdom
+then Might, Druids and Shamans Wisdom then Kings then Might, and Priests,
+Mages and Warlocks Wisdom then Kings. A member gets the first one no other
+Paladin has given them, so blessings from several Paladins stack. Kings comes
+at level 20.
 Members who are dead, offline or out of range are skipped, and so are
 classes a buff does nothing for (see [SKIP_LIST.md](SKIP_LIST.md)). When two
 or more are missing a buff and you have the Reagent Economy talent or the
@@ -70,7 +73,8 @@ a poison running low on charges counts as missing.
 - **Skip Dampen Magic / Skip Thorns.**
 - **Always try Bloodrage out of combat:** casts Bloodrage before Battle Shout.
 - **Paladin blessing on yourself:** Might, Wisdom or Kings. Might until the
-  one you pick is learned.
+  one you pick is learned. If another Paladin has already put it on you, you
+  get the next one on the Paladin list.
 - **Recommend Righteous Fury:** for Paladin tanks. Off by default.
 - **Reminder to leave Cheetah:** shows Aspect of the Hawk while you're in
   Cheetah or Pack.

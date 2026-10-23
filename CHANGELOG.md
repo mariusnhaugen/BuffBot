@@ -1,5 +1,26 @@
 # BuffBot
 
+## 2.4.0 (unreleased)
+
+### New
+
+- **Paladins share out blessings.** When another Paladin's blessing is
+  already on a member, you give them the next one on their class's list, so
+  blessings from several Paladins stack. Warriors and Rogues: Might, then
+  Kings. Hunters and Paladins: Kings, then Wisdom, then Might. Druids and
+  Shamans: Wisdom, then Kings, then Might. Priests, Mages and Warlocks:
+  Wisdom, then Kings. Your own blessing starts with the one picked in the
+  settings, then follows the Paladin list.
+
+### Changed
+
+- Only the buffs you cast are refreshed in their last 5 minutes. Someone
+  else's buff, such as another Mage's Arcane Intellect, counts until it
+  drops off.
+- Your blessing on a member stays until it's due, then the button picks
+  again. Learning Kings no longer has the button recast blessings that are
+  still up.
+
 ## 2.3.0
 
 ### New

@@ -5,12 +5,13 @@ commit.
 
 ## Feature ideas
 
-- 29. Blessings shared out between the group's Paladins over add-on
-  messages, so each Paladin covers one blessing, plus Greater Blessings
-  (Symbol of Kings or Reagent Economy). Linked to 21. Until then each
-  Paladin gives Might to Warriors and Rogues, Kings to Hunters and
-  Paladins, and Wisdom to everyone else,
-  and skips members who already have that blessing from another Paladin.
+- 29. Part 2 of blessing sharing: Paladins agree on who gives which
+  blessing over add-on messages, so two Paladins never cast the same one at
+  once, plus Greater Blessings (Symbol of Kings or Reagent Economy). Linked
+  to 21. Part 1 is done: each Paladin gives a member the first blessing on
+  their class list that no other Paladin has given them. Messages go to
+  PARTY or RAID; the sender's name matches `GetUnitName(unit, true)`, and
+  about 10 go out at once (PROBE_RESULTS.md).
 
 - 18. Settings page cleanup. Show only the current class's settings. General UX. Make paladin prio?
 - 26. Known issue: the first Rockbiter cast once needed a second press
@@ -41,6 +42,7 @@ commit.
 
 ## Done
 
+- [x] 29, part 1. Blessings shared out between Paladins by class lists, and only your own buffs refreshed early (`5b6d413`, `472a85e`)
 - [x] Paladin blessings on the party by class, Kings, and a self-blessing dropdown (`7e411d7`)
 - [x] Group buffing: party, own raid subgroup and optional whole raid, with group versions and the class skip list (`7fc9031`)
 - [x] Turn tracking back on automatically after death and login (`5e871be`)

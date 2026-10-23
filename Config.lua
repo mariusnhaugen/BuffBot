@@ -154,7 +154,7 @@ function BuffBot.RegisterSettings()
         "Shows Aspect of the Hawk if you are in Aspect of the Cheetah/Pack")
 
     addDropdown("PALADIN_BLESSING", "Paladin blessing on yourself",
-        "The blessing the button puts on you, or Might until it's learned. Party members get one by class: Might for Warriors and Rogues, Kings for Hunters and Paladins, Wisdom for everyone else.",
+        "The blessing the button puts on you, or Might until it's learned. If another Paladin has already put it on you, you get the next one on the Paladin list. Party members get one by class, and the next one when another Paladin's is already there.",
         BuffBot.SelfBlessings, BuffBot.SpellName)
     addDropdown("SHAMAN_IMBUE", "Shaman weapon imbue", "The imbue the button puts on your main hand.",
         { "Rockbiter Weapon", "Flametongue Weapon", "Frostbrand Weapon", "Windfury Weapon" }, BuffBot.SpellName)
