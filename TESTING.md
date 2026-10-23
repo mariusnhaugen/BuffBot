@@ -74,7 +74,7 @@ Works as a Paladin with a Rogue in the party: the button offers Blessing of Migh
 Blessing of Might on Warriors and Rogues, Blessing of Kings on Hunters and Paladins (level 20+; Wisdom before that), Blessing of Wisdom on everyone else, and your own blessing from the "Paladin blessing on yourself" dropdown. An old "Recommend Blessing of Wisdom" setting should carry over as Wisdom. Blessings last 60 minutes on Forever, so they're only due again when a member drops one or has under 5 minutes left. A member with another Paladin's blessing isn't buffed again.
 
 Result:
-A Rogue in the party gets Blessing of Might. Still to check: Wisdom on a caster, the dropdown and the old setting carrying over, and Kings at level 20+
+A Rogue in the party gets Blessing of Might. A tester's Paladin on 2.3 got Kings offered for a Hunter and Wisdom for a Shaman and a Warlock: "does exactly what's needed". Still to check: the dropdown and the old setting carrying over
 
 ### Group versions and reagents (at the level of the group buffs)
 
