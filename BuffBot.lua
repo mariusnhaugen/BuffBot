@@ -240,7 +240,9 @@ function BuffBot.UnitHasAssignedBuff(unit, buffString)
     local filter = BuffBot.OwnOnlyBuffs[buffString] and "HELPFUL|PLAYER" or nil
     local aura = C_UnitAuras.GetAuraDataBySpellName(unit, BuffBot.SpellName(buffString), filter)
     if aura ~= nil then
-        if (aura.duration > 0) and (aura.expirationTime > 0) then
+        -- Only the player's own buffs are refreshed early. Someone else's
+        -- counts until it drops off, since refreshing it is their job.
+        if aura.sourceUnit == "player" and (aura.duration > 0) and (aura.expirationTime > 0) then
             local timeLeft = aura.expirationTime - GetTime()
             if (timeLeft < aura.duration * REMINDER_DURA_MULTIPLIER) and (timeLeft < 300) then
                 return false

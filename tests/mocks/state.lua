@@ -91,7 +91,8 @@ function State:aurasOf(unit)
 end
 
 -- opts: duration (seconds, 0 = permanent), remaining (seconds), fromPlayer
--- (default true), unit (default player)
+-- (default true), source (the caster's unit when not the player, default
+-- nil), unit (default player)
 function State:giveAura(name, opts)
     opts = opts or {}
     local duration = opts.duration or 1800
@@ -102,6 +103,7 @@ function State:giveAura(name, opts)
         duration = duration,
         expirationTime = duration > 0 and (self.time + remaining) or 0,
         isFromPlayerOrPlayerPet = opts.fromPlayer ~= false,
+        sourceUnit = opts.fromPlayer ~= false and "player" or opts.source,
     }
 end
 
