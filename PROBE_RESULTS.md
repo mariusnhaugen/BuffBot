@@ -538,3 +538,47 @@ In a group, `/etrace` while a member walks from out of view into buff range. Doe
 
 Result:
 `UNIT_IN_RANGE_UPDATE` never fires, and `UnitInRange` returns secret values. Only `C_Spell.IsSpellInRange` works, so range changes need the poll
+
+## Add-on message prefix
+
+`/dump C_ChatInfo.RegisterAddonMessagePrefix("BuffBot")`
+
+Result:
+`0`, success
+
+## Add-on whisper to yourself
+
+`/run local f=CreateFrame("Frame")f:RegisterEvent("CHAT_MSG_ADDON")f:SetScript("OnEvent",function(_,_,p,m,c,s)if p=="BuffBot"then print(m,c,s,issecretvalue(m))end end)`, then `/dump C_ChatInfo.SendAddonMessage("BuffBot","hi","WHISPER",UnitName("player"))`, then 30 of them in a loop
+
+Result:
+Nothing arrives: "No player named 'Smiil' is currently playing." `UnitName` gives only the first name (see Player names below). `SendAddonMessage` still returned `0` for all 30, so `0` only means queued, not delivered.
+
+With `GetUnitName("player",true)` as the target it arrives: `a WHISPER Smiil Paladingle false false`. Whisper by the full name from `GetUnitName(unit, true)`
+
+## Player names
+
+`/run local a,b=UnitName("player") local c,d=UnitFullName("player") print(a,b,"|",c,d,"|",GetUnitName("player",true),"|",UnitGUID("player"))`
+
+Result:
+`Smiil Paladingle | Smiil Paladingle | Smiil Paladingle | Player-4613-00A108F8`. `print` puts a space between values, so `UnitName` and `UnitFullName` each return the first name and the surname as two values, in the slot that holds the realm elsewhere. Only `GetUnitName(unit, true)` gives the full name as one string. Forever has a single realm (split only by PvE, PvP and RP), which is likely why the surname takes the realm's place, so there's no `-Realm` suffix to handle. `GetNormalizedRealmName()` still returns a realm, `ClassicBetaPVP2` on the beta, but nothing needs it
+
+## One blessing per Paladin per target
+
+Blessing of Might on a party member, then Blessing of Wisdom on them, then `/run for _,b in ipairs({"Blessing of Might","Blessing of Wisdom","Blessing of Kings"}) do local a=C_UnitAuras.GetAuraDataBySpellName("target",b) print(b,a and tostring(a.sourceUnit) or "none") end` on them
+
+Result:
+Might `none`, Wisdom `player`: Wisdom replaced Might. A Paladin has one blessing on a target at a time, as in Classic
+
+## Add-on message to the party (in a party)
+
+Both players `/reload` and run `/run C_ChatInfo.RegisterAddonMessagePrefix("BuffBot") local f=CreateFrame("Frame")f:RegisterEvent("CHAT_MSG_ADDON")f:SetScript("OnEvent",function(_,_,p,m,c,s)if p=="BuffBot"then print(m,c,s,issecretvalue(m),issecretvalue(s))end end)` and `/run print(UnitName("party1"))`, then one sends `/dump C_ChatInfo.SendAddonMessage("BuffBot","hi","PARTY")`, out of combat and then in combat
+
+Result:
+Both players get it, the sender included. The sender is the full two-part name, the same as `UnitName("party1")` printed (both values) on the other side, so match senders against `GetUnitName(unit, true)`. Nothing is secret, in or out of combat
+
+## Add-on message throttle (in a party)
+
+With the listener from the probe above up on both screens, one player sends 30 at once: `/run local t={} for i=1,30 do local r=tostring(C_ChatInfo.SendAddonMessage("BuffBot",""..i,"PARTY")) t[r]=(t[r] or 0)+1 end for k,v in pairs(t) do print(k,v) end`
+
+Result:
+`0 10` and `3 20`: the first 10 go out and the other player gets those 10. The rest return `3` (throttled) and are dropped, not queued. Keep sends to a few at a time, and check the result
