@@ -1,6 +1,6 @@
 # BuffBot
 
-## 2.3.0 (unreleased)
+## 2.3.0
 
 ### New
 
