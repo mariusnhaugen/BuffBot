@@ -102,19 +102,69 @@ BuffBot.GroupBuffs = {
     ["Blessing of Kings"] = true,
 }
 
--- Members get a blessing by class: Might for Warriors and Rogues, Kings for
--- Hunters and Paladins once it's learned at 20, Wisdom for everyone else.
--- The player's own is the one picked in the settings.
+-- Blessings by class, best first. A Paladin has one blessing on each member,
+-- and blessings from different Paladins stack, so each Paladin gives a member
+-- the first one on their list that nobody has given them yet. Blessings not
+-- learned yet are skipped. The player's own starts with the one picked in the
+-- settings, then follows the Paladin list.
 -- Greater Blessings wait for Paladins to share out blessings over add-on
 -- messages.
 BuffBot.Blessings = { ["Blessing of Might"] = true, ["Blessing of Wisdom"] = true, ["Blessing of Kings"] = true }
-local mightClasses = { WARRIOR = true, ROGUE = true }
-local kingsClasses = { HUNTER = true, PALADIN = true }
+local MIGHT, WISDOM, KINGS = "Blessing of Might", "Blessing of Wisdom", "Blessing of Kings"
+BuffBot.BlessingPriority = {
+    WARRIOR = { MIGHT, KINGS },
+    ROGUE = { MIGHT, KINGS },
+    HUNTER = { KINGS, WISDOM, MIGHT },
+    PALADIN = { KINGS, WISDOM, MIGHT },
+    DRUID = { WISDOM, KINGS, MIGHT },
+    SHAMAN = { WISDOM, KINGS, MIGHT },
+    PRIEST = { WISDOM, KINGS },
+    MAGE = { WISDOM, KINGS },
+    WARLOCK = { WISDOM, KINGS },
+}
+
+-- The aura of a blessing on a unit, or of its Greater Blessing, from anyone
+local function BlessingAura(unit, blessing)
+    local aura = C_UnitAuras.GetAuraDataBySpellName(unit, BuffBot.SpellName(blessing))
+    if aura then return aura, false end
+    for _, greater in ipairs(BuffBot.GroupVersions[blessing]) do
+        aura = C_UnitAuras.GetAuraDataBySpellName(unit, BuffBot.SpellName(greater))
+        if aura then return aura, true end
+    end
+end
+
+-- Free to cast: learned, and not on the unit from another Paladin. The
+-- player's own blessing counts as free, so a refresh can pick again.
+local function BlessingFree(unit, blessing)
+    if not BuffBot.CheckSpellAvailable(blessing) then return false end
+    local aura = BlessingAura(unit, blessing)
+    return aura == nil or aura.sourceUnit == "player"
+end
+
+-- The blessing a unit gets from the player, or nil when every blessing on
+-- their list is learned by nobody or already given by other Paladins. The
+-- player's blessing on them stands until it's due, then the list decides
+-- again; on the player, the one picked in the settings takes over as soon as
+-- it's free.
 function BuffBot.BlessingFor(unit)
-    local class = select(2, UnitClass(unit))
-    if mightClasses[class] then return "Blessing of Might" end
-    if kingsClasses[class] and BuffBot.CheckSpellAvailable("Blessing of Kings") then return "Blessing of Kings" end
-    return "Blessing of Wisdom"
+    local isPlayer = unit == "player"
+    local list = BuffBot.BlessingPriority[select(2, UnitClass(unit))] or {}
+    if isPlayer then
+        list = { BuffBot.config.PALADIN_BLESSING }
+        for _, blessing in ipairs(BuffBot.BlessingPriority.PALADIN) do table.insert(list, blessing) end
+    end
+
+    for blessing in pairs(BuffBot.Blessings) do
+        local aura, greater = BlessingAura(unit, blessing)
+        if aura and aura.sourceUnit == "player" then
+            local stands = greater or BuffBot.UnitHasAssignedBuff(unit, blessing)
+            local switch = isPlayer and blessing ~= list[1] and BlessingFree(unit, list[1])
+            if stands and not switch then return blessing end
+        end
+    end
+    for _, blessing in ipairs(list) do
+        if BlessingFree(unit, blessing) then return blessing end
+    end
 end
 
 -- Classes a buff does nothing for, so it's never cast on them (SKIP_LIST.md)

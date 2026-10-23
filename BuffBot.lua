@@ -120,12 +120,11 @@ local function GroupUnits()
     return ordered
 end
 
--- The buff a member gets: a blessing picked by their class, otherwise the
--- player's own. nil when that blessing isn't learned yet.
+-- The buff a unit gets: the blessing the Paladin lists pick for them,
+-- otherwise the buff itself. nil when there's no blessing left to give.
 local function BuffForUnit(buffString, unit)
-    if unit == "player" or not BuffBot.Blessings[buffString] then return buffString end
-    local blessing = BuffBot.BlessingFor(unit)
-    if blessing == buffString or BuffBot.CheckSpellAvailable(blessing) then return blessing end
+    if not BuffBot.Blessings[buffString] then return buffString end
+    return BuffBot.BlessingFor(unit)
 end
 
 -- One subgroup's entries for a group buff: the group version when two or
