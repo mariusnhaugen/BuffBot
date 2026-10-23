@@ -87,3 +87,12 @@ Result:
 Die in a battleground: nothing is cast there. Tracking comes back on after leaving. Get resurrected in combat: tracking waits until combat ends.
 
 Result:
+
+## Test at launch
+
+Checks that can't be run on the beta, or are still waiting for a tester. The steps are in each check above. Tick one off once it has passed on the live servers, and write its result above.
+
+- [ ] [Poison enchant lookup](#poison-enchant-lookup-rogue-dual-wielding): needs a dual-wielding Rogue
+- [ ] [Rogue poisons on the button](#rogue-poisons-on-the-button): the same Rogue, with poisons in the bags
+- [ ] [Group versions and reagents](#group-versions-and-reagents-at-the-level-of-the-group-buffs): Gift of the Wild, Arcane Brilliance, Prayer of Fortitude and Prayer of Spirit need level 48 to 60, above the beta's cap of 30. Includes Reagent Economy being detected by its spell ID
+- [ ] [Tracking in battlegrounds and combat](#tracking-in-battlegrounds-and-combat): dying in a battleground and getting resurrected in combat
