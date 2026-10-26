@@ -20,6 +20,16 @@ commit.
   fire, or `C_Item.GetWeaponEnchantInfo` may lag behind it.
 - 21. More Paladin buffs: Light, Sanctuary. Kings is done: on yourself
   through the blessing dropdown, and on Hunters and Paladins in the party.
+- 30. Salvation. On Forever it is its own spell, not a blessing, so it
+  stacks with blessings; Mass Salvation is the group version. Wowhead lists
+  Salvation as 1038 (the old Blessing of Salvation ID; a third-party site
+  calls it "renamed"), so Mass Salvation is probably the old Greater
+  Blessing's ID too. Check both IDs, durations and the Mass version's
+  reagent at launch. Never give it to tanks: main-tank mark
+  (`GetPartyAssignment("MAINTANK", unit)`), group finder role
+  (`UnitGroupRolesAssigned`) or a tank aura (Defensive Stance, Bear Form,
+  Righteous Fury). It's outside the blessing lists, so part 2 (29) only
+  needs to decide which Paladin casts it.
 - 25. Size sliders for the icon and the text. The icon scales the 48px
   button (`SetSize`, out of combat only), and the text changes the font
   size of the suggestion list. Both use the game's own slider, with no
