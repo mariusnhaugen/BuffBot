@@ -4,9 +4,9 @@
 
 ### New
 
-- **Paladins share out blessings.** When another Paladin's blessing is
-  already on a member, you give them the next one on their class's list, so
-  blessings from several Paladins stack. Warriors and Rogues: Might, then
+- **Multiple Paladins in a party now stack their blessings instead of all
+  casting the same one.** When another Paladin's blessing is already on a
+  member, you give them the next one on their class's list. Warriors and Rogues: Might, then
   Kings. Hunters and Paladins: Kings, then Wisdom, then Might. Druids and
   Shamans: Wisdom, then Kings, then Might. Priests, Mages and Warlocks:
   Wisdom, then Kings. Your own blessing starts with the one picked in the
