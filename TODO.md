@@ -30,6 +30,16 @@ commit.
   (`UnitGroupRolesAssigned`) or a tank aura (Defensive Stance, Bear Form,
   Righteous Fury). It's outside the blessing lists, so part 2 (29) only
   needs to decide which Paladin casts it.
+- 31. Roles in parties. Part 2 (29) gives raid members a role (tank,
+  melee, ranged, caster, healer) that picks their blessings; parties keep
+  the class lists for now. Inspect doesn't help while leveling: talents
+  rarely match the role a character fills in a dungeon. Signals that would:
+  the manual list, the group finder role (`TANK`, `HEALER`), and tanking
+  auras (Righteous Fury, Defensive Stance).
+  - Group arithmetic: in a full 5-person party, a role only one member can
+    fill goes to them (3 Mages, a Priest and a Druid: the Druid tanks).
+    Keep the tank and healer classes in a table, since Forever may change
+    them.
 - 25. Size sliders for the icon and the text. The icon scales the 48px
   button (`SetSize`, out of combat only), and the text changes the font
   size of the suggestion list. Both use the game's own slider, with no
