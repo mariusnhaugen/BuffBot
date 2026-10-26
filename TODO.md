@@ -18,8 +18,11 @@ commit.
   before the button moved on. Not reproduced since. A probe for
   `UNIT_INVENTORY_CHANGED` printed nothing, so the event may not always
   fire, or `C_Item.GetWeaponEnchantInfo` may lag behind it.
-- 21. More Paladin buffs: Light, Sanctuary. Kings is done: on yourself
-  through the blessing dropdown, and on Hunters and Paladins in the party.
+- 21. More Paladin buffs: Light, as the filler a Paladin gives when their
+  blessing does nothing for a member (planned for 2.5 with 29). Sanctuary
+  looks to be gone from Forever; check at launch. Kings is done: on
+  yourself through the blessing dropdown, and on Hunters and Paladins in
+  the party.
 - 30. Salvation. On Forever it is its own spell, not a blessing, so it
   stacks with blessings; Mass Salvation is the group version. Wowhead lists
   Salvation as 1038 (the old Blessing of Salvation ID; a third-party site
