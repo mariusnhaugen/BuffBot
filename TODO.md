@@ -23,16 +23,18 @@ commit.
   looks to be gone from Forever; check at launch. Kings is done: on
   yourself through the blessing dropdown, and on Hunters and Paladins in
   the party.
-- 30. Salvation. On Forever it is its own spell, not a blessing, so it
-  stacks with blessings; Mass Salvation is the group version. Wowhead lists
-  Salvation as 1038 (the old Blessing of Salvation ID; a third-party site
-  calls it "renamed"), so Mass Salvation is probably the old Greater
-  Blessing's ID too. Check both IDs, durations and the Mass version's
-  reagent at launch. Never give it to tanks: main-tank mark
-  (`GetPartyAssignment("MAINTANK", unit)`), group finder role
-  (`UnitGroupRolesAssigned`) or a tank aura (Defensive Stance, Bear Form,
-  Righteous Fury). It's outside the blessing lists, so part 2 (29) only
-  needs to decide which Paladin casts it.
+- 30. Salvation, after 2.5. On Forever it is its own spell, not a
+  blessing, so it stacks with blessings. Wowhead lists Salvation as 1038
+  (the old Blessing of Salvation ID; a third-party site calls it
+  "renamed"), so Mass Salvation is probably the old Greater Blessing's ID
+  too. Mass Salvation's tooltip: 16% of base mana, 40 yd, instant; 30% less
+  threat for 1 hour on every raid or party member of the target's class.
+  No reagent listed. Check the IDs and the single version's duration at
+  launch.
+  - Never on the tank role (part 2, 29): main-tank mark, Inspect, or the
+    manual list.
+  - Share the casts out between BuffBot Paladins instead of giving it to
+    one slot, e.g. split the classes between them.
 - 31. Roles in parties. Part 2 (29) gives raid members a role (tank,
   melee, ranged, caster, healer) that picks their blessings; parties keep
   the class lists for now. Inspect doesn't help while leveling: talents
