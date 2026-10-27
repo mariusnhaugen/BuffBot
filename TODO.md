@@ -45,6 +45,16 @@ commit.
     fill goes to them (3 Mages, a Priest and a Druid: the Druid tanks).
     Keep the tank and healer classes in a table, since Forever may change
     them.
+- 32. Stale roles after a respec, after 2.5. Part 2 (29) caches Inspect
+  results per GUID for the session, so a Resto Druid who goes Feral
+  mid-raid keeps getting Wisdom until the session ends; for now the manual
+  list (`/bb role`) fixes it. Ideas:
+  - A fresher, cheaper signal (talent aura, main-tank mark) that disagrees
+    with the cached result wins and drops the cache entry.
+  - Re-inspect when a raid member casts a spec-change or talent-reset
+    spell (`UNIT_SPELLCAST_SUCCEEDED`), if Forever has one and add-ons can
+    see it. Needs a probe.
+  - Expire cached results after about 30 minutes.
 - 25. Size sliders for the icon and the text. The icon scales the 48px
   button (`SetSize`, out of combat only), and the text changes the font
   size of the suggestion list. Both use the game's own slider, with no
