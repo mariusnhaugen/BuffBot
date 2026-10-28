@@ -10,8 +10,8 @@ Unknown hybrids are inspected in the background and get their spec's role.
 - Tests: mocks for the Inspect API and `InspectFrame`; one at a time; not in combat; not while `InspectFrame` is shown; not for a K holder with other BuffBot Paladins; Warriors only when nobody is MT-marked; a result changes the role.
 
 ## Acceptance criteria
-- [ ] `export PATH="$HOME/.luarocks/bin:$PATH"; busted && luacheck .` passes
-- [ ] Conventional Commit(s), split by concern
+- [x] `export PATH="$HOME/.luarocks/bin:$PATH"; busted && luacheck .` passes
+- [x] Conventional Commit(s), split by concern
 
 ## Notes / risks
 May clash with other add-ons' Inspect use; unprobed on Forever.

@@ -39,6 +39,8 @@ function State.new(class)
         time = 1000,
         timers = {}, -- { at = time, callback } from C_Timer.After
         printed = {},
+        inspects = {}, -- units passed to NotifyInspect, in order
+        inspecting = nil, -- the unit being inspected
         prefixes = {}, -- add-on message prefixes registered
         sent = {}, -- { prefix, text, chatType } for each add-on message that went out
         sendResult = nil, -- forces SendAddonMessage's result when set

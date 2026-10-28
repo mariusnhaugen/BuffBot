@@ -164,9 +164,31 @@ return function(state, env)
         return m and m.name
     end
 
-    -- Classic Era's order: name, icon, points spent, file name
-    function env.GetTalentTabInfo(tab)
-        return "Tree " .. tab, "icon", state.talents[tab] or 0, "Tree" .. tab
+    -- Classic Era's order: name, icon, points spent, file name. With inspect,
+    -- the inspected member's talents (member.talents).
+    function env.GetTalentTabInfo(tab, inspect)
+        local talents = state.talents
+        if inspect then
+            local m = state.inspecting and member(state.inspecting)
+            talents = m and m.talents or {}
+        end
+        return "Tree " .. tab, "icon", talents[tab] or 0, "Tree" .. tab
+    end
+
+    -- Inspect: in range unless member.inRange is false. Specs fire
+    -- INSPECT_READY themselves; state.inspects lists the units asked for.
+    function env.CanInspect(unit)
+        local m = member(unit)
+        return m ~= nil and m.inRange ~= false and not m.offline
+    end
+
+    function env.NotifyInspect(unit)
+        state.inspecting = unit
+        table.insert(state.inspects, unit)
+    end
+
+    function env.ClearInspectPlayer()
+        state.inspecting = nil
     end
 
     function env.UnitName(unit)

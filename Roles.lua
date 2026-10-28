@@ -36,21 +36,22 @@ local TalentTreeRoles = {
     WARRIOR = { "melee", "melee", "tank" },
 }
 
--- Points spent in one of the player's talent trees. Classic Era returns them
--- third; later clients return an ID first and the points fifth.
-local function PointsIn(tab)
-    local _, _, third, _, fifth = GetTalentTabInfo(tab)
+-- Points spent in one talent tree, the player's or, with inspect, the
+-- inspected unit's. Classic Era returns them third; later clients return an
+-- ID first and the points fifth.
+local function PointsIn(tab, inspect)
+    local _, _, third, _, fifth = GetTalentTabInfo(tab, inspect)
     if type(third) == "number" then return third end
     return fifth or 0
 end
 
--- The player's role from the tree with the most points, or nil without talents
-local function TalentRole()
-    local trees = TalentTreeRoles[BuffBot.playerclass]
+-- A class's role from the tree with the most points, or nil without talents
+local function TalentRole(class, inspect)
+    local trees = TalentTreeRoles[class]
     if not trees then return nil end
     local best, bestPoints = nil, 0
     for tab, role in ipairs(trees) do
-        local points = PointsIn(tab)
+        local points = PointsIn(tab, inspect)
         if points > bestPoints then best, bestPoints = role, points end
     end
     return best
@@ -63,6 +64,8 @@ local GROUP_ROLES = { TANK = "tank", HEALER = "healer" }
 -- where the client has no group finder API
 local function GroupRole(unit)
     if UnitGroupRolesAssigned then return GROUP_ROLES[UnitGroupRolesAssigned(unit)] end
+    local index = tonumber(unit:match("^raid(%d+)$"))
+    if index then return GROUP_ROLES[select(12, GetRaidRosterInfo(index)) or ""] end
     for i = 1, GetNumGroupMembers() do
         if UnitIsUnit("raid" .. i, unit) then
             return GROUP_ROLES[select(12, GetRaidRosterInfo(i)) or ""]
@@ -70,8 +73,9 @@ local function GroupRole(unit)
     end
 end
 
--- Roles seen from talent auras, by GUID, for the session. An aura can drop
--- (a Feral leaving cat form), but the talent behind it stays.
+-- Roles seen from talent auras or Inspect, by GUID, for the session:
+-- { role, source }. An aura can drop (a Feral leaving cat form), but the
+-- talent behind it stays.
 local roleByGUID = {}
 
 -- Auras only a Druid's talents give: Moonkin for Balance, Leader of the Pack
@@ -85,21 +89,127 @@ local TALENT_AURAS = {
 
 -- A Druid's role from their talent auras. Party auras can't be read in
 -- combat, so it waits until after.
-local function AuraRole(unit)
-    if select(2, UnitClass(unit)) ~= "DRUID" then return nil end
-    local guid = UnitGUID(unit)
-    if roleByGUID[guid] then return roleByGUID[guid] end
-    if InCombatLockdown() then return nil end
+local function AuraRole(unit, guid)
+    if select(2, UnitClass(unit)) ~= "DRUID" or InCombatLockdown() then return nil end
     for _, talentAura in ipairs(TALENT_AURAS) do
         local aura = C_UnitAuras.GetAuraDataBySpellName(unit, BuffBot.SpellName(talentAura.name))
         if aura and (not talentAura.own or (aura.sourceUnit and UnitIsUnit(aura.sourceUnit, unit))) then
-            roleByGUID[guid] = talentAura.role
+            roleByGUID[guid] = { role = talentAura.role, source = "aura" }
             return talentAura.role
         end
     end
 end
 
--- Forgets the roles of members who left the raid
+--------------- INSPECT ----------------
+-- The last layer, for hybrids nothing cheaper has placed: their talents, by
+-- Inspect, one member at a time (docs/plan/SPEC.md "Inspect queue").
+
+local INSPECT_INTERVAL = 1.5 -- seconds between inspects
+local INSPECT_WAIT = 5 -- seconds to wait for INSPECT_READY before moving on
+local INSPECT_TRIES = 3 -- inspects per member before giving up for the session
+
+-- Specializations by ID, where the client has them
+local SPEC_ROLES = {
+    [102] = "caster", [103] = "melee", [104] = "tank", [105] = "healer",      -- Druid
+    [262] = "caster", [263] = "melee", [264] = "healer",                      -- Shaman
+    [65] = "healer", [66] = "tank", [70] = "melee",                           -- Paladin
+    [71] = "melee", [72] = "melee", [73] = "tank",                            -- Warrior
+}
+
+local HYBRIDS = { DRUID = true, SHAMAN = true, PALADIN = true }
+
+local tries = {} -- GUID -> inspects tried
+local pending -- { guid, at } for the inspect waiting on INSPECT_READY
+local inspecting = false -- the queue's timer is running
+
+local function AnyMainTank()
+    for i = 1, GetNumGroupMembers() do
+        if GetPartyAssignment("MAINTANK", "raid" .. i) then return true end
+    end
+    return false
+end
+
+-- Inspecting only matters to a Paladin buffing the raid whose blessings
+-- depend on role: anything but Kings' slot, or alone. Never in combat, and
+-- never while the player has the Inspect window open.
+local function MayInspect()
+    if BuffBot.playerclass ~= "PALADIN" or not IsInRaid() or not BuffBot.config.GROUP_BUFFING
+        or BuffBot.InPvP() or InCombatLockdown() then
+        return false
+    end
+    if BuffBot.Coordinating() and BuffBot.MySlot() == "K" then return false end
+    return not (InspectFrame and InspectFrame:IsShown())
+end
+
+-- Raid members still waiting to be inspected: hybrids, and Warriors when
+-- nobody is marked main tank, whose role only comes from their class
+local function Waiting()
+    local units, tanksMarked = {}, nil
+    for i = 1, GetNumGroupMembers() do
+        local unit = "raid" .. i
+        local class = select(2, UnitClass(unit))
+        if class == "WARRIOR" and tanksMarked == nil then tanksMarked = AnyMainTank() end
+        local guid = UnitGUID(unit)
+        if guid and not UnitIsUnit(unit, "player") and (HYBRIDS[class] or (class == "WARRIOR" and not tanksMarked))
+            and (tries[guid] or 0) < INSPECT_TRIES and select(2, BuffBot.RoleOf(unit)) == "class" then
+            table.insert(units, unit)
+        end
+    end
+    return units
+end
+
+local function StopInspect()
+    if pending then ClearInspectPlayer() end
+    pending = nil
+end
+
+-- One step of the queue: wait for an answer, or inspect the next member in
+-- range. Stops when nobody in range is left; the next roster change or the
+-- end of combat starts it again.
+local function InspectStep()
+    inspecting = false
+    if not MayInspect() then return StopInspect() end
+    if pending and GetTime() - pending.at < INSPECT_WAIT then
+        inspecting = true
+        return C_Timer.After(INSPECT_INTERVAL, InspectStep)
+    end
+    StopInspect()
+    for _, unit in ipairs(Waiting()) do
+        if CanInspect(unit) then
+            local guid = UnitGUID(unit)
+            tries[guid] = (tries[guid] or 0) + 1
+            pending = { guid = guid, unit = unit, at = GetTime() }
+            NotifyInspect(unit)
+            inspecting = true
+            return C_Timer.After(INSPECT_INTERVAL, InspectStep)
+        end
+    end
+end
+
+function BuffBot.StartInspecting()
+    if inspecting or not MayInspect() then return end
+    inspecting = true
+    C_Timer.After(INSPECT_INTERVAL, InspectStep)
+end
+
+-- The answer to the queue's inspect, not to anyone else's
+function BuffBot.InspectReady(guid)
+    if not pending or guid ~= pending.guid then return end
+    local unit = pending.unit
+    local role = SPEC_ROLES[GetInspectSpecialization and GetInspectSpecialization(unit) or 0]
+        or TalentRole(select(2, UnitClass(unit)), true)
+    if role then roleByGUID[guid] = { role = role, source = "inspect" } end
+    StopInspect()
+    BuffBot.CheckPlayerBuffs()
+end
+
+-- How many members are waiting to be inspected
+function BuffBot.InspectsWaiting()
+    if not IsInRaid() then return 0 end
+    return #Waiting()
+end
+
+-- Forgets the roles of members who left the raid, and inspects newcomers
 function BuffBot.UpdateRoles()
     local present = {}
     for i = 1, GetNumGroupMembers() do
@@ -109,21 +219,30 @@ function BuffBot.UpdateRoles()
     for guid in pairs(roleByGUID) do
         if not present[guid] then roleByGUID[guid] = nil end
     end
+    for guid in pairs(tries) do
+        if not present[guid] then tries[guid] = nil end
+    end
+    BuffBot.StartInspecting()
 end
 
 -- A unit's role and where it came from: the manual list, then the main-tank
--- mark and the group's role, then talent auras, then the player's own
--- talents, then the class default
+-- mark and the group's role, then talent auras or Inspect, then the player's
+-- own talents, then the class default
 function BuffBot.RoleOf(unit)
     local manual = BuffBot.config.ROLES and BuffBot.config.ROLES[GetUnitName(unit, true) or ""]
     if manual then return manual, "manual" end
     if GetPartyAssignment("MAINTANK", unit) then return "tank", "mark" end
     local groupRole = IsInRaid() and GroupRole(unit)
     if groupRole then return groupRole, "group" end
-    local auraRole = IsInRaid() and AuraRole(unit)
-    if auraRole then return auraRole, "aura" end
+    if IsInRaid() then
+        local guid = UnitGUID(unit)
+        local seen = guid and roleByGUID[guid]
+        if seen then return seen.role, seen.source end
+        local auraRole = guid and AuraRole(unit, guid)
+        if auraRole then return auraRole, "aura" end
+    end
     if UnitIsUnit(unit, "player") then
-        local role = TalentRole()
+        local role = TalentRole(BuffBot.playerclass)
         if role then return role, "talents" end
     end
     return BuffBot.ClassDefaultRole[select(2, UnitClass(unit))], "class"

@@ -324,8 +324,13 @@ About 28 yd, one at a time, ~1 per 1.5 s. Runs only when **all** hold:
 - `InspectFrame` isn't shown;
 - the member is a hybrid left unknown by the cheaper layers.
 
-Out-of-range members are skipped and retried on the next pass. Results stay
-local.
+Out-of-range members are skipped and retried on the next pass: the queue
+stops when nobody in range is left, and starts again on the next roster
+change or at the end of combat. An inspect gets 5 s for its
+`INSPECT_READY`; a member is tried at most 3 times per session. Answers to
+other inspects (the player's own, other add-ons') are ignored. Spec IDs map
+to roles by the standard IDs (e.g. Druid 102 Balance, 103 Feral, 104
+Guardian, 105 Restoration). Results stay local.
 
 ## Settings
 

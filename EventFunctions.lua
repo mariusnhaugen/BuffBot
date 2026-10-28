@@ -109,8 +109,14 @@ function events:BAG_UPDATE_DELAYED()
     BuffBot.CheckPlayerBuffs()
 end
 
+-- Talents for the Inspect queue; other inspects are ignored
+function events:INSPECT_READY(guid)
+    BuffBot.InspectReady(guid)
+end
+
 function events:PLAYER_REGEN_ENABLED()
     BuffBot.ResendAfterCombat()
+    BuffBot.StartInspecting()
     BuffBot.CheckPlayerBuffs()
     BuffBot.ResumeTracking()
 end
@@ -181,6 +187,7 @@ events:RegisterEvent("CHAT_MSG_ADDON")
 events:RegisterEvent("GROUP_ROSTER_UPDATE")
 events:RegisterEvent("GROUP_LEFT")
 events:RegisterEvent("UNIT_CONNECTION")
+events:RegisterEvent("INSPECT_READY")
 
 events:RegisterEvent("SPELL_UPDATE_USABLE")
 events:RegisterUnitEvent("UNIT_INVENTORY_CHANGED", "player")

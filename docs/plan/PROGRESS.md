@@ -18,7 +18,7 @@ Built on `release/2.5`, one slice at a time with `/slice next`. Design: `SPEC.md
 - [x] 13 multi-client (MUST, ~40m) — found and fixed a wasted answer while settling (SPEC updated); mocks take the player's name (`name` option)
 - [x] 14 detect-markers (SHOULD, ~20m) — the mark and group role sit before your own talents; UnitGroupRolesAssigned is used only if the client has it
 - [x] 15 detect-auras (SHOULD, ~25m) — Moonkin Aura also has to come from the Druid themselves; Classic aura IDs; cache pruned on every roster update (BuffBot.UpdateRoles)
-- [ ] 16 inspect-queue (SHOULD, ~40m)
+- [x] 16 inspect-queue (SHOULD, ~40m) — 5 s wait per inspect, 3 tries per member; the role cache now holds { role, source }; GroupRole reads raidN's index directly
 - [ ] 17 bb-raid (SHOULD, ~25m)
 - [ ] 18 release-prep (MUST, ~20m)
 
