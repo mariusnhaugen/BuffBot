@@ -10,8 +10,8 @@ Main-tank marked members are tanks without anyone typing `/bb role`.
 - Tests: mock `GetPartyAssignment`; manual list wins over the mark; the mark wins over the class default.
 
 ## Acceptance criteria
-- [ ] `export PATH="$HOME/.luarocks/bin:$PATH"; busted && luacheck .` passes
-- [ ] Conventional Commit(s), split by concern
+- [x] `export PATH="$HOME/.luarocks/bin:$PATH"; busted && luacheck .` passes
+- [x] Conventional Commit(s), split by concern
 
 ## Notes / risks
 None.

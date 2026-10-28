@@ -160,6 +160,55 @@ describe("roles", function()
         end)
     end)
 
+    describe("group markers", function()
+        local function raidOf(members)
+            local h = paladin()
+            h:joinRaid(members)
+            h:settle()
+            return h
+        end
+
+        it("make a main-tank marked member a tank", function()
+            local h = raidOf({ { class = "DRUID", mainTank = true } })
+            assert.same({ "tank", "mark" }, { h.ns.RoleOf("raid2") })
+        end)
+
+        it("make the player a tank when marked", function()
+            local h = raidOf({})
+            h.state.mainTank = true
+            h.state.talents = { 31, 0, 0 }
+            assert.same({ "tank", "mark" }, { h.ns.RoleOf("player") })
+        end)
+
+        it("lose to the manual list", function()
+            local h = paladin({ saved = { ROLES = { Warden = "melee" } } })
+            h:joinRaid({ { class = "WARRIOR", name = "Warden", mainTank = true } })
+            assert.same({ "melee", "manual" }, { h.ns.RoleOf("raid2") })
+        end)
+
+        it("take the raid roster's tank and healer roles", function()
+            local h = raidOf({ { class = "WARRIOR", combatRole = "TANK" }, { class = "SHAMAN", combatRole = "HEALER" },
+                { class = "SHAMAN", combatRole = "DAMAGER" } })
+            assert.same({ "tank", "group" }, { h.ns.RoleOf("raid2") })
+            assert.same({ "healer", "group" }, { h.ns.RoleOf("raid3") })
+            assert.same({ "healer", "class" }, { h.ns.RoleOf("raid4") })
+        end)
+
+        it("prefer the group finder's role where the client has one", function()
+            local h = raidOf({ { class = "DRUID", combatRole = "HEALER" } })
+            h.env.UnitGroupRolesAssigned = function() return "TANK" end
+            assert.same({ "tank", "group" }, { h.ns.RoleOf("raid2") })
+        end)
+
+        it("give a marked tank Kings", function()
+            local h = paladin()
+            h:give("Blessing of Might")
+            h:joinRaid({ { class = "WARRIOR", mainTank = true }, { class = "WARRIOR" } })
+            h:settle()
+            assert.same({ "Blessing of Kings > raid2", "Blessing of Might > raid3" }, h:buffUp())
+        end)
+    end)
+
     describe("the player's own role", function()
         it("comes from the talent tree with the most points", function()
             local h = paladin()

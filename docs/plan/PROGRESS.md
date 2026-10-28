@@ -16,7 +16,7 @@ Built on `release/2.5`, one slice at a time with `/slice next`. Design: `SPEC.md
 - [x] 11 slot-blessings (MUST, ~30m) — SPEC: the Light filler yields to Light's slot, and the outsider fallback skips blessings other slots cover; reserves race the slot holders on the per-member fallback (as designed)
 - [x] 12 reload-restore (MUST, ~20m) — no isReloadingUi check: the save is cleared on login and on leaving the raid, so a save present means a reload (SPEC updated)
 - [x] 13 multi-client (MUST, ~40m) — found and fixed a wasted answer while settling (SPEC updated); mocks take the player's name (`name` option)
-- [ ] 14 detect-markers (SHOULD, ~20m)
+- [x] 14 detect-markers (SHOULD, ~20m) — the mark and group role sit before your own talents; UnitGroupRolesAssigned is used only if the client has it
 - [ ] 15 detect-auras (SHOULD, ~25m)
 - [ ] 16 inspect-queue (SHOULD, ~40m)
 - [ ] 17 bb-raid (SHOULD, ~25m)

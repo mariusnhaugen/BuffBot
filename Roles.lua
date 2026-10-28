@@ -56,11 +56,29 @@ local function TalentRole()
     return best
 end
 
--- A unit's role and where it came from: the manual list, then the player's
--- own talents, then the class default
+-- The group's roles that pick blessings; damage dealers fall through
+local GROUP_ROLES = { TANK = "tank", HEALER = "healer" }
+
+-- A unit's role from the group finder, or from the raid roster's combat role
+-- where the client has no group finder API
+local function GroupRole(unit)
+    if UnitGroupRolesAssigned then return GROUP_ROLES[UnitGroupRolesAssigned(unit)] end
+    for i = 1, GetNumGroupMembers() do
+        if UnitIsUnit("raid" .. i, unit) then
+            return GROUP_ROLES[select(12, GetRaidRosterInfo(i)) or ""]
+        end
+    end
+end
+
+-- A unit's role and where it came from: the manual list, then the main-tank
+-- mark and the group's role, then the player's own talents, then the class
+-- default
 function BuffBot.RoleOf(unit)
     local manual = BuffBot.config.ROLES and BuffBot.config.ROLES[GetUnitName(unit, true) or ""]
     if manual then return manual, "manual" end
+    if GetPartyAssignment("MAINTANK", unit) then return "tank", "mark" end
+    local groupRole = IsInRaid() and GroupRole(unit)
+    if groupRole then return groupRole, "group" end
     if UnitIsUnit(unit, "player") then
         local role = TalentRole()
         if role then return role, "talents" end

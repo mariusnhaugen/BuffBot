@@ -211,14 +211,27 @@ return function(state, env)
         return memberCount()
     end
 
-    -- name, rank, subgroup, level, class, fileName
+    -- name, rank, subgroup, level, class, fileName, zone, online, isDead,
+    -- role, isML, combatRole
     function env.GetRaidRosterInfo(index)
         if not state.raid then return nil end
         if index == 1 then
-            return state.playerName, 0, state.playerSubgroup, 60, state.class, state.class
+            return state.playerName, 0, state.playerSubgroup, 60, state.class, state.class, "Zone", true, false,
+                nil, false, state.combatRole or "NONE"
         end
         local m = member("raid" .. index)
-        if m then return m.name, 0, m.subgroup, 60, m.class, m.class end
+        if m then
+            return m.name, 0, m.subgroup, 60, m.class, m.class, "Zone", not m.offline, m.dead == true,
+                nil, false, m.combatRole or "NONE"
+        end
+    end
+
+    -- The raid's main-tank marks: member.mainTank, or state.mainTank for the player
+    function env.GetPartyAssignment(assignment, unit)
+        if assignment ~= "MAINTANK" then return false end
+        if state:resolve(unit) == "player" then return state.mainTank == true end
+        local m = member(unit)
+        return m and m.mainTank == true or false
     end
 
     function env.UnitLevel() return 60 end
