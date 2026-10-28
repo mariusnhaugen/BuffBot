@@ -1,7 +1,6 @@
 local _, BuffBot = ...
 
--- Tracking is cast by the add-on itself, not the button: CastSpellByID works
--- for tracking without a key press (see PROBE_RESULTS.md).
+-- Tracking is cast by the add-on itself, not the button.
 
 -- What the Tracking dropdown offers, in order. Only one can be on at a time.
 BuffBot.Trackers = { "Find Minerals", "Find Herbs", "Track Beasts", "Track Humanoids", "Track Undead",
@@ -9,20 +8,18 @@ BuffBot.Trackers = { "Find Minerals", "Find Herbs", "Track Beasts", "Track Human
 
 -- Used until the player picks a tracker
 local DEFAULT_ORDER = { "Find Minerals", "Find Herbs", "Track Beasts" }
-
--- The Dwarf racial, which stacks with the other trackers on Forever
-local TREASURE = "Find Treasure"
+local TREASURE = "Find Treasure" --Dwarf. Stacks with tracking.
 
 local RETRY_DELAY = 0.5
 local GIVE_UP_AFTER = 10
 
-function BuffBot.KnowsTracker(key)
-    local spellID = BuffBot.SpellID(key)
+function BuffBot.KnowsTracker(tracker)
+    local spellID = BuffBot.SpellID(tracker)
     return spellID ~= nil and IsPlayerSpell(spellID)
 end
 
-local function IsOn(key)
-    return BuffBot.UnitHasAssignedBuff("player", key)
+local function IsOn(spellid)
+    return BuffBot.UnitHasAssignedBuff("player", spellid)
 end
 
 function BuffBot.DefaultTracker()
