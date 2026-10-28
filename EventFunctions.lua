@@ -67,8 +67,10 @@ function events:PLAYER_UNGHOST()
     BuffBot.UpdateTracking()
 end
 
--- Zoning, which includes leaving a battleground, where tracking isn't cast
+-- Zoning, which includes entering or leaving a battleground, where tracking
+-- isn't cast and only the player is buffed
 function events:PLAYER_ENTERING_WORLD()
+    BuffBot.CheckPlayerBuffs()
     BuffBot.UpdateTracking()
 end
 

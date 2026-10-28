@@ -11,6 +11,12 @@ function BuffBot.IndexOf(value, table)
     return nil
 end
 
+-- In a battleground or arena
+function BuffBot.InPvP()
+    local _, instanceType = IsInInstance()
+    return instanceType == "pvp" or instanceType == "arena"
+end
+
 -- Replaced by the saved config on ADDON_LOADED; empty until then so debug() works
 BuffBot.config = {}
 function BuffBot.debug(...)

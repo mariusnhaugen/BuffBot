@@ -86,9 +86,10 @@ local function InRange(unit, buffString)
 end
 
 -- The units to buff, as subgroups: the player's own first, starting with the
--- player, then the rest of the raid. Pets can't be buffed in Forever.
+-- player, then the rest of the raid. Only the player in a battleground or
+-- arena. Pets can't be buffed in Forever.
 local function GroupUnits()
-    if not BuffBot.config.GROUP_BUFFING or not IsInGroup() then return { { "player" } } end
+    if not BuffBot.config.GROUP_BUFFING or not IsInGroup() or BuffBot.InPvP() then return { { "player" } } end
     if not IsInRaid() then
         local party = { "player" }
         for i = 1, GetNumSubgroupMembers() do

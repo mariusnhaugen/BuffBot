@@ -60,11 +60,6 @@ local function MissingTrackers(switchTo)
     return missing
 end
 
-local function InBattleground()
-    local _, instanceType = IsInInstance()
-    return instanceType == "pvp" or instanceType == "arena"
-end
-
 -- Seconds until a cast can work: the GCD left, or a retry while the player
 -- is casting. A cast during either fails with an error.
 local function BusyFor(key)
@@ -85,14 +80,14 @@ local resumeAfterCombat
 -- it never takes a GCD mid-fight.
 function BuffBot.UpdateTracking(switchTo)
     resumeAfterCombat = nil
-    if InBattleground() then return end
+    if BuffBot.InPvP() then return end
     generation = generation + 1
     local loop = generation
     local deadline = GetTime() + GIVE_UP_AFTER
 
     local function step()
         if loop ~= generation then return end
-        if InBattleground() or UnitIsDeadOrGhost("player") or GetTime() > deadline then return end
+        if BuffBot.InPvP() or UnitIsDeadOrGhost("player") or GetTime() > deadline then return end
         if InCombatLockdown() then
             resumeAfterCombat = function() BuffBot.UpdateTracking(switchTo) end
             return

@@ -450,6 +450,27 @@ describe("group buffing", function()
             h:joinRaid(members)
             assert.same({ "Arcane Intellect" }, h:buffUp())
         end)
+
+        it("is player-only in a battleground or arena", function()
+            for _, instanceType in ipairs({ "pvp", "arena" }) do
+                local h = mage()
+                h.state.instanceType = instanceType
+                h:joinRaid(members)
+                assert.same({ "Arcane Intellect" }, h:buffUp())
+            end
+        end)
+
+        it("buffs the raid again after leaving a battleground", function()
+            local h = mage()
+            h.state.instanceType = "pvp"
+            h:joinRaid(members)
+            h:give("Arcane Intellect")
+            assert.is_nil(h:shown())
+            h.state.instanceType = "none"
+            h:fire("PLAYER_ENTERING_WORLD")
+            assert.equal("Arcane Intellect", h:shown())
+            assert.equal("raid2", h:target())
+        end)
     end)
 
     describe("suggestion list", function()

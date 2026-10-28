@@ -6,6 +6,7 @@
 
 - "Buff your party" is now "Buff your group". In a raid it covers the whole
   raid, your own subgroup first. It's the one switch for buffing others.
+- In battlegrounds and arenas, BuffBot only buffs you.
 
 ### Removed
 

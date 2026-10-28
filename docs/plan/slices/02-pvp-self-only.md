@@ -11,8 +11,8 @@ In a battleground or arena, BuffBot buffs only you.
 - Docs: CHANGELOG "Changed: in battlegrounds and arenas, BuffBot only buffs you."
 
 ## Acceptance criteria
-- [ ] `export PATH="$HOME/.luarocks/bin:$PATH"; busted && luacheck .` passes
-- [ ] Conventional Commit(s), split by concern
+- [x] `export PATH="$HOME/.luarocks/bin:$PATH"; busted && luacheck .` passes
+- [x] Conventional Commit(s), split by concern
 
 ## Notes / risks
 Slice 10 also checks `InPvP()` before sending messages.
