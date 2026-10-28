@@ -1,5 +1,16 @@
 # BuffBot
 
+## 2.5.0
+
+### Changed
+
+- "Buff your party" is now "Buff your group". In a raid it covers the whole
+  raid, your own subgroup first. It's the one switch for buffing others.
+
+### Removed
+
+- "Buff the whole raid". BuffBot now always covers the whole raid.
+
 ## 2.4.0
 
 ### New

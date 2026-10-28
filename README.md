@@ -66,9 +66,8 @@ a poison running low on charges counts as missing.
 
 - **Hide Icon / Hide Text:** text-only or icon-only buffing.
 - **Reset Button Position.**
-- **Buff your party:** group buffing, on by default.
-- **Buff the whole raid:** after your subgroup, the rest of the raid. Off by
-  default.
+- **Buff your group:** your party, or the whole raid starting with your own
+  subgroup. On by default.
 - **Strict Mage Armors:** only the recommended armor counts.
 - **Skip Dampen Magic / Skip Thorns.**
 - **Always try Bloodrage out of combat:** casts Bloodrage before Battle Shout.

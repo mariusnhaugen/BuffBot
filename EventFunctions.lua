@@ -116,6 +116,8 @@ function events:ADDON_LOADED(arg1)
         BuffBotConfig.PALADIN_BLESSING = BuffBotConfig.WISDOM_SELF and "Blessing of Wisdom" or "Blessing of Might"
         BuffBotConfig.WISDOM_SELF = nil
     end
+    -- Before 2.5.0, buffing the rest of the raid was its own setting
+    BuffBotConfig.RAID_BUFFING = nil
     -- Fill in settings added since the config was saved
     for key, value in pairs(BuffBot.GetDefaultConfig()) do
         if BuffBotConfig[key] == nil then

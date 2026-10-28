@@ -12,9 +12,9 @@ Group buffing covers the whole raid without an extra setting, and "Buff your gro
 - Docs: CHANGELOG 2.5.0 "Removed: 'Buff the whole raid'. BuffBot now always covers the whole raid." and the rename under "Changed".
 
 ## Acceptance criteria
-- [ ] No reference to `RAID_BUFFING` remains outside the load-time cleanup (`grep -rn RAID_BUFFING`)
-- [ ] `export PATH="$HOME/.luarocks/bin:$PATH"; busted && luacheck .` passes
-- [ ] Conventional Commit(s), split by concern
+- [x] No reference to `RAID_BUFFING` remains outside the load-time cleanup (`grep -rn RAID_BUFFING`)
+- [x] `export PATH="$HOME/.luarocks/bin:$PATH"; busted && luacheck .` passes
+- [x] Conventional Commit(s), split by concern
 
 ## Notes / risks
 Applies to every class, not just Paladins.

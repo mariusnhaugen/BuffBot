@@ -19,7 +19,6 @@ describe("saved config", function()
             ROGUE_POISON_OFFHAND = "Instant Poison",
             TRACK_TREASURE = true,
             GROUP_BUFFING = true,
-            RAID_BUFFING = false,
         }, h.ns.config)
         assert.equal(h.ns.config, h.env.BuffBotConfig)
     end)
@@ -56,6 +55,11 @@ describe("saved config", function()
         h = Addon.load({ saved = { SUGGESTION_LIST = true } })
         assert.is_false(h.ns.config.HIDE_TEXT)
         assert.is_nil(h.ns.config.SUGGESTION_LIST)
+    end)
+
+    it("drops the old RAID_BUFFING", function()
+        local h = Addon.load({ saved = { RAID_BUFFING = true } })
+        assert.is_nil(h.ns.config.RAID_BUFFING)
     end)
 
     it("turns an old WISDOM_SELF into PALADIN_BLESSING", function()
@@ -220,12 +224,12 @@ describe("settings panel", function()
             elseif init.kind == "button" then
                 table.insert(order, "button")
             elseif init.setting.name == "Auto tracking" or init.setting.name == "Auto Find Treasure"
-                or init.setting.name == "Buff your party" or init.setting.name == "Buff the whole raid" then
+                or init.setting.name == "Buff your group" then
                 table.insert(order, init.setting.name)
             end
         end
-        assert.same({ "button", "Tracking", "Auto tracking", "Auto Find Treasure", "Group", "Buff your party",
-            "Buff the whole raid", "Class Settings" }, order)
+        assert.same({ "button", "Tracking", "Auto tracking", "Auto Find Treasure", "Group", "Buff your group",
+            "Class Settings" }, order)
     end)
 
     local function resetButton(h)

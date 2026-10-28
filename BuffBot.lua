@@ -86,8 +86,7 @@ local function InRange(unit, buffString)
 end
 
 -- The units to buff, as subgroups: the player's own first, starting with the
--- player, then the rest of the raid when that's turned on. Pets can't be
--- buffed in Forever.
+-- player, then the rest of the raid. Pets can't be buffed in Forever.
 local function GroupUnits()
     if not BuffBot.config.GROUP_BUFFING or not IsInGroup() then return { { "player" } } end
     if not IsInRaid() then
@@ -110,11 +109,9 @@ local function GroupUnits()
         end
     end
     local ordered = { subgroups[own] or { "player" } }
-    if BuffBot.config.RAID_BUFFING then
-        for subgroup = 1, 8 do
-            if subgroup ~= own and subgroups[subgroup] then
-                table.insert(ordered, subgroups[subgroup])
-            end
+    for subgroup = 1, 8 do
+        if subgroup ~= own and subgroups[subgroup] then
+            table.insert(ordered, subgroups[subgroup])
         end
     end
     return ordered

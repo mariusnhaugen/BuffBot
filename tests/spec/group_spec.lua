@@ -424,31 +424,31 @@ describe("group buffing", function()
             { class = "DRUID", subgroup = 2 },
         }
 
-        it("buffs only the player's subgroup by default", function()
+        it("buffs the player's subgroup, then the rest of the raid", function()
             local h = mage()
-            h:joinRaid(members)
-            assert.same({ "Arcane Intellect", "Arcane Intellect > raid2" }, h:buffUp())
-        end)
-
-        it("buffs the player's subgroup, then the rest, with whole-raid buffing", function()
-            local h = mage({ config = { RAID_BUFFING = true } })
             h:joinRaid(members)
             assert.same({ "Arcane Intellect", "Arcane Intellect > raid2", "Arcane Intellect > raid3",
                 "Arcane Intellect > raid4" }, h:buffUp())
         end)
 
         it("starts with the player's own subgroup when it isn't the first", function()
-            local h = mage({ config = { RAID_BUFFING = true } })
+            local h = mage()
             h:joinRaid(members, 2)
             assert.same({ "Arcane Intellect", "Arcane Intellect > raid3", "Arcane Intellect > raid4",
                 "Arcane Intellect > raid2" }, h:buffUp())
         end)
 
         it("casts a group version per subgroup", function()
-            local h = mage({ known = { "Arcane Intellect", "Arcane Brilliance" }, config = { RAID_BUFFING = true } })
+            local h = mage({ known = { "Arcane Intellect", "Arcane Brilliance" } })
             h:bag("Arcane Powder")
             h:joinRaid(members)
             assert.same({ "Arcane Brilliance", "Arcane Brilliance > raid3" }, h:buffUp())
+        end)
+
+        it("is player-only with group buffing turned off", function()
+            local h = mage({ config = { GROUP_BUFFING = false } })
+            h:joinRaid(members)
+            assert.same({ "Arcane Intellect" }, h:buffUp())
         end)
     end)
 
