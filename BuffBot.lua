@@ -26,6 +26,7 @@ end
 
 function BuffBot.UpdateClassBuffList()
     BuffBot.debug("UpdateClassBuffList")
+    BuffBot.UpdateCoordination()
     BuffBot.FilterInitialList()
     BuffBot.CheckPlayerBuffs()
 end
@@ -269,7 +270,10 @@ function BuffBot.MissingBuffs()
     for i = 1, #classBuffs do
         local currentBuff = classBuffs[i]
         if BuffBot.Blessings[currentBuff] and IsInRaid() then
-            outOfRange = AddRaidBlessings(missing, later, subgroups) or outOfRange
+            -- Blessings wait while a hello's answers come in
+            if not BuffBot.BlessingsOnHold() then
+                outOfRange = AddRaidBlessings(missing, later, subgroups) or outOfRange
+            end
         elseif BuffBot.GroupBuffs[currentBuff] then
             for _, units in ipairs(subgroups) do
                 outOfRange = AddGroupBuff(missing, currentBuff, units) or outOfRange

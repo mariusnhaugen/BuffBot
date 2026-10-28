@@ -156,15 +156,19 @@ makes its sender an outsider. Messages carry *facts* (who holds what); every
 client derives *decisions* locally from the same rules. No negotiation.
 
 **When to send:**
-- Hello on joining a raid and on `PLAYER_ENTERING_WORLD`.
-- An answer (state) to every hello, after a random 0–2 s delay.
+- Hello when the player starts taking part: joining a raid, logging in or
+  reloading in one (the first roster check after load), or turning group
+  buffing back on. Zoning doesn't restart the add-on, so it sends nothing.
+- An answer (state) to every hello, after a random 0–2 s delay, unless the
+  player already sent their state since the hello (a slot change does that).
 - State whenever your own slot changes.
 - A send that doesn't return `0` (e.g. `AddOnMessageLockdown` in combat)
   is retried once on `PLAYER_REGEN_ENABLED`.
 - No timers otherwise. A newcomer costs 1 hello + 1 answer per Paladin, well
   under the 10-message burst (excess is dropped, not queued).
 
-**Settle window:** after a hello, wait ~3 s for answers, then compute.
+**Settle window:** after a hello, wait ~3 s for answers, then compute. Seeing
+another Paladin's hello also holds blessings for ~3 s.
 Blessing casts are held while settling (self-buffs and auras aren't), so
 nobody spends 60 minutes holding a blessing that belongs to another slot.
 

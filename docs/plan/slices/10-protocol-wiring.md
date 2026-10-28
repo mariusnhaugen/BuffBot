@@ -10,9 +10,9 @@ BuffBot Paladins in a raid announce themselves and settle on slots.
 - Tests: scripted peers in `coordination_spec.lua`: join → hello; a hello is answered once after the delay; two peers → settle → state; a peer going offline (`UNIT_CONNECTION`) frees their slot; a send returning `11` in combat goes out after combat; `BB:v2:K` is ignored; nothing is sent with group buffing off; blessings wait during the settle window but self-buffs don't.
 
 ## Acceptance criteria
-- [ ] `export PATH="$HOME/.luarocks/bin:$PATH"; busted && luacheck .` passes
-- [ ] No send happens more than once per event (the burst budget)
-- [ ] Conventional Commit(s), split by concern
+- [x] `export PATH="$HOME/.luarocks/bin:$PATH"; busted && luacheck .` passes
+- [x] No send happens more than once per event (the burst budget)
+- [x] Conventional Commit(s), split by concern
 
 ## Notes / risks
 Senders are matched against `GetUnitName(unit, true)`.

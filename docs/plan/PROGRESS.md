@@ -12,7 +12,7 @@ Built on `release/2.5`, one slice at a time with `/slice next`. Design: `SPEC.md
 - [x] 07 flat-suggestions (MUST, ~15m) — shows the full spell name ("Greater Blessing of Wisdom > Priests"), not the SPEC's shortened "Greater Wisdom", so it stays right on every client
 - [x] 08 message-mocks (MUST, ~30m) — prefix lives in BuffBot.MESSAGE_PREFIX (EventFunctions.lua); the CHAT_MSG_ADDON stub only prints in debug mode; mock specs in messages_spec.lua
 - [x] 09 slot-rules (MUST, ~40m) — event kinds settle/claim/peerLeft documented in SPEC; slice 10 must record a hello's slot only if nobody else holds it
-- [ ] 10 protocol-wiring (MUST, ~40m)
+- [x] 10 protocol-wiring (MUST, ~40m) — SPEC changed: hello when starting to take part, not on every PLAYER_ENTERING_WORLD; answers skipped when a state already went out; specs in protocol_spec.lua, h:settle() added after Paladin raid joins in older specs
 - [ ] 11 slot-blessings (MUST, ~30m)
 - [ ] 12 reload-restore (MUST, ~20m)
 - [ ] 13 multi-client (MUST, ~40m)

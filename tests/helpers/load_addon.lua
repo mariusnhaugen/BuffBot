@@ -191,6 +191,11 @@ function Harness:joinRaid(members, playerSubgroup)
     self:fire("GROUP_ROSTER_UPDATE")
 end
 
+-- Lets a hello's answers come in, so a Paladin's blessings stop waiting
+function Harness:settle()
+    self.state:advance(3)
+end
+
 function Harness:leaveGroup()
     self.state.group, self.state.raid = false, false
     self.state.members = {}

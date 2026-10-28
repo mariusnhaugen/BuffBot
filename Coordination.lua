@@ -111,3 +111,176 @@ function BuffBot.NextSlot(me, mySlot, peers, event)
     if slot == "-" then return Fill(me, peers, count) end
     return slot
 end
+
+--------------- MESSAGES ----------------
+-- BB:v1:<slot> states the slot a Paladin holds; BB?:v1:<slot> is a hello
+-- that everyone answers with their state. Messages carry facts; every client
+-- decides its own slot from them with NextSlot.
+
+local VERSION = "1"
+local SETTLE = 3 -- seconds to wait for answers to a hello
+local ANSWER_DELAY = 2 -- answers go out at random within this many seconds
+local VALID_SLOTS = { K = true, W = true, M = true, MW = true, L = true, ["-"] = true }
+
+local active = false -- taking part: a Paladin in a raid, buffing the group, not in PvP
+local mySlot = "-"
+local peers = {} -- full name -> slot, for the other BuffBot Paladins in the raid
+local settling = false -- the player's own hello is waiting for answers
+local helloCount = 0 -- so an old hello's settle timer does nothing
+local holdUntil = 0 -- blessings wait until then, after a hello
+local lastStateAt = -1 -- when the player last sent their state
+local unsent -- a message the game refused, to send again after combat
+
+local function Me()
+    return GetUnitName("player", true)
+end
+
+local function Send(text)
+    local result = select(-1, C_ChatInfo.SendAddonMessage(BuffBot.MESSAGE_PREFIX, text, "RAID"))
+    BuffBot.debug("BuffBot sent on RAID:", text, result ~= 0 and ("(failed: " .. tostring(result) .. ")") or "")
+    if result ~= 0 then unsent = text end
+end
+
+local function SendState()
+    lastStateAt = GetTime()
+    Send("BB:v" .. VERSION .. ":" .. mySlot)
+end
+
+local function SetSlot(slot)
+    if slot == mySlot then return end
+    mySlot = slot
+    SendState()
+end
+
+local function HoldBlessings()
+    holdUntil = GetTime() + SETTLE
+    C_Timer.After(SETTLE, BuffBot.CheckPlayerBuffs)
+end
+
+local function Settle(count)
+    if count ~= helloCount or not active then return end
+    settling = false
+    SetSlot(BuffBot.NextSlot(Me(), mySlot, peers, { kind = "settle" }))
+end
+
+local function SendHello()
+    settling = true
+    helloCount = helloCount + 1
+    local count = helloCount
+    Send("BB?:v" .. VERSION .. ":" .. mySlot)
+    HoldBlessings()
+    C_Timer.After(SETTLE, function()
+        Settle(count)
+        BuffBot.CheckPlayerBuffs()
+    end)
+end
+
+-- Applies an event unless the player's own hello is still settling, which
+-- covers it when it ends
+local function Recompute(event)
+    if settling then return end
+    SetSlot(BuffBot.NextSlot(Me(), mySlot, peers, event))
+end
+
+-- The raid unit of a full name, or nil
+local function RaidUnit(name)
+    for i = 1, GetNumGroupMembers() do
+        local unit = "raid" .. i
+        if GetUnitName(unit, true) == name then return unit end
+    end
+end
+
+local function CanTakePart()
+    return BuffBot.playerclass == "PALADIN" and IsInRaid() and BuffBot.config.GROUP_BUFFING
+        and not BuffBot.InPvP()
+end
+
+local function Reset()
+    active, mySlot, peers, settling, holdUntil = false, "-", {}, false, 0
+end
+
+-- Starts or stops taking part, and drops Paladins who left the raid or went
+-- offline. Runs on roster, connection and settings changes.
+function BuffBot.UpdateCoordination()
+    if not CanTakePart() then
+        if active then Reset() end
+        return
+    end
+    if not active then
+        active = true
+        SendHello()
+        return
+    end
+    for name, slot in pairs(peers) do
+        local unit = RaidUnit(name)
+        if not unit or not UnitIsConnected(unit) then
+            peers[name] = nil
+            Recompute({ kind = "peerLeft", name = name, slot = slot })
+        end
+    end
+end
+
+-- Another slot holder than sender, by full name
+local function HeldByOther(slot, sender)
+    if slot == "-" then return false end
+    if mySlot == slot then return true end
+    for name, peerSlot in pairs(peers) do
+        if name ~= sender and peerSlot == slot then return true end
+    end
+    return false
+end
+
+function BuffBot.OnAddonMessage(text, sender)
+    if not active or sender == Me() or not RaidUnit(sender) then return end
+    local kind, version, slot = text:match("^(BB%??):v(%d+):(%S+)$")
+    if not kind then return end
+    if version ~= VERSION or not VALID_SLOTS[slot] then
+        -- Another version is an outsider: it holds no slot here
+        local oldSlot = peers[sender]
+        if oldSlot then
+            peers[sender] = nil
+            Recompute({ kind = "peerLeft", name = sender, slot = oldSlot })
+        end
+        return
+    end
+
+    if kind == "BB?" then
+        -- A hello's slot only counts if nobody else holds it
+        peers[sender] = HeldByOther(slot, sender) and "-" or slot
+        local heardAt = GetTime()
+        C_Timer.After(math.random() * ANSWER_DELAY, function()
+            if active and lastStateAt < heardAt then SendState() end
+        end)
+        HoldBlessings()
+    else
+        peers[sender] = slot
+    end
+    Recompute({ kind = "claim", name = sender })
+    BuffBot.CheckPlayerBuffs()
+end
+
+-- A message the game refused, such as in combat, goes out once more after it
+function BuffBot.ResendAfterCombat()
+    if not unsent then return end
+    local text = unsent
+    unsent = nil
+    if active then
+        local result = select(-1, C_ChatInfo.SendAddonMessage(BuffBot.MESSAGE_PREFIX, text, "RAID"))
+        BuffBot.debug("BuffBot sent on RAID:", text, result ~= 0 and ("(failed: " .. tostring(result) .. ")") or "")
+    end
+end
+
+-- Whether blessings should wait for a hello's answers
+function BuffBot.BlessingsOnHold()
+    return active and GetTime() < holdUntil
+end
+
+-- The player's slot, "-" for none
+function BuffBot.MySlot()
+    return mySlot
+end
+
+-- Whether other BuffBot Paladins in the raid share out blessings with the player
+function BuffBot.Coordinating()
+    return active and next(peers) ~= nil
+end

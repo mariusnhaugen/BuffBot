@@ -39,6 +39,13 @@ end
 function events:CHAT_MSG_ADDON(prefix, text, channel, sender)
     if prefix ~= BuffBot.MESSAGE_PREFIX then return end
     BuffBot.debug("BuffBot message from", sender, "on", channel .. ":", text)
+    BuffBot.OnAddonMessage(text, sender)
+end
+
+-- A member going offline or coming back, which the roster event doesn't cover
+function events:UNIT_CONNECTION()
+    BuffBot.UpdateCoordination()
+    BuffBot.CheckPlayerBuffs()
 end
 
 function events:GROUP_ROSTER_UPDATE()
@@ -102,6 +109,7 @@ function events:BAG_UPDATE_DELAYED()
 end
 
 function events:PLAYER_REGEN_ENABLED()
+    BuffBot.ResendAfterCombat()
     BuffBot.CheckPlayerBuffs()
     BuffBot.ResumeTracking()
 end
@@ -171,6 +179,7 @@ events:RegisterEvent("UNIT_AURA")
 events:RegisterEvent("CHAT_MSG_ADDON")
 events:RegisterEvent("GROUP_ROSTER_UPDATE")
 events:RegisterEvent("GROUP_LEFT")
+events:RegisterEvent("UNIT_CONNECTION")
 
 events:RegisterEvent("SPELL_UPDATE_USABLE")
 events:RegisterUnitEvent("UNIT_INVENTORY_CHANGED", "player")
