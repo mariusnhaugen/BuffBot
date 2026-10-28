@@ -488,6 +488,12 @@ describe("group buffing", function()
             h:joinParty({ { class = "PRIEST", name = "Anduin" } })
             assert.same({ "Arcane Intellect", "Arcane Intellect > Anduin" }, h:suggestions())
         end)
+
+        it("gives the member's full name", function()
+            local h = mage()
+            h:joinParty({ { class = "PRIEST", name = "Anduin Wrynn" } })
+            assert.same({ "Arcane Intellect", "Arcane Intellect > Anduin Wrynn" }, h:suggestions())
+        end)
     end)
 
     describe("events", function()

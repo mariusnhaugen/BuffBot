@@ -193,10 +193,14 @@ return function(state, env)
         state.inspecting, state.inspected = nil, nil
     end
 
+    -- First name and surname as two values, in the realm's place, as in the
+    -- probe; only GetUnitName(unit, true) gives the full name
     function env.UnitName(unit)
-        if state:resolve(unit) == "player" then return state.playerName end
-        local m = member(unit)
-        return m and m.name
+        local name = env.GetUnitName(unit)
+        if not name then return nil end
+        local first, last = name:match("^(%S+) (.+)$")
+        if first then return first, last end
+        return name
     end
 
     -- A member's guid field, or one made from their name

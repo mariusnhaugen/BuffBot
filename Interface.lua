@@ -175,7 +175,8 @@ function BuffBot.UpdateSuggestionList(missing)
         if missing[i].class then
             text = text .. " > " .. ClassLabel(missing[i].class)
         elseif missing[i].unit ~= "player" then
-            text = text .. " > " .. (UnitName(missing[i].unit) or missing[i].unit)
+            -- UnitName splits Forever's "First Last" names in two
+            text = text .. " > " .. (GetUnitName(missing[i].unit, true) or missing[i].unit)
         end
         BuffBot.suggestionList[i]:SetText(text)
         BuffBot.suggestionList[i]:Show()
