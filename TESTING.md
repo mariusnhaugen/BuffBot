@@ -99,3 +99,17 @@ Checks that can't be run on the beta, or are still waiting for a tester. The ste
 - [ ] Two Paladins, for blessing sharing: both cast Blessing of Might on the same target (does the second replace the first, or fail?), and `C_UnitAuras.GetAuraDataBySpellName("party1", "Blessing of Might", "HELPFUL|PLAYER")` returns `nil` when only the other Paladin's Might is on party1. Different Paladins' blessings stacking on one target is assumed, as in Classic
 - [ ] Someone else's fading buff isn't offered: with another Mage's Arcane Intellect on you or a party member, the button stays quiet until it drops off, then offers it
 - [ ] Two Paladins sharing blessings in a party: the second Paladin is offered Kings for a Warrior who has the first one's Might, and both blessings stay up
+
+For 2.5 (raid coordination, `docs/plan/SPEC.md`). Run in a raid unless noted; Greater Blessings and Light need level 60.
+
+- [ ] Add-on messages on `RAID`: `C_ChatInfo.SendAddonMessage("BuffBot", "x", "RAID")` reaches every member, the sender included, and `CHAT_MSG_ADDON` gives the sender as "First Last" with channel `RAID`. The burst limit is 10 per prefix, refilling at 1 per second, as on PARTY
+- [ ] Sends in combat: does `select(-1, C_ChatInfo.SendAddonMessage(...))` return `11` (`AddOnMessageLockdown`) in combat inside a raid instance, and in the open world?
+- [ ] Offline members: `UNIT_CONNECTION` fires with the raid unit when a member goes offline and comes back
+- [ ] Main tank: `GetPartyAssignment("MAINTANK", unit)` is true after marking a member from the raid frame
+- [ ] Raid roster: `GetRaidRosterInfo(i)` gives the right subgroup, class and `online`; does `combatRole` (12th return) or `UnitGroupRolesAssigned(unit)` ever return `TANK` or `HEALER`?
+- [ ] Specs: do `GetSpecialization()` and, after Inspect, `GetInspectSpecialization(unit)` return a spec on Forever's talent trees? If not, `GetTalentTabInfo(tab)` for your own talents and `GetTalentTabInfo(tab, true)` after `NotifyInspect` and `INSPECT_READY` give the points per tab
+- [ ] Talent-only auras: Moonkin Form (and its aura on the party) only comes from the Balance talent, and Leader of the Pack only from the Feral talent, with `sourceUnit` being that Druid
+- [ ] Greater Blessings: they cover every raid member of the target's class (not just the subgroup), reach 40 yd, last 60 minutes, and replace the same Paladin's single blessing on that class
+- [ ] Light: Blessing of Light (19977) and Greater Blessing of Light (25890) are the right IDs, and Light stacks with Might, Wisdom and Kings from other Paladins
+- [ ] Two Paladins' blessings stacking in a raid: different blessings from two Paladins both stay on one member
+- [ ] Battlegrounds, for a later PvP release: which channel (`RAID` or `INSTANCE_CHAT`) reaches a battleground raid

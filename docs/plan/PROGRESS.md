@@ -2,7 +2,7 @@
 
 Built on `release/2.5`, one slice at a time with `/slice next`. Design: `SPEC.md`.
 
-- [ ] 00 docs-groundwork (MUST, ~15m)
+- [x] 00 docs-groundwork (MUST, ~15m) — 11 launch checks in TESTING.md; your own role's talents folded into the Specs check
 - [ ] 01 settings (MUST, ~20m)
 - [ ] 02 pvp-self-only (MUST, ~15m)
 - [ ] 03 roles-and-light (MUST, ~40m)
