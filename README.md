@@ -87,6 +87,9 @@ melee, ranged, caster or healer. Part of the name will do. `/bb role <name>`
 clears it. Roles are saved for your account; without one, a member's role
 comes from their class, and yours from your talents.
 
+`/bb raid` shows which blessing each BuffBot Paladin gives, the Paladins
+not on BuffBot, and every raid member's role.
+
 ## Development
 
 See [TESTING.md](TESTING.md) for the tests and the open in-game checks,

@@ -10,8 +10,8 @@ Requirements: R21
 - Tests: output for a raid with 3 BuffBot Paladins, an outsider, a manual role and a waiting inspect.
 
 ## Acceptance criteria
-- [ ] `export PATH="$HOME/.luarocks/bin:$PATH"; busted && luacheck .` passes
-- [ ] Conventional Commit(s), split by concern
+- [x] `export PATH="$HOME/.luarocks/bin:$PATH"; busted && luacheck .` passes
+- [x] Conventional Commit(s), split by concern
 
 ## Notes / risks
 None.

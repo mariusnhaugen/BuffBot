@@ -311,6 +311,48 @@ function BuffBot.OtherSlots()
     return slots
 end
 
+local SLOT_NAMES = { K = "Kings", MW = "Might/Wisdom", W = "Wisdom", M = "Might", L = "Light", ["-"] = "reserve" }
+local ROLE_ORDER = { "tank", "melee", "ranged", "caster", "healer" }
+
+-- /bb raid: who gives which blessing, the Paladins outside BuffBot, and every
+-- member's role with where it came from (none for the class default)
+function BuffBot.RaidCommand()
+    if not IsInRaid() then return print("BuffBot: not in a raid.") end
+    local me = Me()
+
+    if active then
+        local paladins = { me .. " " .. (next(peers) and SLOT_NAMES[mySlot] or "alone") .. " (you)" }
+        local names = {}
+        for name in pairs(peers) do table.insert(names, name) end
+        table.sort(names)
+        for _, name in ipairs(names) do table.insert(paladins, name .. " " .. SLOT_NAMES[peers[name]]) end
+        print("BuffBot Paladins: " .. table.concat(paladins, ", "))
+    end
+
+    local outsiders, byRole = {}, {}
+    for i = 1, GetNumGroupMembers() do
+        local unit = "raid" .. i
+        local name = GetUnitName(unit, true)
+        if name and name ~= me and select(2, UnitClass(unit)) == "PALADIN" and not peers[name] then
+            table.insert(outsiders, name)
+        end
+        local role, source = BuffBot.RoleOf(unit)
+        if name and role then
+            byRole[role] = byRole[role] or {}
+            table.insert(byRole[role], source == "class" and name or (name .. " (" .. source .. ")"))
+        end
+    end
+    if active and #outsiders > 0 then
+        table.sort(outsiders)
+        print("Not on BuffBot: " .. table.concat(outsiders, ", "))
+    end
+    for _, role in ipairs(ROLE_ORDER) do
+        if byRole[role] then print(role .. ": " .. table.concat(byRole[role], ", ")) end
+    end
+    local waiting = BuffBot.InspectsWaiting()
+    if waiting > 0 then print(waiting .. " waiting for Inspect.") end
+end
+
 -- Whether other BuffBot Paladins in the raid share out blessings with the player
 function BuffBot.Coordinating()
     return active and next(peers) ~= nil

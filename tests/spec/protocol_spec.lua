@@ -319,6 +319,48 @@ describe("coordination messages", function()
         end)
     end)
 
+    describe("/bb raid", function()
+        it("lists the Paladins, the ones outside BuffBot, and the roles", function()
+            local h = paladin({ saved = { ROLES = { ["Cat Paw"] = "melee" } } })
+            h:joinRaid({
+                { class = "PALADIN", name = "Ann Peer" }, { class = "PALADIN", name = "Bob Peer" },
+                { class = "PALADIN", name = "Old School" }, { class = "DRUID", name = "Cat Paw" },
+                { class = "WARRIOR", name = "Tor Stone", mainTank = true }, { class = "SHAMAN", name = "Rain Song" },
+                { class = "MAGE", name = "Jaina Frost" },
+            })
+            h:receive("Ann Peer", "BB:v1:K")
+            h:receive("Bob Peer", "BB:v1:MW")
+            h:settle()
+            h.state.printed = {}
+            h:slash("raid")
+            assert.same({
+                -- What each Paladin last announced: Bob hasn't said he split yet
+                "BuffBot Paladins: Tester Might (you), Ann Peer Kings, Bob Peer Might/Wisdom",
+                "Not on BuffBot: Old School",
+                "tank: Tor Stone (mark)",
+                "melee: Cat Paw (manual)",
+                "caster: Jaina Frost",
+                "healer: Tester, Ann Peer, Bob Peer, Old School, Rain Song",
+                "4 waiting for Inspect.",
+            }, h.state.printed)
+        end)
+
+        it("shows a lone Paladin and reserves", function()
+            local h = paladin()
+            h:joinRaid({})
+            h:settle()
+            h.state.printed = {}
+            h:slash("raid")
+            assert.equal("BuffBot Paladins: Tester alone (you)", h.state.printed[1])
+        end)
+
+        it("says so outside a raid", function()
+            local h = paladin()
+            h:slash("raid")
+            assert.is_true(h:printed("BuffBot: not in a raid."))
+        end)
+    end)
+
     describe("slots", function()
         local ALL = {
             "Blessing of Might", "Blessing of Wisdom", "Blessing of Kings", "Blessing of Light",

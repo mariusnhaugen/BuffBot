@@ -306,9 +306,11 @@ Out-of-range members are skipped, not waited on.
   Paladins, blessings follow the raid's assignment."
 - **`/bb role <name> <role>`:** sets a role (partial name matched against the
   raid); `/bb role <name>` clears it. Prints what changed.
-- **`/bb raid`:** BuffBot Paladins and their slots (reserves as "reserve"),
-  "Not on BuffBot: …" for Paladins with no messages, and each role with its
-  source: "Feralname – melee (manual)", "(aura)", "(inspect)", "N waiting".
+- **`/bb raid`:** BuffBot Paladins and the slots they last announced
+  ("reserve" for `-`, "alone" when no other BuffBot Paladin is there),
+  "Not on BuffBot: …" for Paladins with no messages, one line per role
+  listing members with their source ("melee: Cat Paw (manual), Tor
+  (aura)"; none for the class default), and "N waiting for Inspect.".
 - **`/bb debug`:** also prints every message sent and received.
 
 ## Inspect queue
