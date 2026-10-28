@@ -153,10 +153,111 @@ local function AddGroupBuff(missing, buffString, units)
     return outOfRange
 end
 
+-- Fixed order for Greater Blessings on classes missing the same number
+local CLASS_ORDER = { "WARRIOR", "ROGUE", "HUNTER", "MAGE", "WARLOCK", "PRIEST", "DRUID", "SHAMAN", "PALADIN" }
+
+-- The blessing most of a class gets from the player. A tie goes to the one
+-- the class's default role ranks higher.
+local function ClassBlessing(class, members)
+    local counts = {}
+    for _, member in ipairs(members) do counts[member.pick] = (counts[member.pick] or 0) + 1 end
+    local list = BuffBot.RoleLists[BuffBot.ClassDefaultRole[class]] or {}
+    local function rank(blessing) return BuffBot.IndexOf(blessing, list) or #list + 1 end
+    local best
+    for blessing, count in pairs(counts) do
+        if not best or count > counts[best] or (count == counts[best]
+                and (rank(blessing) < rank(best) or (rank(blessing) == rank(best) and blessing < best))) then
+            best = blessing
+        end
+    end
+    return best
+end
+
+-- One class's casts: a Greater Blessing of the class blessing when it takes
+-- fewer casts than singles, plus singles for the members who need another
+-- blessing (exceptions). The Greater costs 1, plus 1 for each exception of
+-- the player's it would replace; on a tie it still wins unless it replaces
+-- one. Singles instead when the class has one member, the Greater can't be
+-- cast, or most of the class is out of range. Returns the Greater entry or
+-- nil, singles by unit, and whether a member is missing one out of range.
+local function PlanClass(class, members)
+    local blessing = ClassBlessing(class, members)
+    local targets, singles, replaced, away, outOfRange = {}, {}, 0, 0, false
+    for _, member in ipairs(members) do
+        local unit, pick = member.unit, member.pick
+        if not InRange(unit, blessing) then away = away + 1 end
+        local missingIt = UnitMissing(unit, pick)
+        if pick ~= blessing and not missingIt then replaced = replaced + 1 end
+        if missingIt then
+            if not InRange(unit, pick) then
+                outOfRange = true
+            elseif pick == blessing then
+                table.insert(targets, unit)
+            else
+                singles[unit] = { buff = pick, unit = unit }
+            end
+        end
+    end
+    local greater = #members >= 2 and away * 2 <= #members and #targets > 0
+        and BuffBot.CastableGroupVersion(blessing)
+    local cost = 1 + replaced
+    if greater and (cost < #targets or (cost == #targets and replaced == 0)) then
+        return { buff = greater, unit = targets[1], class = class, count = #targets }, singles, outOfRange
+    end
+    for _, unit in ipairs(targets) do
+        singles[unit] = { buff = blessing, unit = unit }
+    end
+    return nil, singles, outOfRange
+end
+
+-- Blessings in a raid go out by class. The player's own blessing goes in
+-- first, unless their class gets a Greater Blessing; the rest goes in later:
+-- Greater Blessings, the class with the most members missing first, then the
+-- singles in subgroup order. True when a member in view is missing one out of
+-- range.
+local function AddRaidBlessings(missing, later, subgroups)
+    local byClass, outOfRange = {}, false
+    for _, units in ipairs(subgroups) do
+        for _, unit in ipairs(units) do
+            local pick = BuffBot.BlessingFor(unit)
+            if pick and CanSeeUnit(unit, pick) then
+                local class = select(2, UnitClass(unit))
+                byClass[class] = byClass[class] or {}
+                table.insert(byClass[class], { unit = unit, pick = pick })
+            end
+        end
+    end
+
+    local greaters, singles = {}, {}
+    for class, members in pairs(byClass) do
+        local greater, classSingles, away = PlanClass(class, members)
+        outOfRange = outOfRange or away
+        if greater then table.insert(greaters, greater) end
+        if classSingles.player and not greater then
+            table.insert(missing, classSingles.player)
+            classSingles.player = nil
+        end
+        for unit, entry in pairs(classSingles) do singles[unit] = entry end
+    end
+
+    table.sort(greaters, function(a, b)
+        if a.count ~= b.count then return a.count > b.count end
+        return BuffBot.IndexOf(a.class, CLASS_ORDER) < BuffBot.IndexOf(b.class, CLASS_ORDER)
+    end)
+    for _, greater in ipairs(greaters) do table.insert(later, greater) end
+    for _, units in ipairs(subgroups) do
+        for _, unit in ipairs(units) do
+            if singles[unit] then table.insert(later, singles[unit]) end
+        end
+    end
+    return outOfRange
+end
+
 -- Every cast the button would make, in order, as { buff, unit } entries. The
 -- button casts the first, and the suggestion list shows them all. A group
--- buff goes on everyone before the next buff starts. The second result is
--- true when a member in view is missing a buff out of range.
+-- buff goes on everyone before the next buff starts. Raid blessings come
+-- after the player's own buffs. The second result is true when a member in
+-- view is missing a buff out of range.
 function BuffBot.MissingBuffs()
     local missing = {}
     if InCombatLockdown() then return missing end
@@ -164,10 +265,12 @@ function BuffBot.MissingBuffs()
     local classBuffs = BuffBot.classBuffList
     if classBuffs == nil then return missing end
 
-    local subgroups, outOfRange = GroupUnits(), false
+    local subgroups, outOfRange, later = GroupUnits(), false, {}
     for i = 1, #classBuffs do
         local currentBuff = classBuffs[i]
-        if BuffBot.GroupBuffs[currentBuff] then
+        if BuffBot.Blessings[currentBuff] and IsInRaid() then
+            outOfRange = AddRaidBlessings(missing, later, subgroups) or outOfRange
+        elseif BuffBot.GroupBuffs[currentBuff] then
             for _, units in ipairs(subgroups) do
                 outOfRange = AddGroupBuff(missing, currentBuff, units) or outOfRange
             end
@@ -175,6 +278,7 @@ function BuffBot.MissingBuffs()
             table.insert(missing, { buff = currentBuff, unit = "player" })
         end
     end
+    for _, entry in ipairs(later) do table.insert(missing, entry) end
     return missing, outOfRange
 end
 

@@ -154,7 +154,9 @@ end
 -- their list is learned by nobody or already given by other Paladins. The
 -- player's blessing on them stands until it's due, then the list decides
 -- again; on the player, the one picked in the settings takes over as soon as
--- it's free. In a raid, the list is the member's role's, with Light last.
+-- it's free. A Greater Blessing went on for the class, not the member, so it
+-- only counts when the list still picks it. In a raid, the list is the
+-- member's role's, with Light last.
 function BuffBot.BlessingFor(unit)
     local isPlayer, inRaid = unit == "player", IsInRaid()
     local list = BuffBot.BlessingPriority[select(2, UnitClass(unit))] or {}
@@ -173,7 +175,7 @@ function BuffBot.BlessingFor(unit)
     for blessing in pairs(BuffBot.Blessings) do
         local aura, greater = BlessingAura(unit, blessing)
         if aura and aura.sourceUnit == "player" then
-            local stands = greater or BuffBot.UnitHasAssignedBuff(unit, blessing)
+            local stands = not greater and BuffBot.UnitHasAssignedBuff(unit, blessing)
             local switch = isPlayer and blessing ~= list[1] and BlessingFree(unit, list[1])
             if stands and not switch then return blessing end
         end

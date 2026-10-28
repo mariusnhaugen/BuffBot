@@ -12,6 +12,12 @@
 - **`/bb role <name> <role>`** sets a raid member's role (tank, melee,
   ranged, caster or healer), e.g. `/bb role oak melee` for a Feral Druid.
   `/bb role <name>` clears it.
+- **Greater Blessings in a raid.** One per class, for the blessing most of
+  the class gets, then single blessings for members who need a different
+  one, such as a Feral Druid among Restos. Needs Symbol of Kings or Reagent
+  Economy. A class with one member, or mostly out of range, gets singles.
+  The order: your own buffs, then the Greater Blessings, the class missing
+  the most first, then the singles.
 - **Blessing of Light** fills in for raid members who already have every
   blessing on their list from other Paladins.
 

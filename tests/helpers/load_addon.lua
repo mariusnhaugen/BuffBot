@@ -245,6 +245,16 @@ function Harness:suggestions()
     return texts
 end
 
+-- A Paladin has one blessing on each unit, so a new one, single or Greater,
+-- replaces the player's other blessing there
+function Harness:replaceOwnBlessing(buff, unit)
+    if not (self.state:englishName(buff) or buff):find("Blessing of ") then return end
+    local auras = self.state:aurasOf(unit)
+    for name, aura in pairs(auras) do
+        if name:find("Blessing of ") and aura.sourceUnit == "player" then auras[name] = nil end
+    end
+end
+
 -- Presses the button until nothing is left, returning the buffs in cast order.
 -- Casts on someone other than the player read "<buff> > <unit>".
 function Harness:buffUp()
@@ -253,6 +263,7 @@ function Harness:buffUp()
         local buff, unit = self:shown(), self:target()
         if not buff then return cast end
         local landsOn = self:landsOn(buff, unit or "player")
+        for _, other in ipairs(landsOn) do self:replaceOwnBlessing(buff, other) end
         if #landsOn == 1 and self.state:resolve(landsOn[1]) == "player" then
             table.insert(cast, buff)
             self:give(buff)

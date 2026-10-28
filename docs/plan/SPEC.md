@@ -235,8 +235,14 @@ restart the add-on. The collision rule handles stale saves.
 
 ### Greater Blessings (raids)
 
-- One Greater per class: the blessing you'd give the class's **majority
-  role**; a tie goes to the class's default role.
+- One Greater per class: the blessing most of the class's members get from
+  you (each member's pick from their role list, after other Paladins'
+  blessings). That's the majority role's blessing unless outsiders cover
+  some members, and then it saves casts. A tie goes to the blessing the
+  class's default role ranks higher.
+- Your own Greater Blessing on a member doesn't "stand" the way a single
+  does: it went on for the class, so the member's own pick decides, and an
+  exception gets their single even with the Greater up.
 - Members whose own pick differs are **exceptions** and get singles. A
   Greater wipes the same Paladin's singles on that class, so exceptions are
   recast after it.

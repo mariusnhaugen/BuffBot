@@ -326,10 +326,10 @@ describe("group buffing", function()
             assert.is_nil(h:shown())
         end)
 
-        it("never casts a Greater Blessing", function()
+        it("never casts a Greater Blessing in a party", function()
             local h = paladin({ known = { "Blessing of Might", "Blessing of Wisdom", "Greater Blessing of Might" } })
             h:learn("Reagent Economy")
-            h:joinParty({ { class = "WARRIOR" }, { class = "ROGUE" } })
+            h:joinParty({ { class = "WARRIOR" }, { class = "WARRIOR" } })
             assert.same({ "Blessing of Might", "Blessing of Might > party1", "Blessing of Might > party2" },
                 h:buffUp())
         end)
