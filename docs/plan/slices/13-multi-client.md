@@ -10,8 +10,8 @@ Tests show independent clients end up with the same slots.
 - Tests: new `raid_sync_spec.lua`: form with 2; join a 3rd (split); 4th (L); 5th (reserve); leaves for every slot (reserve fills, shrink merges); simultaneous hellos; reload of one client; each ends with every client's view of slots identical and valid for the Paladin count.
 
 ## Acceptance criteria
-- [ ] `export PATH="$HOME/.luarocks/bin:$PATH"; busted && luacheck .` passes
-- [ ] Conventional Commit(s), split by concern
+- [x] `export PATH="$HOME/.luarocks/bin:$PATH"; busted && luacheck .` passes
+- [x] Conventional Commit(s), split by concern
 
 ## Notes / risks
 Cut line 2: stop here for coordination with class-default and manual roles.

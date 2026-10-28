@@ -159,7 +159,7 @@ return function(state, env)
     end
 
     function env.GetUnitName(unit)
-        if state:resolve(unit) == "player" then return "Tester" end
+        if state:resolve(unit) == "player" then return state.playerName end
         local m = member(unit)
         return m and m.name
     end
@@ -170,7 +170,7 @@ return function(state, env)
     end
 
     function env.UnitName(unit)
-        if state:resolve(unit) == "player" then return "Tester" end
+        if state:resolve(unit) == "player" then return state.playerName end
         local m = member(unit)
         return m and m.name
     end
@@ -215,7 +215,7 @@ return function(state, env)
     function env.GetRaidRosterInfo(index)
         if not state.raid then return nil end
         if index == 1 then
-            return "Tester", 0, state.playerSubgroup, 60, state.class, state.class
+            return state.playerName, 0, state.playerSubgroup, 60, state.class, state.class
         end
         local m = member("raid" .. index)
         if m then return m.name, 0, m.subgroup, 60, m.class, m.class end

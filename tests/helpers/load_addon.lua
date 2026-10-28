@@ -355,10 +355,12 @@ local M = {}
 --   config  config overrides applied after ADDON_LOADED
 --   raid    start in a raid
 --   translate  function mapping English spell names to the client's names
+--   name    the player's full name (default "Tester")
 function M.load(opts)
     opts = opts or {}
     local state = State.new(opts.class)
     state.translate = opts.translate
+    state.playerName = opts.name or state.playerName
     state:learn(unpack(opts.known or {}))
     if opts.raid then state.group, state.raid = true, true end
 

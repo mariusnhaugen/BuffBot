@@ -11,6 +11,7 @@ State.SECRET = setmetatable({}, { __tostring = function() return "<secret>" end 
 function State.new(class)
     return setmetatable({
         class = class or "WARRIOR",
+        playerName = "Tester", -- the player's full name, "First Last" on Forever
         known = {},
         locale = "enUS",
         talents = {}, -- points spent per talent tree, by tab
