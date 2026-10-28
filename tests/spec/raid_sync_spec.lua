@@ -71,6 +71,7 @@ describe("raid coordination across clients", function()
         raid:run(5)
         raid:join("Ann Light", "Cid Oak")
         raid:run(5)
+        assert.same({ ["Ann Light"] = "K", ["Bob Stone"] = "W", ["Cid Oak"] = "M" }, raid:slots())
         assertAgreed(raid)
     end)
 

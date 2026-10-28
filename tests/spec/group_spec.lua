@@ -91,16 +91,22 @@ describe("group buffing", function()
             local h = mage()
             h:joinParty({ { class = "PRIEST" }, { class = "DRUID", visible = false } })
             h:buffUp()
-            assert.same({}, h.state.timers)
+            -- A poll would re-check and notice the buff gone without an event
+            h.state:removeAura("Arcane Intellect", "party1")
+            h.state:advance(5)
+            assert.is_nil(h:shown())
         end)
 
         it("stops polling for range once the member out of range is buffed", function()
             local h = mage()
             h:joinParty({ { class = "PRIEST", inRange = false } })
             h:buffUp()
+            h.state.members.party1.inRange = true
             h:give("Arcane Intellect", { unit = "party1" })
             h.state:advance(2)
-            assert.same({}, h.state.timers)
+            h.state:removeAura("Arcane Intellect", "party1")
+            h.state:advance(5)
+            assert.is_nil(h:shown())
         end)
 
         it("picks up a member coming into view from their aura event", function()
@@ -418,22 +424,25 @@ describe("group buffing", function()
     end)
 
     describe("in a raid", function()
-        local members = {
-            { class = "PRIEST", subgroup = 1 },
-            { class = "MAGE", subgroup = 2 },
-            { class = "DRUID", subgroup = 2 },
-        }
+        -- A fresh roster per test, since joining fills in each member
+        local function members()
+            return {
+                { class = "PRIEST", subgroup = 1 },
+                { class = "MAGE", subgroup = 2 },
+                { class = "DRUID", subgroup = 2 },
+            }
+        end
 
         it("buffs the player's subgroup, then the rest of the raid", function()
             local h = mage()
-            h:joinRaid(members)
+            h:joinRaid(members())
             assert.same({ "Arcane Intellect", "Arcane Intellect > raid2", "Arcane Intellect > raid3",
                 "Arcane Intellect > raid4" }, h:buffUp())
         end)
 
         it("starts with the player's own subgroup when it isn't the first", function()
             local h = mage()
-            h:joinRaid(members, 2)
+            h:joinRaid(members(), 2)
             assert.same({ "Arcane Intellect", "Arcane Intellect > raid3", "Arcane Intellect > raid4",
                 "Arcane Intellect > raid2" }, h:buffUp())
         end)
@@ -441,13 +450,13 @@ describe("group buffing", function()
         it("casts a group version per subgroup", function()
             local h = mage({ known = { "Arcane Intellect", "Arcane Brilliance" } })
             h:bag("Arcane Powder")
-            h:joinRaid(members)
+            h:joinRaid(members())
             assert.same({ "Arcane Brilliance", "Arcane Brilliance > raid3" }, h:buffUp())
         end)
 
         it("is player-only with group buffing turned off", function()
             local h = mage({ config = { GROUP_BUFFING = false } })
-            h:joinRaid(members)
+            h:joinRaid(members())
             assert.same({ "Arcane Intellect" }, h:buffUp())
         end)
 
@@ -455,7 +464,7 @@ describe("group buffing", function()
             for _, instanceType in ipairs({ "pvp", "arena" }) do
                 local h = mage()
                 h.state.instanceType = instanceType
-                h:joinRaid(members)
+                h:joinRaid(members())
                 assert.same({ "Arcane Intellect" }, h:buffUp())
             end
         end)
@@ -463,7 +472,7 @@ describe("group buffing", function()
         it("buffs the raid again after leaving a battleground", function()
             local h = mage()
             h.state.instanceType = "pvp"
-            h:joinRaid(members)
+            h:joinRaid(members())
             h:give("Arcane Intellect")
             assert.is_nil(h:shown())
             h.state.instanceType = "none"
@@ -503,8 +512,7 @@ describe("group buffing", function()
             h:joinParty({ { class = "PRIEST" } })
             h:enterCombat()
             local timers = #h.state.timers
-            local payload = setmetatable({}, { __index = function() error("payload read") end })
-            h:fire("UNIT_AURA", "party1", payload)
+            h:fire("UNIT_AURA", "party1", h.state.untouchable())
             assert.equal(timers, #h.state.timers)
         end)
 

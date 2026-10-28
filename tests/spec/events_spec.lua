@@ -8,6 +8,25 @@ describe("event handling", function()
         return Addon.load(opts)
     end
 
+    -- Wearing the armor for where they are, with Arcane Intellect to cast. The
+    -- armor is strict, so a rebuilt list asks for the armor of the new place.
+    local function armored(inRaid)
+        local h = Addon.load({
+            class = "MAGE",
+            known = { "Ice Armor", "Mage Armor", "Arcane Intellect" },
+            config = { STRICT_ARMOR = true },
+            raid = inRaid,
+        })
+        h:give(inRaid and "Mage Armor" or "Ice Armor")
+        assert.equal("Arcane Intellect", h:shown())
+        return h
+    end
+
+    -- Joins or leaves a raid without the roster event
+    local function setRaid(h, inRaid)
+        h.state.group, h.state.raid = inRaid, inRaid
+    end
+
     it("UNIT_AURA for the player re-checks", function()
         local h = mage()
         h.state:giveAura("Arcane Intellect")
@@ -24,17 +43,16 @@ describe("event handling", function()
 
     it("UNIT_AURA for another unit doesn't read its payload, which can be secret in combat", function()
         local h = mage()
-        local payload = setmetatable({}, { __index = function() error("payload read") end })
-        h:fire("UNIT_AURA", "target", payload)
+        h:fire("UNIT_AURA", "target", h.state.untouchable())
+        assert.equal("Arcane Intellect", h:shown())
     end)
 
     it("UNIT_AURA with a secret full update re-checks without rebuilding", function()
-        local h = mage({ raid = true })
-        local before = h.ns.classBuffList
+        local h = armored(false)
+        setRaid(h, true)
         h.state:giveAura("Arcane Intellect")
         h:fire("UNIT_AURA", "player", { isFullUpdate = h.state.SECRET })
-        assert.equal(before, h.ns.classBuffList)
-        assert.equal("Dampen Magic", h:shown())
+        assert.is_nil(h:shown())
     end)
 
     it("UNIT_AURA with removed auras re-checks", function()
@@ -46,31 +64,42 @@ describe("event handling", function()
     end)
 
     it("UNIT_AURA full update rebuilds the list in a raid", function()
-        local h = mage({ raid = true })
-        local before = h.ns.classBuffList
+        local h = armored(false)
+        setRaid(h, true)
         h:fire("UNIT_AURA", "player", { isFullUpdate = true })
-        assert.are_not.equal(before, h.ns.classBuffList)
+        assert.equal("Mage Armor", h:shown())
     end)
 
     it("UNIT_AURA full update outside a raid re-checks without rebuilding", function()
-        local h = mage()
-        local before = h.ns.classBuffList
+        local h = armored(true)
+        setRaid(h, false)
         h.state:giveAura("Arcane Intellect")
         h:fire("UNIT_AURA", "player", { isFullUpdate = true })
-        assert.equal(before, h.ns.classBuffList)
-        assert.equal("Dampen Magic", h:shown())
+        assert.is_nil(h:shown())
     end)
 
-    for _, event in ipairs({ "GROUP_ROSTER_UPDATE", "GROUP_LEFT", "SPELLS_CHANGED" }) do
-        it(event .. " rebuilds the list and re-checks", function()
-            local h = mage()
-            local before = h.ns.classBuffList
-            h.state:giveAura("Arcane Intellect")
-            h:fire(event)
-            assert.are_not.equal(before, h.ns.classBuffList)
-            assert.equal("Dampen Magic", h:shown())
-        end)
-    end
+    it("GROUP_ROSTER_UPDATE rebuilds the list", function()
+        local h = armored(false)
+        setRaid(h, true)
+        h:fire("GROUP_ROSTER_UPDATE")
+        assert.equal("Mage Armor", h:shown())
+    end)
+
+    it("GROUP_LEFT rebuilds the list", function()
+        local h = armored(true)
+        setRaid(h, false)
+        h:fire("GROUP_LEFT")
+        assert.equal("Ice Armor", h:shown())
+    end)
+
+    it("SPELLS_CHANGED rebuilds the list", function()
+        local h = mage()
+        h:give("Arcane Intellect")
+        h:give("Dampen Magic")
+        h.state:learn("Ice Armor")
+        h:fire("SPELLS_CHANGED")
+        assert.equal("Ice Armor", h:shown())
+    end)
 
     it("ADDON_LOADED for another addon is ignored", function()
         local h = mage()

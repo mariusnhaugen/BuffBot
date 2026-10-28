@@ -76,19 +76,22 @@ return function(state, env)
 
     env.C_Item = {
         -- Two entries, like the probe. In game the enchant can be in either
-        -- (Rockbiter was second, a weightstone first); here it's second.
+        -- (Rockbiter was second, a weightstone first); here it's second unless
+        -- state.enchantEntry says 1.
         GetWeaponEnchantInfo = function(weaponSlot)
             local empty = { hasEnchant = false, enchantType = 0, timeLeft = 0, charges = 0, enchantID = 0, enchantIconID = 0 }
             local enchant = state.weaponEnchants[weaponSlot]
             if not enchant then return { empty, empty } end
-            return { empty, {
+            local entries = { empty, empty }
+            entries[state.enchantEntry or 2] = {
                 hasEnchant = true,
                 enchantType = enchant.type,
                 timeLeft = enchant.timeLeft,
                 charges = enchant.charges or 0,
                 enchantID = 29,
                 enchantIconID = 136086,
-            } }
+            }
+            return entries
         end,
 
         GetItemCount = function(itemID)

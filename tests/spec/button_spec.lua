@@ -38,9 +38,8 @@ describe("cast button", function()
 
     it("waits until after combat to stop taking clicks", function()
         local h = Addon.load({ class = "WARRIOR", known = { "Battle Shout" } })
-        h.state.combat = true
-        h.ns.config.HIDE_ICON = true
-        h.ns.UpdateIconVisibility()
+        h:enterCombat()
+        h:settingNamed("Hide Icon"):SetValue(true)
         assert.equal(0, h.button:GetNormalTexture():GetAlpha())
         assert.is_true(h.button:IsMouseEnabled())
         h:leaveCombat()
@@ -97,13 +96,6 @@ describe("suggestion list", function()
         local h = Addon.load({ class = "HUNTER", known = { "Aspect of the Hawk", "Trueshot Aura" } })
         h:give("Aspect of the Monkey")
         assert.same({ "Trueshot Aura" }, h:suggestions())
-    end)
-
-    it("is cleared when HIDE_TEXT is turned on", function()
-        local h = Addon.load({ class = "PRIEST", known = known })
-        h.ns.config.HIDE_TEXT = true
-        h.ns.UpdateSuggestionList()
-        assert.same({}, h:suggestions())
     end)
 
     it("is not built when HIDE_TEXT is on from the start", function()

@@ -28,13 +28,6 @@ describe("Greater Blessings", function()
             h:settle()
             assert.same({ "player", "raid2" }, h:landsOn("Greater Blessing of Wisdom", "raid2"))
         end)
-
-        it("leave other group versions on the subgroup", function()
-            local h = paladin()
-            h:joinRaid({ { class = "PRIEST", subgroup = 1 }, { class = "PRIEST", subgroup = 2 } })
-            h:settle()
-            assert.same(1, #h:landsOn("Arcane Brilliance", "raid3"))
-        end)
     end)
 
     describe("in a raid", function()

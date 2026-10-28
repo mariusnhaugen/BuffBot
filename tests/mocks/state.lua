@@ -8,6 +8,16 @@ State.__index = State
 -- A unique value that the issecretvalue mock reports as secret
 State.SECRET = setmetatable({}, { __tostring = function() return "<secret>" end })
 
+-- A payload that errors on any read, length or pairs(), like one full of
+-- secrets: only passing it along is safe
+function State.untouchable()
+    local payload = newproxy(true)
+    local mt = getmetatable(payload)
+    mt.__index = function() error("payload read", 2) end
+    mt.__len = function() error("payload read", 2) end
+    return payload
+end
+
 function State.new(class)
     return setmetatable({
         class = class or "WARRIOR",
@@ -29,6 +39,7 @@ function State.new(class)
         offHand = nil, -- equipped off-hand item ID
         -- By weapon slot (0 main hand, 1 off hand): { type = 2 or 3, timeLeft = ms, charges }
         weaponEnchants = {},
+        enchantEntry = nil, -- which of GetWeaponEnchantInfo's two entries holds it (default 2)
         bags = {}, -- item ID -> count
         group = false,
         raid = false,

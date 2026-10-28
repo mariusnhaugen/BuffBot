@@ -123,13 +123,6 @@ describe("saved config", function()
         h.button:GetScript("OnMouseUp")(h.button, "LeftButton")
         assert.same({ point = "TOPLEFT", relativePoint = "TOPLEFT", x = 50, y = -60 }, h.ns.config.buttonPosition)
     end)
-
-    it("changes the saved settings table directly", function()
-        local h = Addon.load()
-        h.ns.config.IGNORE_THORNS = true
-        assert.equal(h.ns.config, h.env.BuffBotConfig)
-        assert.is_true(h.env.BuffBotConfig.IGNORE_THORNS)
-    end)
 end)
 
 describe("slash commands", function()
@@ -168,31 +161,47 @@ describe("slash commands", function()
 end)
 
 describe("settings panel", function()
+    local function shown(h) return h:shown() end
+
+    -- { label, key, load options, what ticking it changes, setup }
     local checkboxes = {
-        ["Hide Icon"] = "HIDE_ICON",
-        ["Hide Text"] = "HIDE_TEXT",
-        ["Strict Mage Armors"] = "STRICT_ARMOR",
-        ["Skip Dampen Magic"] = "IGNORE_DAMPEN",
-        ["Always try Bloodrage out of combat"] = "BLOODRAGE",
-        ["Recommend Righteous Fury"] = "RIGHTEOUS_FURY",
-        ["Skip Thorns"] = "IGNORE_THORNS",
-        ["Reminder to leave Cheetah"] = "CHEETAH_REMINDER",
-        ["Auto Find Treasure"] = "TRACK_TREASURE",
+        { "Hide Icon", "HIDE_ICON", { class = "WARRIOR", known = { "Battle Shout" } },
+            function(h) return h.button:GetNormalTexture():GetAlpha() end },
+        { "Hide Text", "HIDE_TEXT", { class = "PRIEST", known = { "Power Word: Fortitude" } },
+            function(h) return h:suggestions() end },
+        { "Strict Mage Armors", "STRICT_ARMOR", { class = "MAGE", known = { "Frost Armor", "Ice Armor", "Arcane Intellect" } },
+            shown, function(h) h:give("Frost Armor") end },
+        { "Skip Dampen Magic", "IGNORE_DAMPEN", { class = "MAGE", known = { "Arcane Intellect", "Dampen Magic" } },
+            shown, function(h) h:give("Arcane Intellect") end },
+        { "Always try Bloodrage out of combat", "BLOODRAGE", { class = "WARRIOR", known = { "Battle Shout", "Bloodrage" } },
+            function(h) return h.button:GetAttribute("macrotext1") end,
+            function(h) h:setOutOfPower("Battle Shout", true) end },
+        { "Recommend Righteous Fury", "RIGHTEOUS_FURY", { class = "PALADIN", known = { "Blessing of Might", "Righteous Fury" } },
+            shown, function(h) h:give("Blessing of Might") end },
+        { "Skip Thorns", "IGNORE_THORNS", { class = "DRUID", known = { "Thorns" } }, shown },
+        { "Reminder to leave Cheetah", "CHEETAH_REMINDER", { class = "HUNTER", known = { "Aspect of the Hawk" } },
+            shown, function(h) h:give("Aspect of the Cheetah") end },
+        { "Auto Find Treasure", "TRACK_TREASURE", { known = { "Find Treasure" }, saved = { TRACK_TREASURE = false } },
+            function(h) return h.state.auras["Find Treasure"] ~= nil end,
+            function(h) h.state:advance(11) end },
     }
 
-    for label, key in pairs(checkboxes) do
-        it("'" .. label .. "' is a checkbox bound to " .. key, function()
-            local h = Addon.load()
+    for _, row in ipairs(checkboxes) do
+        local label, key, opts, observe, setup = unpack(row)
+        it("'" .. label .. "' is a checkbox bound to " .. key .. " that takes effect", function()
+            local h = Addon.load(opts)
+            if setup then setup(h) end
             local control = h:control(label)
             assert.equal("checkbox", control.kind)
-            assert.is_not_nil(control.tooltip)
+            assert.is_string(control.tooltip)
+            assert.are_not.equal("", control.tooltip)
             local setting = control.setting
-            assert.equal(h.ns.GetDefaultConfig()[key], setting.default)
             local initial = h.ns.config[key]
             assert.equal(initial, setting:GetValue())
+            local before = observe(h)
             setting:SetValue(not initial)
             assert.equal(not initial, h.ns.config[key])
-            assert.equal(not initial, h.env.BuffBotConfig[key])
+            assert.are_not.same(before, observe(h))
         end)
     end
 

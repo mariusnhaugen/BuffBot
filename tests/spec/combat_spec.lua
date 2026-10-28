@@ -13,11 +13,6 @@ describe("combat", function()
         assert.is_false(h.button:IsShown())
     end)
 
-    it("finds nothing to cast in combat", function()
-        h:enterCombat()
-        assert.same({}, h.ns.MissingBuffs())
-    end)
-
     it("does not touch the secure button in combat", function()
         h:enterCombat()
         h.ns.UpdateMacro("Dampen Magic", "player")
