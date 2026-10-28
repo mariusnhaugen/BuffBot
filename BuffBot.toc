@@ -11,6 +11,7 @@
 
 HelperFunctions.lua
 EventFunctions.lua
+Roles.lua
 ClassBuffList.lua
 Interface.lua
 BuffBot.lua

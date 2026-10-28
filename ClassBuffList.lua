@@ -89,6 +89,7 @@ BuffBot.GroupVersions = {
     ["Blessing of Might"] = { "Greater Blessing of Might" },
     ["Blessing of Wisdom"] = { "Greater Blessing of Wisdom" },
     ["Blessing of Kings"] = { "Greater Blessing of Kings" },
+    ["Blessing of Light"] = { "Greater Blessing of Light" },
 }
 
 -- Single-target buffs the button also casts on group members
@@ -100,17 +101,25 @@ BuffBot.GroupBuffs = {
     ["Blessing of Might"] = true,
     ["Blessing of Wisdom"] = true,
     ["Blessing of Kings"] = true,
+    ["Blessing of Light"] = true,
 }
 
--- Blessings by class, best first. A Paladin has one blessing on each member,
--- and blessings from different Paladins stack, so each Paladin gives a member
--- the first one on their list that nobody has given them yet. Blessings not
--- learned yet are skipped. The player's own starts with the one picked in the
--- settings, then follows the Paladin list.
+-- Blessings by class, best first, for parties. A Paladin has one blessing on
+-- each member, and blessings from different Paladins stack, so each Paladin
+-- gives a member the first one on their list that nobody has given them yet.
+-- Blessings not learned yet are skipped. The player's own starts with the one
+-- picked in the settings, then follows the Paladin list. In a raid, members
+-- follow their role's list instead (Roles.lua), and get Light once nothing on
+-- it is left.
 -- Greater Blessings wait for Paladins to share out blessings over add-on
 -- messages.
-BuffBot.Blessings = { ["Blessing of Might"] = true, ["Blessing of Wisdom"] = true, ["Blessing of Kings"] = true }
-local MIGHT, WISDOM, KINGS = "Blessing of Might", "Blessing of Wisdom", "Blessing of Kings"
+BuffBot.Blessings = {
+    ["Blessing of Might"] = true,
+    ["Blessing of Wisdom"] = true,
+    ["Blessing of Kings"] = true,
+    ["Blessing of Light"] = true,
+}
+local MIGHT, WISDOM, KINGS, LIGHT = "Blessing of Might", "Blessing of Wisdom", "Blessing of Kings", "Blessing of Light"
 BuffBot.BlessingPriority = {
     WARRIOR = { MIGHT, KINGS },
     ROGUE = { MIGHT, KINGS },
@@ -145,13 +154,20 @@ end
 -- their list is learned by nobody or already given by other Paladins. The
 -- player's blessing on them stands until it's due, then the list decides
 -- again; on the player, the one picked in the settings takes over as soon as
--- it's free.
+-- it's free. In a raid, the list is the member's role's, with Light last.
 function BuffBot.BlessingFor(unit)
-    local isPlayer = unit == "player"
+    local isPlayer, inRaid = unit == "player", IsInRaid()
     local list = BuffBot.BlessingPriority[select(2, UnitClass(unit))] or {}
+    if inRaid then
+        list = BuffBot.RoleLists[BuffBot.RoleOf(unit)] or {}
+    end
     if isPlayer then
         list = { BuffBot.config.PALADIN_BLESSING }
         for _, blessing in ipairs(BuffBot.BlessingPriority.PALADIN) do table.insert(list, blessing) end
+    end
+    if inRaid then
+        list = { unpack(list) }
+        table.insert(list, LIGHT)
     end
 
     for blessing in pairs(BuffBot.Blessings) do
@@ -243,6 +259,8 @@ local spellIDTable = {
     ["Greater Blessing of Wisdom"] = 25894,
     ["Blessing of Kings"] = 20217,
     ["Greater Blessing of Kings"] = 25898,
+    ["Blessing of Light"] = 19977, -- Classic IDs, unchecked on Forever
+    ["Greater Blessing of Light"] = 25890,
     ["Righteous Fury"] = 25780,
     -- PRIEST
     ["Power Word: Fortitude"] = 1243,

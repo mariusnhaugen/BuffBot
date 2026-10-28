@@ -2,6 +2,15 @@
 
 ## 2.5.0
 
+### New
+
+- **In a raid, blessings follow each member's role.** Warriors and Rogues
+  are melee (Might, then Kings), Hunters ranged (Kings, Wisdom, Might),
+  Mages and Warlocks casters, and Priests, Druids, Shamans and Paladins
+  healers (Wisdom, then Kings). Parties keep the class lists.
+- **Blessing of Light** fills in for raid members who already have every
+  blessing on their list from other Paladins.
+
 ### Changed
 
 - "Buff your party" is now "Buff your group". In a raid it covers the whole

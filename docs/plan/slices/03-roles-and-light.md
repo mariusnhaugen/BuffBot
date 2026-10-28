@@ -12,9 +12,9 @@ In a raid, each member gets blessings for their role (from their class for now),
 - Tests: new `roles_spec.lua`: class defaults per class; a raid Warrior with another Paladin's Might gets Kings, and with Might and Kings taken gets Light; a party member never gets Light (existing `group_spec` passes unchanged).
 
 ## Acceptance criteria
-- [ ] `export PATH="$HOME/.luarocks/bin:$PATH"; busted && luacheck .` passes
-- [ ] Party behaviour is unchanged: every existing Paladin spec in `group_spec.lua` passes
-- [ ] Conventional Commit(s), split by concern
+- [x] `export PATH="$HOME/.luarocks/bin:$PATH"; busted && luacheck .` passes
+- [x] Party behaviour is unchanged: every existing Paladin spec in `group_spec.lua` passes
+- [x] Conventional Commit(s), split by concern
 
 ## Notes / risks
 Light on yourself: only through the role list fallback, not the dropdown.
