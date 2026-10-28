@@ -81,6 +81,109 @@ describe("roles", function()
         end)
     end)
 
+    describe("/bb role", function()
+        local function raid()
+            local h = paladin()
+            h:give("Blessing of Might")
+            h:joinRaid({
+                { class = "DRUID", name = "Bark Oakheart" },
+                { class = "DRUID", name = "Barley Moss" },
+                { class = "WARRIOR", name = "Tor Stone" },
+            })
+            return h
+        end
+
+        it("sets a member's role by part of their name", function()
+            local h = raid()
+            h:slash("role oak melee")
+            assert.same({ ["Bark Oakheart"] = "melee" }, h.ns.config.ROLES)
+            assert.equal("melee", h.ns.RoleOf("raid2"))
+            assert.equal("manual", select(2, h.ns.RoleOf("raid2")))
+            assert.is_true(h:printed("Bark Oakheart is melee."))
+        end)
+
+        it("takes a full name with a space, in any case", function()
+            local h = raid()
+            h:slash("role barley moss CASTER")
+            assert.equal("caster", h.ns.config.ROLES["Barley Moss"])
+        end)
+
+        it("changes what the member is given", function()
+            local h = raid()
+            h:slash("role oak melee")
+            h:give("Blessing of Wisdom", { unit = "raid3" })
+            h:give("Blessing of Might", { unit = "raid4" })
+            assert.same({ "Blessing of Might > raid2" }, h:buffUp())
+        end)
+
+        it("lists the candidates when a name matches several", function()
+            local h = raid()
+            h:slash("role bar melee")
+            assert.same({}, h.ns.config.ROLES)
+            assert.is_true(h:printed("\"bar\" matches Bark Oakheart, Barley Moss."))
+        end)
+
+        it("says so when nobody matches", function()
+            local h = raid()
+            h:slash("role zed tank")
+            assert.same({}, h.ns.config.ROLES)
+            assert.is_true(h:printed("no raid member matches \"zed\""))
+        end)
+
+        it("clears a role, even for someone who left", function()
+            local h = paladin({ saved = { ROLES = { ["Bark Oakheart"] = "melee" } } })
+            h:slash("role oak")
+            assert.same({}, h.ns.config.ROLES)
+            assert.is_true(h:printed("Bark Oakheart's role is back to automatic."))
+        end)
+
+        it("prints the usage without a name", function()
+            local h = raid()
+            h:slash("role")
+            assert.is_true(h:printed("/bb role <name>"))
+        end)
+
+        it("keeps roles in the account-wide settings", function()
+            local h = paladin({ saved = { ROLES = { ["Tor Stone"] = "tank" } } })
+            h:joinRaid({ { class = "WARRIOR", name = "Tor Stone" } })
+            assert.equal("tank", h.ns.RoleOf("raid2"))
+            assert.equal(h.ns.config, h.env.BuffBotConfig)
+        end)
+    end)
+
+    describe("the player's own role", function()
+        it("comes from the talent tree with the most points", function()
+            local h = paladin()
+            h.state.talents = { 5, 31, 15 }
+            assert.same({ "tank", "talents" }, { h.ns.RoleOf("player") })
+        end)
+
+        it("is the class default without talents", function()
+            local h = paladin()
+            assert.same({ "healer", "class" }, { h.ns.RoleOf("player") })
+        end)
+
+        it("reads the points from later clients' talent tab layout", function()
+            local h = Addon.load({ class = "DRUID" })
+            h.env.GetTalentTabInfo = function(tab)
+                return tab, "Tree", "description", "icon", ({ 0, 30, 21 })[tab]
+            end
+            assert.equal("melee", h.ns.RoleOf("player"))
+        end)
+
+        it("is overridden by the manual list", function()
+            local h = paladin({ saved = { ROLES = { Tester = "melee" } } })
+            h.state.talents = { 31, 0, 0 }
+            assert.same({ "melee", "manual" }, { h.ns.RoleOf("player") })
+        end)
+
+        it("is the class default for classes with one role", function()
+            local h = Addon.load({ class = "MAGE" })
+            h.state.talents = { 31, 0, 0 }
+            assert.equal("caster", h.ns.RoleOf("player"))
+        end)
+    end)
+
     describe("blessings in a party", function()
         it("never give Light", function()
             local h = paladin()

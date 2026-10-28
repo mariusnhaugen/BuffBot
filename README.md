@@ -82,6 +82,11 @@ a poison running low on charges counts as missing.
 
 `/bb buffs` prints your current buff list.
 
+`/bb role <name> <role>` sets a raid member's role for blessings: tank,
+melee, ranged, caster or healer. Part of the name will do. `/bb role <name>`
+clears it. Roles are saved for your account; without one, a member's role
+comes from their class, and yours from your talents.
+
 ## Development
 
 See [TESTING.md](TESTING.md) for the tests and the open in-game checks,

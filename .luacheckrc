@@ -32,6 +32,7 @@ read_globals = {
     "GetNumGroupMembers",
     "GetNumSubgroupMembers",
     "GetRaidRosterInfo",
+    "GetTalentTabInfo",
     "GetTime",
     "GetUnitName",
     "InCombatLockdown",

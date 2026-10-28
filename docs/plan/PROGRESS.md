@@ -6,7 +6,7 @@ Built on `release/2.5`, one slice at a time with `/slice next`. Design: `SPEC.md
 - [x] 01 settings (MUST, ~20m) — also updated README settings list
 - [x] 02 pvp-self-only (MUST, ~15m) — `BuffBot.InPvP()` in HelperFunctions.lua; PLAYER_ENTERING_WORLD now also re-checks buffs, so zoning in or out updates the button
 - [x] 03 roles-and-light (MUST, ~40m) — your own blessing in a raid keeps the dropdown + Paladin list, with Light last; CHANGELOG New entries added
-- [ ] 04 manual-and-own-role (MUST, ~30m)
+- [x] 04 manual-and-own-role (MUST, ~30m) — role is the last word when it names a role, so full names with spaces work; talent points read from either the Classic Era or the later GetTalentTabInfo layout; README + CHANGELOG
 - [ ] 05 greater-harness (MUST, ~20m)
 - [ ] 06 raid-greaters (MUST, ~40m)
 - [ ] 07 flat-suggestions (MUST, ~15m)

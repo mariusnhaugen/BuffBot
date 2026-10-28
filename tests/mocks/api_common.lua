@@ -158,7 +158,16 @@ return function(state, env)
         return class:sub(1, 1) .. class:sub(2):lower(), class, 1
     end
 
-    function env.GetUnitName() return "Tester" end
+    function env.GetUnitName(unit)
+        if state:resolve(unit) == "player" then return "Tester" end
+        local m = member(unit)
+        return m and m.name
+    end
+
+    -- Classic Era's order: name, icon, points spent, file name
+    function env.GetTalentTabInfo(tab)
+        return "Tree " .. tab, "icon", state.talents[tab] or 0, "Tree" .. tab
+    end
 
     function env.UnitName(unit)
         if state:resolve(unit) == "player" then return "Tester" end

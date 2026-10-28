@@ -28,7 +28,102 @@ BuffBot.ClassDefaultRole = {
     PALADIN = "healer",
 }
 
--- A unit's role and where it came from
+-- The role of each talent tree, by class, for the classes whose trees differ
+local TalentTreeRoles = {
+    DRUID = { "caster", "melee", "healer" },
+    SHAMAN = { "caster", "melee", "healer" },
+    PALADIN = { "healer", "tank", "melee" },
+    WARRIOR = { "melee", "melee", "tank" },
+}
+
+-- Points spent in one of the player's talent trees. Classic Era returns them
+-- third; later clients return an ID first and the points fifth.
+local function PointsIn(tab)
+    local _, _, third, _, fifth = GetTalentTabInfo(tab)
+    if type(third) == "number" then return third end
+    return fifth or 0
+end
+
+-- The player's role from the tree with the most points, or nil without talents
+local function TalentRole()
+    local trees = TalentTreeRoles[BuffBot.playerclass]
+    if not trees then return nil end
+    local best, bestPoints = nil, 0
+    for tab, role in ipairs(trees) do
+        local points = PointsIn(tab)
+        if points > bestPoints then best, bestPoints = role, points end
+    end
+    return best
+end
+
+-- A unit's role and where it came from: the manual list, then the player's
+-- own talents, then the class default
 function BuffBot.RoleOf(unit)
+    local manual = BuffBot.config.ROLES and BuffBot.config.ROLES[GetUnitName(unit, true) or ""]
+    if manual then return manual, "manual" end
+    if UnitIsUnit(unit, "player") then
+        local role = TalentRole()
+        if role then return role, "talents" end
+    end
     return BuffBot.ClassDefaultRole[select(2, UnitClass(unit))], "class"
+end
+
+-- The raid members whose name contains text, ignoring case, as full names.
+-- An exact match wins over partial ones.
+local function MatchMembers(text, names)
+    text = text:lower()
+    local matches = {}
+    for _, name in ipairs(names) do
+        if name:lower() == text then return { name } end
+        if name:lower():find(text, 1, true) then table.insert(matches, name) end
+    end
+    table.sort(matches)
+    return matches
+end
+
+local function RaidNames()
+    local names = {}
+    if not IsInRaid() then return names end
+    for i = 1, GetNumGroupMembers() do
+        local name = GetUnitName("raid" .. i, true)
+        if name then table.insert(names, name) end
+    end
+    return names
+end
+
+local USAGE = "BuffBot: /bb role <name> <tank|melee|ranged|caster|healer> sets a raid member's role; /bb role <name> clears it."
+
+-- /bb role <name> [role]. Names are matched against the raid; clearing also
+-- matches names saved earlier.
+function BuffBot.RoleCommand(args)
+    -- The last word is the role when it names one; the rest is the name
+    local text, role = args:match("^(.-)%s+(%S+)$")
+    role = role and role:lower()
+    if not (role and BuffBot.RoleLists[role]) then text, role = args, "" end
+    text = text:match("^%s*(.-)%s*$")
+    if text == "" then return print(USAGE) end
+
+    local names = RaidNames()
+    if role == "" then
+        for name in pairs(BuffBot.config.ROLES) do
+            if not BuffBot.IndexOf(name, names) then table.insert(names, name) end
+        end
+    end
+    local matches = MatchMembers(text, names)
+    if #matches == 0 then
+        return print("BuffBot: no raid member matches \"" .. text .. "\".")
+    end
+    if #matches > 1 then
+        return print("BuffBot: \"" .. text .. "\" matches " .. table.concat(matches, ", ") .. ".")
+    end
+
+    local name = matches[1]
+    if role == "" then
+        BuffBot.config.ROLES[name] = nil
+        print("BuffBot: " .. name .. "'s role is back to automatic.")
+    else
+        BuffBot.config.ROLES[name] = role
+        print("BuffBot: " .. name .. " is " .. role .. ".")
+    end
+    BuffBot.CheckPlayerBuffs()
 end

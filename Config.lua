@@ -20,6 +20,12 @@ SlashCmdList.BUFFBOTSETTINGS = function(arg)
         return
     end
 
+    local roleArgs = arg:match("^role%s*(.*)$")
+    if roleArgs then
+        BuffBot.RoleCommand(roleArgs)
+        return
+    end
+
     if arg == "debug" then
         BuffBot.config.DEBUG_MODE = not BuffBot.config.DEBUG_MODE
         print("BuffBot Debug Mode -", BuffBot.config.DEBUG_MODE)
@@ -45,6 +51,7 @@ function BuffBot.GetDefaultConfig()
     defaultConfig.ROGUE_POISON_OFFHAND = "Instant Poison"
     defaultConfig.TRACK_TREASURE = true
     defaultConfig.GROUP_BUFFING = true
+    defaultConfig.ROLES = {} -- full name -> role, set with /bb role
 
     return defaultConfig
 end

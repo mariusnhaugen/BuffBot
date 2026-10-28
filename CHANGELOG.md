@@ -7,7 +7,11 @@
 - **In a raid, blessings follow each member's role.** Warriors and Rogues
   are melee (Might, then Kings), Hunters ranged (Kings, Wisdom, Might),
   Mages and Warlocks casters, and Priests, Druids, Shamans and Paladins
-  healers (Wisdom, then Kings). Parties keep the class lists.
+  healers (Wisdom, then Kings). Parties keep the class lists. Your own role
+  comes from your talents.
+- **`/bb role <name> <role>`** sets a raid member's role (tank, melee,
+  ranged, caster or healer), e.g. `/bb role oak melee` for a Feral Druid.
+  `/bb role <name>` clears it.
 - **Blessing of Light** fills in for raid members who already have every
   blessing on their list from other Paladins.
 

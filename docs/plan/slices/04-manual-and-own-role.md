@@ -11,9 +11,9 @@ A raid leader can fix anyone's role with `/bb role`, and your own role follows y
 - Tests: mocks for `GetUnitName(unit, true)` returning member names (player `"Tester"`) and `GetTalentTabInfo`; specs for set, clear, partial match, ambiguous match, saved across reload, own role from talents, manual overriding talents.
 
 ## Acceptance criteria
-- [ ] `export PATH="$HOME/.luarocks/bin:$PATH"; busted && luacheck .` passes
-- [ ] `/bb role` with no arguments prints usage
-- [ ] Conventional Commit(s), split by concern
+- [x] `export PATH="$HOME/.luarocks/bin:$PATH"; busted && luacheck .` passes
+- [x] `/bb role` with no arguments prints usage
+- [x] Conventional Commit(s), split by concern
 
 ## Notes / risks
 Manual roles are keyed by full name, so they survive the member leaving and rejoining.

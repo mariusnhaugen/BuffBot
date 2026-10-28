@@ -19,6 +19,7 @@ describe("saved config", function()
             ROGUE_POISON_OFFHAND = "Instant Poison",
             TRACK_TREASURE = true,
             GROUP_BUFFING = true,
+            ROLES = {},
         }, h.ns.config)
         assert.equal(h.ns.config, h.env.BuffBotConfig)
     end)
