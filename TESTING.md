@@ -125,4 +125,5 @@ For 2.5 (raid coordination, `docs/plan/SPEC.md`). Run in a raid unless noted; Gr
 - [ ] Two Paladins' blessings stacking in a raid: different blessings from two Paladins both stay on one member
 - [ ] [Raid blessings](#raid-blessings-25-at-level-60): the in-game run of 2.5 with two to four Paladins
 - [ ] Sanctuary is gone from Forever (TODO 21)
+- [ ] Keybind on the settings page: `/dump C_KeyBindings.GetBindingIndex("CLICK BUFFBOT_MacroButton:LeftButton")` prints a number, and `/bb` shows a BuffBot Cast keybind row at the top. Set a key there: it casts, shows under Key Bindings > AddOns, and survives `/reload`. If the row is missing or broken, fall back to a button that calls `SetBindingClick` and `SaveBindings` (TODO 35)
 - [ ] Battlegrounds, for a later PvP release: which channel (`RAID` or `INSTANCE_CHAT`) reaches a battleground raid

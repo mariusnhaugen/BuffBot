@@ -42,6 +42,47 @@ commit.
     spell (`UNIT_SPELLCAST_SUCCEEDED`), if Forever has one and add-ons can
     see it. Needs a probe.
   - Expire cached results after about 30 minutes.
+- 33. Hybrids with BuffBot announce their own role. A Druid, Shaman,
+  Paladin or Warrior running BuffBot already knows its role from its own
+  talents (`GetTalentTabInfo`, plus the manual list), so it can tell the
+  raid over add-on messages and the Paladins skip detection layers 3–4
+  (talent auras, Inspect) for that member. Also fixes TODO 32 for them:
+  re-announce after a respec.
+  - The manual list (layer 1) still wins over an announced role.
+  - Needs a message the `BB:v1` rules don't treat as an outsider's, or a
+    protocol bump; non-Paladins would send it too.
+- 34. A window for checking the raid's roles and fixing wrong ones.
+  `/bb raid` prints roles and their sources to chat, but a long raid is
+  hard to read there and a fix means typing `/bb role <name> <role>` per
+  member. A window could list members by group or role, with each one's
+  role, source (manual, mark, aura, Inspect, class default) and blessing,
+  and a dropdown or click to set the role (saved to the manual list) or
+  clear it. Maybe also re-inspect a member or drop their cached result
+  (TODO 32).
+- 35. Bring back the usage text on the settings page. The Settings API
+  rewrite (`cfb530f`) dropped the old canvas page's lines: set a keybind
+  in the game's Key Bindings > AddOns for a spammable button, Alt+drag to
+  move the button, and `/bb`, `/buffbot` to open the page. Now they only
+  appear in the Hide Icon and Reset Button Position tooltips. The
+  vertical-layout category may need a section header or a custom
+  initializer for plain text.
+  - The keybind now has its own row at the top of the page
+    (`CreateKeybindingEntryInitializer`), written without the game to test
+    it on; check it at launch (TESTING.md, Test at launch). If it works, the
+    text only needs the Alt+drag and slash command lines.
+- 36. Share out other classes' raid buffs, as the Paladins' blessings are
+  (29). Two Mages both offer Arcane Intellect to the whole raid; they could
+  split it by subgroup instead (Mage A groups 1–4, B 5–8), and the same for
+  Priests' Fortitude and Druids' Mark of the Wild. Two ways:
+  - Over add-on messages, like the `BB:v1` slots: each caster announces
+    the groups they cover. Handles casters without BuffBot, but non-Paladin
+    messages need a protocol change (as in 33).
+  - Deterministic, no messages: every BuffBot caster of the class sorts
+    the raid's casters by name and takes its share of the groups. Simpler,
+    but it can't tell who runs BuffBot, so groups assigned to a caster
+    without it go unbuffed unless they're covered after a timeout.
+  - Group versions (Arcane Brilliance etc.) cover one subgroup per cast,
+    so splitting by subgroup fits them.
 - 25. Size sliders for the icon and the text. The icon scales the 48px
   button (`SetSize`, out of combat only), and the text changes the font
   size of the suggestion list. Both use the game's own slider, with no

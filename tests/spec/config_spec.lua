@@ -222,15 +222,29 @@ describe("settings panel", function()
         for _, init in ipairs(h.state.categories.BuffBot.initializers) do
             if init.kind == "header" then
                 table.insert(order, init.name)
-            elseif init.kind == "button" then
-                table.insert(order, "button")
+            elseif init.kind == "button" or init.kind == "keybind" then
+                table.insert(order, init.kind)
             elseif init.setting.name == "Auto tracking" or init.setting.name == "Auto Find Treasure"
                 or init.setting.name == "Buff your group" then
                 table.insert(order, init.setting.name)
             end
         end
-        assert.same({ "button", "Tracking", "Auto tracking", "Auto Find Treasure", "Group", "Buff your group",
+        assert.same({ "keybind", "button", "Tracking", "Auto tracking", "Auto Find Treasure", "Group", "Buff your group",
             "Class Settings" }, order)
+    end)
+
+    it("starts with the game's keybind row for the cast button", function()
+        local h = Addon.load()
+        local first = h.state.categories.BuffBot.initializers[1]
+        assert.equal("keybind", first.kind)
+        assert.equal(1, first.bindingIndex)
+    end)
+
+    it("leaves the keybind row out when the binding isn't found", function()
+        local h = Addon.load({ bindings = {} })
+        for _, init in ipairs(h.state.categories.BuffBot.initializers) do
+            assert.are_not.equal("keybind", init.kind)
+        end
     end)
 
     local function resetButton(h)

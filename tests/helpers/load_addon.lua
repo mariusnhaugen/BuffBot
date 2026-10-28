@@ -356,6 +356,7 @@ local M = {}
 --   raid    start in a raid
 --   translate  function mapping English spell names to the client's names
 --   name    the player's full name (default "Tester")
+--   bindings  key bindings the client knows, action -> index (default: BuffBot's cast button)
 function M.load(opts)
     opts = opts or {}
     local state = State.new(opts.class)
@@ -363,6 +364,7 @@ function M.load(opts)
     state.playerName = opts.name or state.playerName
     state:learn(unpack(opts.known or {}))
     if opts.raid then state.group, state.raid = true, true end
+    if opts.bindings then state.bindings = opts.bindings end
 
     local env = setmetatable({}, { __index = _G })
     env._G = env

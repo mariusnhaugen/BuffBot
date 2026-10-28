@@ -57,8 +57,8 @@ a poison running low on charges counts as missing.
 
 ## Setup
 
-- **Keybind:** Key Bindings > AddOns > BuffBot Cast. A key you can press
-  repeatedly is the fastest way to buff.
+- **Keybind:** at the top of the settings page, or Key Bindings > AddOns >
+  BuffBot Cast. A key you can press repeatedly is the fastest way to buff.
 - **Move the button:** hold Alt and drag it.
 - **Settings:** `/bb` or `/buffbot`.
 

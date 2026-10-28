@@ -380,6 +380,14 @@ return function(state, env)
         return { kind = "header", name = name }
     end
 
+    function env.CreateKeybindingEntryInitializer(bindingIndex, search)
+        return { kind = "keybind", bindingIndex = bindingIndex, search = search }
+    end
+
+    env.C_KeyBindings = {
+        GetBindingIndex = function(action) return state.bindings[action] end,
+    }
+
     -- Misc
     env.SlashCmdList = {}
 

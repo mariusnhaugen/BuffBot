@@ -49,6 +49,7 @@ function State.new(class)
         templates = {},
         categories = {},
         settings = {}, -- label -> setting
+        bindings = { ["CLICK BUFFBOT_MacroButton:LeftButton"] = 1 }, -- action -> index, from Bindings.xml
         openedCategory = nil,
     }, State)
 end

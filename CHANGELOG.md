@@ -42,6 +42,8 @@
 - **`/bb raid`** shows which blessing each BuffBot Paladin gives, the
   Paladins not on BuffBot, and every raid member's role and where it came
   from.
+- **The cast keybind can be set on the settings page**, at the top, as
+  well as under Key Bindings > AddOns.
 
 ### Changed
 

@@ -105,6 +105,13 @@ function BuffBot.RegisterSettings()
         Settings.CreateDropdown(category, setting, options, tooltip)
     end
 
+    -- The game's own keybind row for the cast button, so it can be set here
+    -- as well as under Key Bindings > AddOns. Left out if the binding isn't found.
+    local bindingIndex = C_KeyBindings.GetBindingIndex("CLICK BUFFBOT_MacroButton:LeftButton")
+    if bindingIndex then
+        layout:AddInitializer(CreateKeybindingEntryInitializer(bindingIndex, true))
+    end
+
     addCheckbox("HIDE_ICON", "Hide Icon",
         "Hides the button icon for text-only buffing. The keybind (Key Bindings > AddOns) and the text still work.",
         BuffBot.UpdateIconVisibility)
