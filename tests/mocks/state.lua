@@ -124,6 +124,19 @@ function State:subgroupOf(unit)
     return units
 end
 
+-- Group members of the same class as unit, the player included
+function State:classmatesOf(unit)
+    unit = self:resolve(unit)
+    local class = unit == "player" and self.class or self.members[unit].class
+    local units = {}
+    if class == self.class then table.insert(units, "player") end
+    for other, member in pairs(self.members) do
+        if member.class == class then table.insert(units, other) end
+    end
+    table.sort(units)
+    return units
+end
+
 -- Moves the clock on and runs the timers that came due, in order, each at
 -- its own time, including timers they start
 function State:advance(seconds)

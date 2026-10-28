@@ -198,6 +198,10 @@ local reagents = {
     ["Arcane Brilliance"] = { 17020 },          -- Arcane Powder
     ["Prayer of Fortitude"] = { 17028, 17029 }, -- Holy Candle, Sacred Candle
     ["Prayer of Spirit"] = { 17029 },           -- Sacred Candle
+    ["Greater Blessing of Might"] = { 21177 },  -- Symbol of Kings
+    ["Greater Blessing of Wisdom"] = { 21177 },
+    ["Greater Blessing of Kings"] = { 21177 },
+    ["Greater Blessing of Light"] = { 21177 },
 }
 
 -- The account-wide Legacy talent that removes reagent costs. It's a trait,

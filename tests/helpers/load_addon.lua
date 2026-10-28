@@ -218,15 +218,19 @@ function Harness:target()
 end
 
 -- Who a cast lands on: a group version reaches the target's whole subgroup,
--- apart from members who are dead, offline or out of range
+-- and a Greater Blessing every group member of the target's class, apart from
+-- members who are dead, offline or out of range
 function Harness:landsOn(buff, unit)
+    local english = self.state:englishName(buff) or buff
     local isGroupVersion = false
     for _, versions in pairs(self.ns.GroupVersions) do
-        if versions[1] == (self.state:englishName(buff) or buff) then isGroupVersion = true end
+        if versions[1] == english then isGroupVersion = true end
     end
     if not isGroupVersion then return { unit } end
+    local reached = self.state:subgroupOf(unit)
+    if english:find("^Greater Blessing of ") then reached = self.state:classmatesOf(unit) end
     local units = {}
-    for _, other in ipairs(self.state:subgroupOf(unit)) do
+    for _, other in ipairs(reached) do
         local m = self.state.members[other]
         if not m or not (m.dead or m.offline or m.inRange == false) then table.insert(units, other) end
     end

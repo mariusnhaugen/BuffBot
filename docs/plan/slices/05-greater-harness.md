@@ -11,8 +11,8 @@ The test harness models Greater Blessings landing on a whole class, so the raid 
 - Tests: `CastableGroupVersion("Blessing of Wisdom")` needs Greater learned and Symbol of Kings or Reagent Economy.
 
 ## Acceptance criteria
-- [ ] `export PATH="$HOME/.luarocks/bin:$PATH"; busted && luacheck .` passes
-- [ ] Conventional Commit(s), split by concern
+- [x] `export PATH="$HOME/.luarocks/bin:$PATH"; busted && luacheck .` passes
+- [x] Conventional Commit(s), split by concern
 
 ## Notes / risks
 Greater rules on Forever (class-wide, 40 yd) are a launch check.

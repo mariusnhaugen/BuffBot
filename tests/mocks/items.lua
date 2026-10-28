@@ -27,6 +27,7 @@ local byName = {
     ["Arcane Powder"] = 17020,
     ["Holy Candle"] = 17028,
     ["Sacred Candle"] = 17029,
+    ["Symbol of Kings"] = 21177,
 }
 
 local byID = {}
