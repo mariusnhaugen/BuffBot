@@ -37,6 +37,19 @@ function Harness:fire(event, ...)
     end
 end
 
+-- An add-on message from another player, on RAID unless given
+function Harness:receive(sender, text, opts)
+    opts = opts or {}
+    self:fire("CHAT_MSG_ADDON", opts.prefix or "BuffBot", text, opts.channel or "RAID", sender)
+end
+
+-- The texts of the add-on messages sent, in order
+function Harness:sent()
+    local texts = {}
+    for _, message in ipairs(self.state.sent) do table.insert(texts, message.text) end
+    return texts
+end
+
 function Harness:slash(arg)
     self.env.SlashCmdList.BUFFBOTSETTINGS(arg or "")
 end

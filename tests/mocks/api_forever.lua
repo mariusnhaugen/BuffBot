@@ -117,6 +117,39 @@ return function(state, env)
         end,
     }
 
+    -- Add-on messages. Each prefix has 10 sends, refilling at 1 a second;
+    -- past that a send fails with 3 (AddonMessageThrottle) and is dropped.
+    -- The result comes last, as from the deprecation wrapper, so the add-on
+    -- has to read it with select(-1, ...). state.sendResult forces a result,
+    -- e.g. 11 for AddOnMessageLockdown.
+    local allowance = {}
+    env.C_ChatInfo = {
+        RegisterAddonMessagePrefix = function(prefix)
+            state.prefixes[prefix] = true
+            return nil, 0
+        end,
+        SendAddonMessage = function(prefix, text, chatType)
+            if not state.prefixes[prefix] then return nil, 1 end
+            if state.sendResult then return nil, state.sendResult end
+            local a = allowance[prefix] or { left = 10, at = state.time }
+            a.left = math.min(10, a.left + (state.time - a.at))
+            a.at = state.time
+            allowance[prefix] = a
+            if a.left < 1 then return nil, 3 end
+            a.left = a.left - 1
+            table.insert(state.sent, { prefix = prefix, text = text, chatType = chatType })
+            return nil, 0
+        end,
+    }
+
+    -- math.random returns state.random(...) when a spec sets it
+    env.math = setmetatable({
+        random = function(...)
+            if state.random then return state.random(...) end
+            return math.random(...)
+        end,
+    }, { __index = math })
+
     function env.GetInventoryItemID(unit, slot)
         if unit ~= "player" then return nil end
         if slot == 16 then return state.mainHand end

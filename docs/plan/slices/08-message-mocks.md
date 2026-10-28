@@ -10,9 +10,9 @@ Specs can send and receive add-on messages.
 - Code: register the `BuffBot` prefix on `ADDON_LOADED`; a `CHAT_MSG_ADDON` handler stub that ignores other prefixes.
 
 ## Acceptance criteria
-- [ ] `export PATH="$HOME/.luarocks/bin:$PATH"; busted && luacheck .` passes
-- [ ] A spec asserts the prefix is registered on load
-- [ ] Conventional Commit(s), split by concern
+- [x] `export PATH="$HOME/.luarocks/bin:$PATH"; busted && luacheck .` passes
+- [x] A spec asserts the prefix is registered on load
+- [x] Conventional Commit(s), split by concern
 
 ## Notes / risks
 No protocol logic yet.

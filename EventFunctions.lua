@@ -1,6 +1,9 @@
 local addonName, BuffBot = ...
 local events = CreateFrame("Frame")
 
+-- The prefix for messages between BuffBot Paladins (docs/plan/SPEC.md)
+BuffBot.MESSAGE_PREFIX = "BuffBot"
+
 -- Members' auras change in bursts, so their events share one re-check
 local RESCAN_DELAY = 0.2
 local rescanPending = false
@@ -31,6 +34,11 @@ function events:UNIT_AURA(unit, info)
     else
         BuffBot.CheckPlayerBuffs()
     end
+end
+
+function events:CHAT_MSG_ADDON(prefix, text, channel, sender)
+    if prefix ~= BuffBot.MESSAGE_PREFIX then return end
+    BuffBot.debug("BuffBot message from", sender, "on", channel .. ":", text)
 end
 
 function events:GROUP_ROSTER_UPDATE()
@@ -137,6 +145,7 @@ function events:ADDON_LOADED(arg1)
     end
     BuffBot.charConfig = BuffBotCharConfig
     BuffBot.RegisterSettings()
+    C_ChatInfo.RegisterAddonMessagePrefix(BuffBot.MESSAGE_PREFIX)
 
 
     local debugString = ""
@@ -159,6 +168,7 @@ end)
 
 events:RegisterEvent("UNIT_AURA")
 
+events:RegisterEvent("CHAT_MSG_ADDON")
 events:RegisterEvent("GROUP_ROSTER_UPDATE")
 events:RegisterEvent("GROUP_LEFT")
 

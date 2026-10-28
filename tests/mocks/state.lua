@@ -38,6 +38,10 @@ function State.new(class)
         time = 1000,
         timers = {}, -- { at = time, callback } from C_Timer.After
         printed = {},
+        prefixes = {}, -- add-on message prefixes registered
+        sent = {}, -- { prefix, text, chatType } for each add-on message that went out
+        sendResult = nil, -- forces SendAddonMessage's result when set
+        random = nil, -- replaces math.random when set
         frames = {},
         templates = {},
         categories = {},
