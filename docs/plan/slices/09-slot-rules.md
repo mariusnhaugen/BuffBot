@@ -10,8 +10,8 @@ The slot rules exist as one pure function every client runs identically.
 - Tests: new `coordination_spec.lua`, table-driven, one row per rule and every worked example in SPEC.
 
 ## Acceptance criteria
-- [ ] `export PATH="$HOME/.luarocks/bin:$PATH"; busted && luacheck .` passes
-- [ ] Conventional Commit(s), split by concern
+- [x] `export PATH="$HOME/.luarocks/bin:$PATH"; busted && luacheck .` passes
+- [x] Conventional Commit(s), split by concern
 
 ## Notes / risks
 Riskiest logic; keep it free of WoW API calls so it's easy to test.

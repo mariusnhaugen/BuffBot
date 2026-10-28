@@ -197,6 +197,23 @@ battleground or arena, and every non-Paladin.
 - **Handover:** the old owner's blessings stay until due; then the new owner
   casts. Nothing that's up is overwritten.
 
+**How each client applies them:** `BuffBot.NextSlot(me, mySlot, peers,
+event)` (`Coordination.lua`) is a pure function that returns the player's own
+slot; each client only ever decides its own slot and announces it.
+- `{ kind = "settle" }`: the player's own hello window ended. A slot a peer
+  holds goes to the peer (the player gives way).
+- `{ kind = "claim", name }`: a peer's hello or state changed `peers` while
+  the player is settled. A slot both hold goes to the first by name.
+- `{ kind = "peerLeft", name, slot }`: a peer left or went offline (already
+  removed from `peers`); reserve, then close-up rules.
+- In every case the MW holder reads as W from 3 Paladins on, a slot that
+  doesn't exist for the count is dropped, and a Paladin without a slot fills
+  the free slots by name sort (reserves only move on `peerLeft`, since no
+  slot is free otherwise).
+- Recording a hello: a peer's hello slot is recorded only if nobody else
+  holds it, otherwise the peer is recorded as `-`. So a stale reload never
+  frees or contests the holder's slot, and a real reload keeps its own.
+
 **Worked examples:**
 - A and B form a raid: both `BB?:v1:-`, settle, name sort → A `BB:v1:K`,
   B `BB:v1:MW`.

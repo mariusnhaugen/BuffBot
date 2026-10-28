@@ -11,7 +11,7 @@ Built on `release/2.5`, one slice at a time with `/slice next`. Design: `SPEC.md
 - [x] 06 raid-greaters (MUST, ~40m) — SPEC changed: class blessing = majority of members' picks; own Greater no longer 'stands' in BlessingFor; your own blessing waits until after a Greater on your class that would replace it; harness now replaces the player's other blessing on a unit
 - [x] 07 flat-suggestions (MUST, ~15m) — shows the full spell name ("Greater Blessing of Wisdom > Priests"), not the SPEC's shortened "Greater Wisdom", so it stays right on every client
 - [x] 08 message-mocks (MUST, ~30m) — prefix lives in BuffBot.MESSAGE_PREFIX (EventFunctions.lua); the CHAT_MSG_ADDON stub only prints in debug mode; mock specs in messages_spec.lua
-- [ ] 09 slot-rules (MUST, ~40m)
+- [x] 09 slot-rules (MUST, ~40m) — event kinds settle/claim/peerLeft documented in SPEC; slice 10 must record a hello's slot only if nobody else holds it
 - [ ] 10 protocol-wiring (MUST, ~40m)
 - [ ] 11 slot-blessings (MUST, ~30m)
 - [ ] 12 reload-restore (MUST, ~20m)
