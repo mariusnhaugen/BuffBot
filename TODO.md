@@ -5,13 +5,13 @@ commit.
 
 ## Feature ideas
 
-- 29. Part 2 of blessing sharing: Paladins agree on who gives which
-  blessing over add-on messages, so two Paladins never cast the same one at
-  once, plus Greater Blessings (Symbol of Kings or Reagent Economy). Linked
-  to 21. Part 1 is done: each Paladin gives a member the first blessing on
-  their class list that no other Paladin has given them. Messages go to
-  PARTY or RAID; the sender's name matches `GetUnitName(unit, true)`, and
-  about 10 go out at once (PROBE_RESULTS.md).
+- 29. Part 2 of blessing sharing, planned for 2.5: raid coordination.
+  BuffBot Paladins in a raid agree over add-on messages (`BB:v1`) on one
+  blessing slot each (Kings, Might/Wisdom, Wisdom, Might, Light), give each
+  member the blessings for their role (tank, melee, ranged, caster,
+  healer), and use Greater Blessings per class with single casts for
+  exceptions. Parties keep the 2.4 class lists. Linked to 21. Design and
+  build slices: `docs/plan/SPEC.md`, progress in `docs/plan/PROGRESS.md`.
 
 - 18. Settings page cleanup. Show only the current class's settings. General UX. Make paladin prio?
 - 26. Known issue: the first Rockbiter cast once needed a second press
