@@ -9,7 +9,9 @@
   Mages and Warlocks casters, and Priests, Druids, Shamans and Paladins
   healers (Wisdom, then Kings). Parties keep the class lists. Main-tank
   marked members are tanks (Kings, then Might), and so are the group's
-  tank roles. Your own role comes from your talents.
+  tank roles. Druids in Moonkin Form are casters, and Druids with their own
+  Leader of the Pack are melee (Might, then Kings). Your own role comes
+  from your talents.
 - **`/bb role <name> <role>`** sets a raid member's role (tank, melee,
   ranged, caster or healer), e.g. `/bb role oak melee` for a Feral Druid.
   `/bb role <name>` clears it.

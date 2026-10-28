@@ -266,6 +266,9 @@ end
 local spellIDTable = {
     --DRUID
     ["Omen of Clarity"] = 16864,
+    ["Moonkin Form"] = 24858, -- talent auras, for raid roles
+    ["Moonkin Aura"] = 24907,
+    ["Leader of the Pack"] = 24932,
     ["Mark of the Wild"] = 1126,
     ["Gift of the Wild"] = 21849,
     ["Thorns"] = 467,

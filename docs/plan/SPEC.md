@@ -105,9 +105,10 @@ Light is on no list: it's the filler (below).
    (`{ ["First Last"] = "melee" }`). Not shared with other Paladins.
 2. Group markers: main-tank mark → tank; `combatRole` from
    `GetRaidRosterInfo` (or `UnitGroupRolesAssigned`) if Forever fills it in.
-3. Talent auras seen on the member: Moonkin Form/Aura → caster; Leader of the
-   Pack with `sourceUnit` = that Druid → melee. Not Cat Form (travel form),
-   not Sanctity Aura.
+3. Talent auras seen on the member: Moonkin Form, or Moonkin Aura from that
+   Druid → caster; Leader of the Pack with `sourceUnit` = that Druid →
+   melee. Not Cat Form (travel form), not Sanctity Aura. IDs are Classic's
+   (24858, 24907, 24932) until checked.
 4. Inspect, for still-unknown hybrids (Druid, Shaman, Paladin; Warrior for
    Prot when nobody is main-tank marked).
 5. Class default.

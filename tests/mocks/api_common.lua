@@ -175,6 +175,13 @@ return function(state, env)
         return m and m.name
     end
 
+    -- A member's guid field, or one made from their name
+    function env.UnitGUID(unit)
+        if state:resolve(unit) == "player" then return "Player-" .. state.playerName end
+        local m = member(unit)
+        return m and (m.guid or ("Player-" .. m.name))
+    end
+
     function env.UnitExists(unit)
         return state:resolve(unit) == "player" or member(unit) ~= nil
     end

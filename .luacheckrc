@@ -54,6 +54,7 @@ read_globals = {
     "UnitChannelInfo",
     "UnitExists",
     "UnitGroupRolesAssigned",
+    "UnitGUID",
     "UnitInRaid",
     "UnitIsConnected",
     "UnitIsDeadOrGhost",

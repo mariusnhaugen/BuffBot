@@ -10,8 +10,8 @@ Moonkins and Leader-of-the-Pack Ferals are detected from their auras.
 - Tests: Moonkin aura → caster; Leader of the Pack from another Druid doesn't mark this one; Cat Form alone doesn't; cache survives the aura dropping.
 
 ## Acceptance criteria
-- [ ] `export PATH="$HOME/.luarocks/bin:$PATH"; busted && luacheck .` passes
-- [ ] Conventional Commit(s), split by concern
+- [x] `export PATH="$HOME/.luarocks/bin:$PATH"; busted && luacheck .` passes
+- [x] Conventional Commit(s), split by concern
 
 ## Notes / risks
 Which auras are still talent-only on Forever is a launch check.

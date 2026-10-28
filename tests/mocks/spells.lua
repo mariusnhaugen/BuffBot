@@ -3,6 +3,10 @@
 local byName = {
     -- DRUID
     ["Omen of Clarity"] = 16864,
+    ["Moonkin Form"] = 24858,
+    ["Moonkin Aura"] = 24907,
+    ["Leader of the Pack"] = 24932,
+    ["Cat Form"] = 768,
     ["Mark of the Wild"] = 1126,
     ["Gift of the Wild"] = 21849,
     ["Thorns"] = 467,

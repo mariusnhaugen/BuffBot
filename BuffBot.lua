@@ -27,6 +27,7 @@ end
 function BuffBot.UpdateClassBuffList()
     BuffBot.debug("UpdateClassBuffList")
     BuffBot.UpdateCoordination()
+    BuffBot.UpdateRoles()
     BuffBot.FilterInitialList()
     BuffBot.CheckPlayerBuffs()
 end

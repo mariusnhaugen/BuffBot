@@ -70,15 +70,58 @@ local function GroupRole(unit)
     end
 end
 
+-- Roles seen from talent auras, by GUID, for the session. An aura can drop
+-- (a Feral leaving cat form), but the talent behind it stays.
+local roleByGUID = {}
+
+-- Auras only a Druid's talents give: Moonkin for Balance, Leader of the Pack
+-- for Feral. The auras also go on the Druid's party, so a Druid only counts
+-- with their own.
+local TALENT_AURAS = {
+    { name = "Moonkin Form", role = "caster" },
+    { name = "Moonkin Aura", role = "caster", own = true },
+    { name = "Leader of the Pack", role = "melee", own = true },
+}
+
+-- A Druid's role from their talent auras. Party auras can't be read in
+-- combat, so it waits until after.
+local function AuraRole(unit)
+    if select(2, UnitClass(unit)) ~= "DRUID" then return nil end
+    local guid = UnitGUID(unit)
+    if roleByGUID[guid] then return roleByGUID[guid] end
+    if InCombatLockdown() then return nil end
+    for _, talentAura in ipairs(TALENT_AURAS) do
+        local aura = C_UnitAuras.GetAuraDataBySpellName(unit, BuffBot.SpellName(talentAura.name))
+        if aura and (not talentAura.own or (aura.sourceUnit and UnitIsUnit(aura.sourceUnit, unit))) then
+            roleByGUID[guid] = talentAura.role
+            return talentAura.role
+        end
+    end
+end
+
+-- Forgets the roles of members who left the raid
+function BuffBot.UpdateRoles()
+    local present = {}
+    for i = 1, GetNumGroupMembers() do
+        local guid = UnitGUID("raid" .. i)
+        if guid then present[guid] = true end
+    end
+    for guid in pairs(roleByGUID) do
+        if not present[guid] then roleByGUID[guid] = nil end
+    end
+end
+
 -- A unit's role and where it came from: the manual list, then the main-tank
--- mark and the group's role, then the player's own talents, then the class
--- default
+-- mark and the group's role, then talent auras, then the player's own
+-- talents, then the class default
 function BuffBot.RoleOf(unit)
     local manual = BuffBot.config.ROLES and BuffBot.config.ROLES[GetUnitName(unit, true) or ""]
     if manual then return manual, "manual" end
     if GetPartyAssignment("MAINTANK", unit) then return "tank", "mark" end
     local groupRole = IsInRaid() and GroupRole(unit)
     if groupRole then return groupRole, "group" end
+    local auraRole = IsInRaid() and AuraRole(unit)
+    if auraRole then return auraRole, "aura" end
     if UnitIsUnit(unit, "player") then
         local role = TalentRole()
         if role then return role, "talents" end
