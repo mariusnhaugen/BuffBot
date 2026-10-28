@@ -178,7 +178,7 @@ local function InspectStep()
         if CanInspect(unit) then
             local guid = UnitGUID(unit)
             tries[guid] = (tries[guid] or 0) + 1
-            pending = { guid = guid, unit = unit, at = GetTime() }
+            pending = { guid = guid, at = GetTime() }
             NotifyInspect(unit)
             inspecting = true
             return C_Timer.After(INSPECT_INTERVAL, InspectStep)
@@ -192,13 +192,24 @@ function BuffBot.StartInspecting()
     C_Timer.After(INSPECT_INTERVAL, InspectStep)
 end
 
--- The answer to the queue's inspect, not to anyone else's
+-- The raid unit with this GUID now, or nil once they've left
+local function RaidUnitOf(guid)
+    for i = 1, GetNumGroupMembers() do
+        local unit = "raid" .. i
+        if UnitGUID(unit) == guid then return unit end
+    end
+end
+
+-- The answer to the queue's inspect, not to anyone else's. The roster may
+-- have moved the member to another unit since the inspect went out.
 function BuffBot.InspectReady(guid)
     if not pending or guid ~= pending.guid then return end
-    local unit = pending.unit
-    local role = SPEC_ROLES[GetInspectSpecialization and GetInspectSpecialization(unit) or 0]
-        or TalentRole(select(2, UnitClass(unit)), true)
-    if role then roleByGUID[guid] = { role = role, source = "inspect" } end
+    local unit = RaidUnitOf(guid)
+    if unit then
+        local role = SPEC_ROLES[GetInspectSpecialization and GetInspectSpecialization(unit) or 0]
+            or TalentRole(select(2, UnitClass(unit)), true)
+        if role then roleByGUID[guid] = { role = role, source = "inspect" } end
+    end
     StopInspect()
     BuffBot.CheckPlayerBuffs()
 end

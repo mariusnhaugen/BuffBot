@@ -52,6 +52,7 @@ function State.new(class)
         printed = {},
         inspects = {}, -- units passed to NotifyInspect, in order
         inspecting = nil, -- the unit being inspected
+        inspected = nil, -- the member it was when the inspect was sent
         prefixes = {}, -- add-on message prefixes registered
         sent = {}, -- { prefix, text, chatType } for each add-on message that went out
         sendResult = nil, -- forces SendAddonMessage's result when set

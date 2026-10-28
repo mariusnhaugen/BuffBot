@@ -430,6 +430,19 @@ describe("roles", function()
             ready(h, "raid2")
             assert.same({ "melee", "inspect" }, { h.ns.RoleOf("raid2") })
         end)
+
+        it("reads the answer for the member inspected, even after the roster moves them", function()
+            local cat = { class = "DRUID", name = "Cat", talents = { 0, 31, 0 } }
+            local shield = { class = "PALADIN", name = "Shield", talents = { 0, 31, 0 } }
+            local h = raidOf({ cat })
+            h.state:advance(1.5)
+            assert.same({ "raid2" }, h.state.inspects)
+            -- Shield joins and takes raid2 before Cat's answer comes in
+            h:joinRaid({ shield, cat })
+            ready(h, "raid3")
+            assert.same({ "melee", "inspect" }, { h.ns.RoleOf("raid3") })
+            assert.are_not.equal("inspect", select(2, h.ns.RoleOf("raid2")))
+        end)
     end)
 
     describe("the player's own role", function()

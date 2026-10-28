@@ -165,11 +165,12 @@ return function(state, env)
     end
 
     -- Classic Era's order: name, icon, points spent, file name. With inspect,
-    -- the inspected member's talents (member.talents).
+    -- the inspected member's talents (member.talents), even if the roster has
+    -- moved them to another unit since
     function env.GetTalentTabInfo(tab, inspect)
         local talents = state.talents
         if inspect then
-            local m = state.inspecting and member(state.inspecting)
+            local m = state.inspecting and state.inspected
             talents = m and m.talents or {}
         end
         return "Tree " .. tab, "icon", talents[tab] or 0, "Tree" .. tab
@@ -184,11 +185,12 @@ return function(state, env)
 
     function env.NotifyInspect(unit)
         state.inspecting = unit
+        state.inspected = member(unit)
         table.insert(state.inspects, unit)
     end
 
     function env.ClearInspectPlayer()
-        state.inspecting = nil
+        state.inspecting, state.inspected = nil, nil
     end
 
     function env.UnitName(unit)

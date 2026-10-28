@@ -315,7 +315,8 @@ Out-of-range members are skipped, not waited on.
 
 ## Inspect queue
 
-`CanInspect` → `NotifyInspect` → `INSPECT_READY` (match the GUID) →
+`CanInspect` → `NotifyInspect` → `INSPECT_READY` (match the GUID, then find
+the member's unit by it, since the roster may have moved them) →
 `GetInspectSpecialization(unit)` if it returns a spec on Forever, otherwise
 `GetTalentTabInfo(tab, true)` (most points = spec) → `ClearInspectPlayer`.
 About 28 yd, one at a time, ~1 per 1.5 s. Runs only when **all** hold:
