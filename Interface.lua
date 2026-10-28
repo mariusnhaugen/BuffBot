@@ -142,6 +142,18 @@ macroButton:SetScript('OnMouseDown', function(_, button)
 end)
 
 
+-- English class names for a Greater Blessing's line. Other clients show the
+-- game's class name.
+local CLASS_PLURALS = {
+    WARRIOR = "Warriors", ROGUE = "Rogues", HUNTER = "Hunters", MAGE = "Mages", WARLOCK = "Warlocks",
+    PRIEST = "Priests", DRUID = "Druids", SHAMAN = "Shamans", PALADIN = "Paladins",
+}
+
+local function ClassLabel(class)
+    if GetLocale():sub(1, 2) == "en" then return CLASS_PLURALS[class] end
+    return LOCALIZED_CLASS_NAMES_MALE[class] or class
+end
+
 BuffBot.suggestionList = {}
 -- missing: the list the button just used; built here when called on its own
 function BuffBot.UpdateSuggestionList(missing)
@@ -160,7 +172,9 @@ function BuffBot.UpdateSuggestionList(missing)
         end
         local text = BuffBot.DisplayName(missing[i].buff)
         -- "→" isn't in the game font
-        if missing[i].unit ~= "player" then
+        if missing[i].class then
+            text = text .. " > " .. ClassLabel(missing[i].class)
+        elseif missing[i].unit ~= "player" then
             text = text .. " > " .. (UnitName(missing[i].unit) or missing[i].unit)
         end
         BuffBot.suggestionList[i]:SetText(text)

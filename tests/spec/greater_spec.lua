@@ -165,6 +165,36 @@ describe("Greater Blessings", function()
         end)
     end)
 
+    describe("suggestion list", function()
+        local function raidWith(members, opts)
+            opts = opts or {}
+            opts.class = "PALADIN"
+            opts.known = { "Blessing of Might", "Blessing of Wisdom", "Greater Blessing of Might",
+                "Greater Blessing of Wisdom", "Reagent Economy" }
+            local h = Addon.load(opts)
+            h:give("Blessing of Might")
+            h:joinRaid(members)
+            return h
+        end
+
+        it("names the class a Greater Blessing goes on, then the members for singles", function()
+            local h = raidWith({
+                { class = "PRIEST" }, { class = "PRIEST" }, { class = "WARRIOR" }, { class = "WARRIOR" },
+                { class = "MAGE", name = "Jaina" },
+            })
+            assert.same({ "Greater Blessing of Might > Warriors", "Greater Blessing of Wisdom > Priests",
+                "Blessing of Wisdom > Jaina" }, h:suggestions())
+        end)
+
+        it("uses the game's class name on other clients", function()
+            local h = raidWith({ { class = "PRIEST" }, { class = "PRIEST" } },
+                { translate = function(name) return "DE " .. name end })
+            h.state.locale = "deDE"
+            h.ns.UpdateSuggestionList()
+            assert.same({ "DE Greater Blessing of Wisdom > Class PRIEST" }, h:suggestions())
+        end)
+    end)
+
     describe("reagents", function()
         it("need Symbol of Kings", function()
             local h = paladin()

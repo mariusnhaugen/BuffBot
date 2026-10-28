@@ -12,6 +12,7 @@ function State.new(class)
     return setmetatable({
         class = class or "WARRIOR",
         known = {},
+        locale = "enUS",
         talents = {}, -- points spent per talent tree, by tab
         unusable = {},
         auras = {},

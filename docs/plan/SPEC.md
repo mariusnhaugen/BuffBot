@@ -23,7 +23,7 @@ with as few settings as possible (TODO 18).
 | R8 | MUST | Greaters in raids: one per class by majority role; exceptions get singles; singles when the class has one member, the Greater can't be cast, or most of the class is out of range | 06 |
 | R9 | MUST | A partly covered class compares cast counts; on a tie, Greater unless it wipes an exception | 06 |
 | R10 | MUST | Cast order: own buffs, then Greaters (most missing first), then singles | 06 |
-| R11 | MUST | Flat suggestion list (`Greater Wisdom > Priests`, `Might > Feralname`) | 07 |
+| R11 | MUST | Flat suggestion list (`Greater Blessing of Wisdom > Priests`, `Blessing of Might > Feralname`) | 07 |
 | R12 | MUST | Protocol `BB:v1` on `RAID` under the `BuffBot` prefix; other versions are outsiders; `/bb debug` prints traffic | 08, 10 |
 | R13 | MUST | Slot rules: table by Paladin count, name sort, sticky, collisions, reserves, Might/Wisdom split, shrink merges | 09 |
 | R14 | MUST | Handshake: hello, answers, state, settle window; leaving or going offline frees a slot, dying doesn't | 10 |
@@ -269,9 +269,9 @@ Out-of-range members are skipped, not waited on.
   cover X" chat line.
 - **Suggestion list:** flat, no member counts:
   ```
-  Greater Wisdom > Priests
-  Greater Wisdom > Druids
-  Might > Feralname
+  Greater Blessing of Wisdom > Priests
+  Greater Blessing of Wisdom > Druids
+  Blessing of Might > Feralname
   ```
 - **Settings:** "Buff the whole raid" removed. "Buff your group" tooltip:
   "Your party, or the whole raid, starting with your own subgroup." The

@@ -124,6 +124,13 @@ return function(state, env)
         return nil
     end
 
+    function env.GetLocale() return state.locale end
+
+    env.LOCALIZED_CLASS_NAMES_MALE = {}
+    for _, class in ipairs({ "WARRIOR", "ROGUE", "HUNTER", "MAGE", "WARLOCK", "PRIEST", "DRUID", "SHAMAN", "PALADIN" }) do
+        env.LOCALIZED_CLASS_NAMES_MALE[class] = "Class " .. class
+    end
+
     -- Reads "## Field: value" lines from the addon's TOC
     env.C_AddOns = {
         GetAddOnMetadata = function(addon, field)

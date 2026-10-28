@@ -9,7 +9,7 @@ Built on `release/2.5`, one slice at a time with `/slice next`. Design: `SPEC.md
 - [x] 04 manual-and-own-role (MUST, ~30m) — role is the last word when it names a role, so full names with spaces work; talent points read from either the Classic Era or the later GetTalentTabInfo layout; README + CHANGELOG
 - [x] 05 greater-harness (MUST, ~20m) — Greaters land class-wide in parties too (matches the game); new State:classmatesOf; greater_spec.lua started
 - [x] 06 raid-greaters (MUST, ~40m) — SPEC changed: class blessing = majority of members' picks; own Greater no longer 'stands' in BlessingFor; your own blessing waits until after a Greater on your class that would replace it; harness now replaces the player's other blessing on a unit
-- [ ] 07 flat-suggestions (MUST, ~15m)
+- [x] 07 flat-suggestions (MUST, ~15m) — shows the full spell name ("Greater Blessing of Wisdom > Priests"), not the SPEC's shortened "Greater Wisdom", so it stays right on every client
 - [ ] 08 message-mocks (MUST, ~30m)
 - [ ] 09 slot-rules (MUST, ~40m)
 - [ ] 10 protocol-wiring (MUST, ~40m)

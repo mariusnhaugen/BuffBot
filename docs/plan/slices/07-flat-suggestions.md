@@ -10,8 +10,8 @@ The suggestion list reads `Greater Wisdom > Priests` for a Greater and `Might > 
 - Tests: suggestions in a raid show the flat list; `locale_spec` still passes.
 
 ## Acceptance criteria
-- [ ] `export PATH="$HOME/.luarocks/bin:$PATH"; busted && luacheck .` passes
-- [ ] Conventional Commit(s), split by concern
+- [x] `export PATH="$HOME/.luarocks/bin:$PATH"; busted && luacheck .` passes
+- [x] Conventional Commit(s), split by concern
 
 ## Notes / risks
 Stop here for a "solo raid Paladin" release (cut line 1).
