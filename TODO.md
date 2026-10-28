@@ -5,24 +5,11 @@ commit.
 
 ## Feature ideas
 
-- 29. Part 2 of blessing sharing, planned for 2.5: raid coordination.
-  BuffBot Paladins in a raid agree over add-on messages (`BB:v1`) on one
-  blessing slot each (Kings, Might/Wisdom, Wisdom, Might, Light), give each
-  member the blessings for their role (tank, melee, ranged, caster,
-  healer), and use Greater Blessings per class with single casts for
-  exceptions. Parties keep the 2.4 class lists. Linked to 21. Design and
-  build slices: `docs/plan/SPEC.md`, progress in `docs/plan/PROGRESS.md`.
-
 - 18. Settings page cleanup. Show only the current class's settings. General UX. Make paladin prio?
 - 26. Known issue: the first Rockbiter cast once needed a second press
   before the button moved on. Not reproduced since. A probe for
   `UNIT_INVENTORY_CHANGED` printed nothing, so the event may not always
   fire, or `C_Item.GetWeaponEnchantInfo` may lag behind it.
-- 21. More Paladin buffs: Light, as the filler a Paladin gives when their
-  blessing does nothing for a member (planned for 2.5 with 29). Sanctuary
-  looks to be gone from Forever; check at launch. Kings is done: on
-  yourself through the blessing dropdown, and on Hunters and Paladins in
-  the party.
 - 30. Salvation, after 2.5. On Forever it is its own spell, not a
   blessing, so it stacks with blessings. Wowhead lists Salvation as 1038
   (the old Blessing of Salvation ID; a third-party site calls it
@@ -77,6 +64,8 @@ commit.
 
 ## Done
 
+- [x] 29, part 2. Raid coordination for 2.5: roles, Greater Blessings with exceptions, slots shared out over add-on messages, `/bb role` and `/bb raid` (`d57f9d6`, `9999d4a`, `267d427`, `de356f9`, `4ea5463`; design in `docs/plan/SPEC.md`)
+- [x] 21. Blessing of Light as the raid filler (`2a815e1`). Sanctuary is a launch check in TESTING.md
 - [x] 29, part 1. Blessings shared out between Paladins by class lists, and only your own buffs refreshed early (`5b6d413`, `472a85e`)
 - [x] Paladin blessings on the party by class, Kings, and a self-blessing dropdown (`7e411d7`)
 - [x] Group buffing: party, own raid subgroup and optional whole raid, with group versions and the class skip list (`7fc9031`)

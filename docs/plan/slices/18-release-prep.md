@@ -11,9 +11,9 @@ Requirements: R22
 - Docs: tick TODO 29 and 21 off in a separate `docs:` commit with the hash.
 
 ## Acceptance criteria
-- [ ] `export PATH="$HOME/.luarocks/bin:$PATH"; busted && luacheck .` passes
-- [ ] Push, ff-merge into `main`, and `git tag v2.5.0` only when the user asks
-- [ ] Conventional Commit(s), split by concern
+- [x] `export PATH="$HOME/.luarocks/bin:$PATH"; busted && luacheck .` passes
+- [ ] Push, ff-merge into `main`, and `git tag v2.5.0` only when the user asks (waiting on the user)
+- [x] Conventional Commit(s), split by concern
 
 ## Notes / risks
 Slices 14–17 can ship later if this runs before they're done.

@@ -20,7 +20,7 @@ Built on `release/2.5`, one slice at a time with `/slice next`. Design: `SPEC.md
 - [x] 15 detect-auras (SHOULD, ~25m) — Moonkin Aura also has to come from the Druid themselves; Classic aura IDs; cache pruned on every roster update (BuffBot.UpdateRoles)
 - [x] 16 inspect-queue (SHOULD, ~40m) — 5 s wait per inspect, 3 tries per member; the role cache now holds { role, source }; GroupRole reads raidN's index directly
 - [x] 17 bb-raid (SHOULD, ~25m) — roles printed one line per role (SPEC updated); README + CHANGELOG
-- [ ] 18 release-prep (MUST, ~20m)
+- [x] 18 release-prep (MUST, ~20m) — version 2.5.0; push, merge into main and tag v2.5.0 wait for the user
 
 MUST total: ~415 min (6.9 h). SHOULD (14–17): ~110 min.
 
