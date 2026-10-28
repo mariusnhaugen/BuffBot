@@ -146,9 +146,11 @@ local function SendState()
     Send("BB:v" .. VERSION .. ":" .. mySlot)
 end
 
+-- The slot is saved per character, so a /reload mid-raid can claim it again
 local function SetSlot(slot)
     if slot == mySlot then return end
     mySlot = slot
+    BuffBot.charConfig.SLOT = slot ~= "-" and slot or nil
     SendState()
 end
 
@@ -197,6 +199,7 @@ end
 
 local function Reset()
     active, mySlot, peers, settling, holdUntil = false, "-", {}, false, 0
+    BuffBot.charConfig.SLOT = nil
 end
 
 -- Starts or stops taking part, and drops Paladins who left the raid or went
@@ -207,7 +210,8 @@ function BuffBot.UpdateCoordination()
         return
     end
     if not active then
-        active = true
+        -- After a /reload, the hello claims the saved slot back
+        active, mySlot = true, BuffBot.charConfig.SLOT or "-"
         SendHello()
         return
     end
@@ -278,6 +282,12 @@ end
 -- The player's slot, "-" for none
 function BuffBot.MySlot()
     return mySlot
+end
+
+-- Logging in starts without a slot: going offline already gave it up. A
+-- /reload keeps the saved one.
+function BuffBot.EnteredWorld(isInitialLogin)
+    if isInitialLogin then BuffBot.charConfig.SLOT = nil end
 end
 
 -- The slots the other BuffBot Paladins in the raid hold

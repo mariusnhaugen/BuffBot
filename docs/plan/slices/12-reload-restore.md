@@ -10,8 +10,8 @@ A `/reload` mid-raid keeps your slot.
 - Tests: reload with `W` → `BB?:v1:W`; login → `BB?:v1:-` and the save cleared; stale save collides with a holder → gives way and re-announces; leaving the raid clears it.
 
 ## Acceptance criteria
-- [ ] `export PATH="$HOME/.luarocks/bin:$PATH"; busted && luacheck .` passes
-- [ ] Conventional Commit(s), split by concern
+- [x] `export PATH="$HOME/.luarocks/bin:$PATH"; busted && luacheck .` passes
+- [x] Conventional Commit(s), split by concern
 
 ## Notes / risks
 None.

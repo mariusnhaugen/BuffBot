@@ -229,9 +229,11 @@ slot; each client only ever decides its own slot and announces it.
 
 ### Reload
 
-Save your slot in `BuffBotCharConfig.SLOT` when it changes. On
-`PLAYER_ENTERING_WORLD` with `isReloadingUi` and `IsInRaid()`, the hello
-carries it (`BB?:v1:W`). On login or relog, start at `-` (going offline
+Save your slot in `BuffBotCharConfig.SLOT` when it changes. When the
+player starts taking part, the hello carries a saved slot (`BB?:v1:W`).
+Since the save is cleared on login (`PLAYER_ENTERING_WORLD` with
+`isInitialLogin`) and on leaving the raid, a save that's still there means a
+reload; `isReloadingUi` isn't needed. On login or relog, start at `-` (going offline
 already freed the slot). Clear the save on login and on leaving the raid
 (`GROUP_ROSTER_UPDATE` with `IsInRaid()` false). Loading screens don't
 restart the add-on. The collision rule handles stale saves.

@@ -84,7 +84,8 @@ end
 
 -- Zoning, which includes entering or leaving a battleground, where tracking
 -- isn't cast and only the player is buffed
-function events:PLAYER_ENTERING_WORLD()
+function events:PLAYER_ENTERING_WORLD(isInitialLogin)
+    BuffBot.EnteredWorld(isInitialLogin)
     BuffBot.CheckPlayerBuffs()
     BuffBot.UpdateTracking()
 end
