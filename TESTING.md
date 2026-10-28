@@ -76,6 +76,17 @@ Blessing of Might on Warriors and Rogues, Blessing of Kings on Hunters and Palad
 Result:
 A Rogue in the party gets Blessing of Might. A tester's Paladin on 2.3 got Kings offered for a Hunter and Wisdom for a Shaman and a Warlock: "does exactly what's needed". Still to check: the dropdown and the old setting carrying over
 
+### Raid blessings (2.5, at level 60)
+
+Needs a raid, and for sharing, two to four Paladins on BuffBot 2.5 (`/bb debug` on prints the messages). See [docs/plan/SPEC.md](docs/plan/SPEC.md) for the rules.
+
+- Alone in a raid: Greater Blessings per class (with Symbol of Kings or Reagent Economy), singles for a class of one, Light for members with every blessing on their list from other Paladins. The text under the button reads "Greater Blessing of Wisdom > Priests".
+- Two Paladins: one gives Kings, the other Might or Wisdom by role; `/bb raid` agrees on both clients. A third joining splits Might and Wisdom; one leaving merges them back. A `/reload` keeps your slot.
+- Roles: `/bb role <name> melee` on a Druid switches them to Might; a main-tank mark makes a tank; Moonkin Form and Leader of the Pack are picked up; Inspect fills in the rest without opening the Inspect window or fighting it.
+- Battlegrounds: only you are buffed.
+
+Result:
+
 ### Group versions and reagents (at the level of the group buffs)
 
 Untestable while the beta is capped. With two or more party members missing a buff and the reagent in the bags (or Reagent Economy), the button casts the group version on the first of them, and it covers the party. Without either it casts single-target. The reagent check takes any reagent for the buff, so a rank 2 caster holding only the rank 1 reagent (Wild Berries, Holy Candle) may get "Missing reagent".
@@ -112,4 +123,6 @@ For 2.5 (raid coordination, `docs/plan/SPEC.md`). Run in a raid unless noted; Gr
 - [ ] Greater Blessings: they cover every raid member of the target's class (not just the subgroup), reach 40 yd, last 60 minutes, and replace the same Paladin's single blessing on that class
 - [ ] Light: Blessing of Light (19977) and Greater Blessing of Light (25890) are the right IDs, and Light stacks with Might, Wisdom and Kings from other Paladins
 - [ ] Two Paladins' blessings stacking in a raid: different blessings from two Paladins both stay on one member
+- [ ] [Raid blessings](#raid-blessings-25-at-level-60): the in-game run of 2.5 with two to four Paladins
+- [ ] Sanctuary is gone from Forever (TODO 21)
 - [ ] Battlegrounds, for a later PvP release: which channel (`RAID` or `INSTANCE_CHAT`) reaches a battleground raid
