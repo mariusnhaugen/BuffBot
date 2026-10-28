@@ -52,6 +52,25 @@ with as few settings as possible (TODO 18).
   Sanctity Aura isn't a Ret talent; Sanctuary looks deleted; Salvation is its
   own spell; hybrid specs (Feral, Enhancement, Ret, Balance) are viable and
   common.
+- **Add-on message API (from the API docs, 2026-10-28):**
+  - Each prefix has 10 messages, refilling at 1 per second; past that, a
+    send returns `AddonMessageThrottle` (3) and is dropped.
+  - Read the result with `select(-1, C_ChatInfo.SendAddonMessage(...))`: a
+    deprecation wrapper moves it to the last return value.
+  - Results: 0 Success, 1 InvalidPrefix, 2 InvalidMessage, 3
+    AddonMessageThrottle, 4 InvalidChatType, 5 NotInGroup, 8
+    ChannelThrottle, 9 GeneralError, 11 AddOnMessageLockdown (new in
+    12.0.0, likely in combat in instances), 12 TargetOffline.
+  - Messages are at most 255 characters. `"RAID"` falls back to `"PARTY"`
+    outside a raid.
+- **Roster API (from the API docs):** `GetRaidRosterInfo(i)` returns name,
+  rank, subgroup, level, class, fileName, zone, online, isDead, role, isML,
+  combatRole. `GROUP_ROSTER_UPDATE` doesn't fire when a member goes offline;
+  `UNIT_CONNECTION(unit)` does. `PLAYER_ENTERING_WORLD` passes
+  `isInitialLogin, isReloadingUi`, and saved variables are loaded before it.
+- **Talent API:** `GetTalentTabInfo` and the spec APIs
+  (`GetSpecializationInfo`, `GetInspectSpecialization`, …) exist on the
+  Classic clients; which return useful data on Forever is a launch check.
 - One realm, so `GetUnitName(unit, true)` ("First Last") is the identity for
   names everywhere: message senders, the manual role list, name sort.
 
@@ -84,7 +103,8 @@ Light is on no list: it's the filler (below).
 **Detection, first match wins:**
 1. Manual list (`/bb role`), saved account-wide in `BuffBotConfig.ROLES`
    (`{ ["First Last"] = "melee" }`). Not shared with other Paladins.
-2. Group markers: main-tank mark → tank; group-finder role if Forever has one.
+2. Group markers: main-tank mark → tank; `combatRole` from
+   `GetRaidRosterInfo` (or `UnitGroupRolesAssigned`) if Forever fills it in.
 3. Talent auras seen on the member: Moonkin Form/Aura → caster; Leader of the
    Pack with `sourceUnit` = that Druid → melee. Not Cat Form (travel form),
    not Sanctity Aura.
@@ -139,6 +159,8 @@ client derives *decisions* locally from the same rules. No negotiation.
 - Hello on joining a raid and on `PLAYER_ENTERING_WORLD`.
 - An answer (state) to every hello, after a random 0–2 s delay.
 - State whenever your own slot changes.
+- A send that doesn't return `0` (e.g. `AddOnMessageLockdown` in combat)
+  is retried once on `PLAYER_REGEN_ENABLED`.
 - No timers otherwise. A newcomer costs 1 hello + 1 answer per Paladin, well
   under the 10-message burst (excess is dropped, not queued).
 
@@ -162,8 +184,8 @@ battleground or arena, and every non-Paladin.
 - **Reserves:** a freed slot goes to the first reserve by name sort. Until
   then a reserve buffs as an outsider would (self-buffs plus the per-member
   fallback).
-- **A Paladin leaving** (leaves the raid or `UnitIsConnected` false) frees
-  their slot. Dying doesn't. Being elsewhere (in town, hearthed) doesn't.
+- **A Paladin leaving** (leaves the raid, or goes offline: `UNIT_CONNECTION`,
+  since `GROUP_ROSTER_UPDATE` doesn't fire for it) frees their slot. Dying doesn't. Being elsewhere (in town, hearthed) doesn't.
 - **Shrink (Q29):** a reserve fills the freed slot first, and nothing merges.
   Otherwise:
   - 4 → 3: L leaving moves nothing; any other slot is filled by the L holder.
@@ -259,6 +281,7 @@ Out-of-range members are skipped, not waited on.
 ## Inspect queue
 
 `CanInspect` → `NotifyInspect` → `INSPECT_READY` (match the GUID) →
+`GetInspectSpecialization(unit)` if it returns a spec on Forever, otherwise
 `GetTalentTabInfo(tab, true)` (most points = spec) → `ClearInspectPlayer`.
 About 28 yd, one at a time, ~1 per 1.5 s. Runs only when **all** hold:
 - you're a Paladin in a raid;
@@ -309,6 +332,6 @@ of the class (covered members become exceptions).
   (`h:sent()`). For collisions, reload, stale saves, odd messages.
 - **Multi-client** (`tests/helpers/raid.lua`): N real sandboxes, one shared
   roster and clock, a bus delivering `RAID` messages to everyone including
-  the sender on the next tick, a 10-message burst after which sends return
-  `3` and are dropped, `math.random` stubbed per client. For "every client
+  the sender on the next tick, 10 messages per client refilling at 1 per
+  second (sends past that return `3` and are dropped), `math.random` stubbed per client. For "every client
   agrees" join, leave, split, shrink and reload sequences.

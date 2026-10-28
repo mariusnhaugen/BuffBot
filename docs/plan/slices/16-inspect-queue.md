@@ -6,7 +6,7 @@ Requirements: R20
 Unknown hybrids are inspected in the background and get their spec's role.
 
 ## Tasks
-- Code: queue in `Roles.lua`: `CanInspect` → `NotifyInspect` → `INSPECT_READY` (match GUID) → `GetTalentTabInfo(tab, true)` → `ClearInspectPlayer`; ~1 per 1.5 s; only under the SPEC conditions; out-of-range skipped and retried; cache by GUID (source `"inspect"`); dropped on leave.
+- Code: queue in `Roles.lua`: `CanInspect` → `NotifyInspect` → `INSPECT_READY` (match GUID) → `GetInspectSpecialization(unit)` when it returns a spec ID, else `GetTalentTabInfo(tab, true)` → `ClearInspectPlayer`; ~1 per 1.5 s; only under the SPEC conditions; out-of-range skipped and retried; cache by GUID (source `"inspect"`); dropped on leave.
 - Tests: mocks for the Inspect API and `InspectFrame`; one at a time; not in combat; not while `InspectFrame` is shown; not for a K holder with other BuffBot Paladins; Warriors only when nobody is MT-marked; a result changes the role.
 
 ## Acceptance criteria

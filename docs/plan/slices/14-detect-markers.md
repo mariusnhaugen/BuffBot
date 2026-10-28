@@ -6,7 +6,7 @@ Requirements: R18
 Main-tank marked members are tanks without anyone typing `/bb role`.
 
 ## Tasks
-- Code: `RoleOf` layer 2: `GetPartyAssignment("MAINTANK", unit)` → tank (source `"mark"`); a group-finder role if Forever's API has one (`UnitGroupRolesAssigned`), guarded by existence.
+- Code: `RoleOf` layer 2: `GetPartyAssignment("MAINTANK", unit)` → tank (source `"mark"`); `combatRole` from `GetRaidRosterInfo` (12th return) or `UnitGroupRolesAssigned`, when it's `TANK` or `HEALER` (source `"group"`); `NONE`/`DAMAGER` falls through.
 - Tests: mock `GetPartyAssignment`; manual list wins over the mark; the mark wins over the class default.
 
 ## Acceptance criteria
