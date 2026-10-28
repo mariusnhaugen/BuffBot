@@ -115,7 +115,7 @@ function events:INSPECT_READY(guid)
 end
 
 function events:PLAYER_REGEN_ENABLED()
-    BuffBot.ResendAfterCombat()
+    BuffBot.ResendUnsent()
     BuffBot.StartInspecting()
     BuffBot.CheckPlayerBuffs()
     BuffBot.ResumeTracking()

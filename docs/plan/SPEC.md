@@ -165,8 +165,10 @@ client derives *decisions* locally from the same rules. No negotiation.
   A Paladin whose own hello is still settling answers at its settle instead,
   once, even if its slot didn't change.
 - State whenever your own slot changes.
-- A send that doesn't return `0` (e.g. `AddOnMessageLockdown` in combat)
-  is retried once on `PLAYER_REGEN_ENABLED`.
+- A send that doesn't return `0` (e.g. `AddOnMessageLockdown` in combat) is
+  retried on `PLAYER_REGEN_ENABLED`, or after 2 s out of combat, until it goes
+  out. A lost hello goes out as a new hello (it carries the slot, so it also
+  covers a lost state); a lost state goes out as the slot held at the time.
 - No timers otherwise. A newcomer costs 1 hello + 1 answer per Paladin, well
   under the 10-message burst (excess is dropped, not queued).
 

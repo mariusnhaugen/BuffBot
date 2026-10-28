@@ -264,6 +264,58 @@ describe("coordination messages", function()
             assert.same({ "BB?:v1:-", "BB:v1:M" }, h:sent())
         end)
 
+        it("says hello again after combat when the hello and the state were both refused", function()
+            local h = paladin()
+            h:enterCombat()
+            h.state.sendResult = 11
+            raid(h, { "Ann Peer", "Bob Peer" })
+            h:receive("Ann Peer", "BB:v1:K")
+            h:receive("Bob Peer", "BB:v1:MW")
+            h:settle()
+            assert.equal("M", h.ns.MySlot())
+            assert.same({}, h:sent())
+            h.state.sendResult = nil
+            h:leaveCombat()
+            -- The hello carries the slot, so it stands in for the lost state
+            assert.same({ "BB?:v1:M" }, h:sent())
+            h:settle()
+            assert.equal("M", h.ns.MySlot())
+            assert.same({ "BB?:v1:M" }, h:sent())
+        end)
+
+        it("keeps trying when the resend is refused too", function()
+            local h = paladin()
+            raid(h, { "Ann Peer", "Bob Peer" })
+            h:receive("Ann Peer", "BB:v1:K")
+            h:receive("Bob Peer", "BB:v1:MW")
+            h:enterCombat()
+            h.state.sendResult = 11
+            h:settle()
+            h.state.sendResult = 3
+            h:leaveCombat()
+            assert.same({ "BB?:v1:-" }, h:sent())
+            h.state.sendResult = nil
+            h.state:advance(5)
+            assert.same({ "BB?:v1:-", "BB:v1:M" }, h:sent())
+        end)
+
+        it("resends the current slot, not the one refused", function()
+            local h = paladin()
+            raid(h, { "Ann Peer", "Bob Peer" })
+            h:receive("Ann Peer", "BB:v1:K")
+            h:receive("Bob Peer", "BB:v1:MW")
+            h:enterCombat()
+            h.state.sendResult = 11
+            h:settle()
+            assert.equal("M", h.ns.MySlot())
+            -- Bob leaves in combat: Might and Wisdom merge back
+            h:joinRaid({ { class = "PALADIN", name = "Ann Peer" } })
+            assert.equal("MW", h.ns.MySlot())
+            h.state.sendResult = nil
+            h:leaveCombat()
+            assert.same({ "BB?:v1:-", "BB:v1:MW" }, h:sent())
+        end)
+
         it("prints what it sends in debug mode", function()
             local h = paladin({ config = { DEBUG_MODE = true } })
             raid(h, {})

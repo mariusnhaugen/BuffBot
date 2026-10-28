@@ -130,21 +130,36 @@ local helloCount = 0 -- so an old hello's settle timer does nothing
 local holdUntil = 0 -- blessings wait until then, after a hello
 local lastStateAt = -1 -- when the player last sent their state
 local answerOwed = false -- a hello came in while the player's own was settling
-local unsent -- a message the game refused, to send again after combat
+-- Messages the game refused, such as in combat or when throttled, to send
+-- again: after combat, or after RESEND_DELAY out of it
+local helloUnsent, stateUnsent = false, false
+local resendPending = false
+local RESEND_DELAY = 2
 
 local function Me()
     return GetUnitName("player", true)
 end
 
+-- Sends text, and says whether the game took it
 local function Send(text)
     local result = select(-1, C_ChatInfo.SendAddonMessage(BuffBot.MESSAGE_PREFIX, text, "RAID"))
     BuffBot.debug("BuffBot sent on RAID:", text, result ~= 0 and ("(failed: " .. tostring(result) .. ")") or "")
-    if result ~= 0 then unsent = text end
+    return result == 0
+end
+
+local function ScheduleResend()
+    if resendPending or InCombatLockdown() then return end
+    resendPending = true
+    C_Timer.After(RESEND_DELAY, function()
+        resendPending = false
+        BuffBot.ResendUnsent()
+    end)
 end
 
 local function SendState()
     lastStateAt = GetTime()
-    Send("BB:v" .. VERSION .. ":" .. mySlot)
+    stateUnsent = not Send("BB:v" .. VERSION .. ":" .. mySlot)
+    if stateUnsent then ScheduleResend() end
 end
 
 -- The slot is saved per character, so a /reload mid-raid can claim it again
@@ -175,7 +190,8 @@ local function SendHello()
     settling = true
     helloCount = helloCount + 1
     local count = helloCount
-    Send("BB?:v" .. VERSION .. ":" .. mySlot)
+    helloUnsent = not Send("BB?:v" .. VERSION .. ":" .. mySlot)
+    if helloUnsent then ScheduleResend() end
     HoldBlessings()
     C_Timer.After(SETTLE, function()
         Settle(count)
@@ -205,6 +221,7 @@ end
 
 local function Reset()
     active, mySlot, peers, settling, holdUntil, answerOwed = false, "-", {}, false, 0, false
+    helloUnsent, stateUnsent = false, false
     BuffBot.charConfig.SLOT = nil
 end
 
@@ -275,14 +292,16 @@ function BuffBot.OnAddonMessage(text, sender)
     BuffBot.CheckPlayerBuffs()
 end
 
--- A message the game refused, such as in combat, goes out once more after it
-function BuffBot.ResendAfterCombat()
-    if not unsent then return end
-    local text = unsent
-    unsent = nil
-    if active then
-        local result = select(-1, C_ChatInfo.SendAddonMessage(BuffBot.MESSAGE_PREFIX, text, "RAID"))
-        BuffBot.debug("BuffBot sent on RAID:", text, result ~= 0 and ("(failed: " .. tostring(result) .. ")") or "")
+-- Sends what the game refused again: a lost hello as a new hello, which
+-- carries the slot so it stands in for a lost state too, or else the state
+-- as it is now. A refused resend is retried in turn.
+function BuffBot.ResendUnsent()
+    if not active then return end
+    if helloUnsent then
+        stateUnsent = false
+        SendHello()
+    elseif stateUnsent then
+        SendState()
     end
 end
 
