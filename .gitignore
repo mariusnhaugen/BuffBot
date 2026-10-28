@@ -3,3 +3,4 @@ uinotes.lua
 # Local luarocks tree
 .luarocks/
 lua_modules/
+SESSION_RECAP.md
