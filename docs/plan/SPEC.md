@@ -247,9 +247,10 @@ restart the add-on. The collision rule handles stale saves.
   another Paladin); then Light. Your own blessing follows the dropdown.
 - **Raid, coordinating:** your slot's blessing (MW → Might or Wisdom by the
   member's role, whichever is higher on their list); Light when it does
-  nothing for them. If your slot's blessing is already on them from someone
-  else (an outsider), the next useful blessing nobody has given them, down
-  their role list, then Light. The `PALADIN_BLESSING` dropdown is ignored:
+  nothing for them, unless another Paladin holds Light's slot (then
+  nothing). If your slot's blessing is already on them from someone else
+  (an outsider), the next useful blessing nobody has given them, down their
+  role list, skipping blessings another slot covers, then Light. The `PALADIN_BLESSING` dropdown is ignored:
   you're just another member.
 - Never cast over another Paladin's blessing, even when it's fading (only
   your own buffs are refreshed early).

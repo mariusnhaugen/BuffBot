@@ -18,6 +18,12 @@
   Economy. A class with one member, or mostly out of range, gets singles.
   The order: your own buffs, then the Greater Blessings, the class missing
   the most first, then the singles.
+- **BuffBot Paladins in a raid share out the blessings.** They agree over
+  add-on messages on one blessing each for the whole raid: with two, Kings
+  and Might/Wisdom (by role); with three, Kings, Wisdom and Might; a fourth
+  gives Light. Each Paladin gives Light where their blessing does nothing.
+  The button just shows the next cast; there's nothing to set up. Your
+  self-blessing setting is ignored while you share out blessings.
 - **Blessing of Light** fills in for raid members who already have every
   blessing on their list from other Paladins.
 

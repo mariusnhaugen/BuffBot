@@ -280,6 +280,15 @@ function BuffBot.MySlot()
     return mySlot
 end
 
+-- The slots the other BuffBot Paladins in the raid hold
+function BuffBot.OtherSlots()
+    local slots = {}
+    for _, slot in pairs(peers) do
+        if slot ~= "-" then table.insert(slots, slot) end
+    end
+    return slots
+end
+
 -- Whether other BuffBot Paladins in the raid share out blessings with the player
 function BuffBot.Coordinating()
     return active and next(peers) ~= nil

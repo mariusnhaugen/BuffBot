@@ -238,7 +238,80 @@ describe("coordination messages", function()
             h:receive("Zed Peer", "BB?:v1:-")
             assert.is_nil(h:shown())
             h:settle()
-            assert.equal("Blessing of Might", h:shown())
+            -- Tester now holds Kings, with Zed on Might/Wisdom
+            assert.equal("Blessing of Kings", h:shown())
+        end)
+    end)
+
+    describe("slots", function()
+        local ALL = {
+            "Blessing of Might", "Blessing of Wisdom", "Blessing of Kings", "Blessing of Light",
+            "Greater Blessing of Might", "Greater Blessing of Wisdom", "Greater Blessing of Kings",
+            "Greater Blessing of Light", "Reagent Economy",
+        }
+
+        -- Tester in a raid with Warriors (raid3, raid4) and Priests (raid5,
+        -- raid6) after the other BuffBot Paladins, who announce slots
+        local function slotted(slots, opts)
+            opts = opts or {}
+            opts.known = ALL
+            local h = paladin(opts)
+            local members, names = {}, {}
+            for name in pairs(slots) do table.insert(names, name) end
+            table.sort(names)
+            for _, name in ipairs(names) do table.insert(members, { class = "PALADIN", name = name }) end
+            for _, class in ipairs({ "WARRIOR", "WARRIOR", "PRIEST", "PRIEST" }) do
+                table.insert(members, { class = class })
+            end
+            h:joinRaid(members)
+            for _, name in ipairs(names) do h:receive(name, "BB:v1:" .. slots[name]) end
+            h:settle()
+            return h
+        end
+
+        it("gives Kings to everyone from Kings' slot", function()
+            local h = slotted({ ["Zed Peer"] = "MW" })
+            assert.equal("K", h.ns.MySlot())
+            assert.same({ "Greater Blessing of Kings > raid3", "Greater Blessing of Kings > raid5",
+                "Greater Blessing of Kings" }, h:buffUp())
+        end)
+
+        it("gives Might or Wisdom by role from Might/Wisdom's slot, ignoring the setting", function()
+            local h = slotted({ ["Ann Peer"] = "K" }, { config = { PALADIN_BLESSING = "Blessing of Kings" } })
+            assert.equal("MW", h.ns.MySlot())
+            assert.same({ "Greater Blessing of Might > raid3", "Greater Blessing of Wisdom > raid5",
+                "Greater Blessing of Wisdom" }, h:buffUp())
+        end)
+
+        it("gives Light where Wisdom's slot does nothing", function()
+            local h = slotted({ ["Ann Peer"] = "K", ["Zed Peer"] = "M" })
+            assert.equal("W", h.ns.MySlot())
+            -- The three Paladins are missing the most, so go first
+            assert.same({ "Greater Blessing of Wisdom", "Greater Blessing of Light > raid4",
+                "Greater Blessing of Wisdom > raid6" }, h:buffUp())
+        end)
+
+        it("leaves Light to Light's slot", function()
+            local h = slotted({ ["Ann Peer"] = "K", ["Bob Peer"] = "M", ["Zed Peer"] = "L" })
+            assert.equal("W", h.ns.MySlot())
+            assert.same({ "Greater Blessing of Wisdom", "Greater Blessing of Wisdom > raid7" }, h:buffUp())
+        end)
+
+        it("gives the next uncovered blessing, then Light, when another Paladin's is there", function()
+            local h = slotted({ ["Ann Peer"] = "K" })
+            h:give("Blessing of Wisdom", { unit = "raid5", fromPlayer = false })
+            -- One Greater for the other Priest ties with one single, so the Greater wins
+            assert.same({ "Greater Blessing of Might > raid3", "Greater Blessing of Wisdom",
+                "Greater Blessing of Wisdom > raid6", "Blessing of Light > raid5" }, h:buffUp())
+        end)
+
+        it("falls back to the lone Paladin's lists as a reserve", function()
+            local h = slotted({ ["Ann Peer"] = "K", ["Bob Peer"] = "W", ["Zed Peer"] = "M", ["Cid Peer"] = "L" })
+            assert.equal("-", h.ns.MySlot())
+            assert.is_false(h.ns.Coordinating() and h.ns.MySlot() ~= "-")
+            -- Like a lone raid Paladin: the Paladins' Greater Wisdom, own Might after it
+            assert.equal("Greater Blessing of Wisdom", h:shown())
+            assert.equal("Blessing of Might", h:suggestions()[#h:suggestions()])
         end)
     end)
 end)

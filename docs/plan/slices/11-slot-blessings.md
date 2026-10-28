@@ -11,8 +11,8 @@ With 2+ BuffBot Paladins, each one casts their slot's blessing raid-wide, with L
 - Tests: K holder gives Greater Kings everywhere; MW holder gives Greater Might to Warriors and Greater Wisdom to Priests; W holder (3 Paladins) gives Light to Warriors; an outsider's Wisdom on one Priest makes that Priest an exception; the dropdown is ignored for yourself.
 
 ## Acceptance criteria
-- [ ] `export PATH="$HOME/.luarocks/bin:$PATH"; busted && luacheck .` passes
-- [ ] Conventional Commit(s), split by concern
+- [x] `export PATH="$HOME/.luarocks/bin:$PATH"; busted && luacheck .` passes
+- [x] Conventional Commit(s), split by concern
 
 ## Notes / risks
 Handover: blessings already up stay until due (existing `BlessingFor` rule).

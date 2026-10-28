@@ -13,7 +13,7 @@ Built on `release/2.5`, one slice at a time with `/slice next`. Design: `SPEC.md
 - [x] 08 message-mocks (MUST, ~30m) — prefix lives in BuffBot.MESSAGE_PREFIX (EventFunctions.lua); the CHAT_MSG_ADDON stub only prints in debug mode; mock specs in messages_spec.lua
 - [x] 09 slot-rules (MUST, ~40m) — event kinds settle/claim/peerLeft documented in SPEC; slice 10 must record a hello's slot only if nobody else holds it
 - [x] 10 protocol-wiring (MUST, ~40m) — SPEC changed: hello when starting to take part, not on every PLAYER_ENTERING_WORLD; answers skipped when a state already went out; specs in protocol_spec.lua, h:settle() added after Paladin raid joins in older specs
-- [ ] 11 slot-blessings (MUST, ~30m)
+- [x] 11 slot-blessings (MUST, ~30m) — SPEC: the Light filler yields to Light's slot, and the outsider fallback skips blessings other slots cover; reserves race the slot holders on the per-member fallback (as designed)
 - [ ] 12 reload-restore (MUST, ~20m)
 - [ ] 13 multi-client (MUST, ~40m)
 - [ ] 14 detect-markers (SHOULD, ~20m)

@@ -150,15 +150,48 @@ local function BlessingFree(unit, blessing)
     return aura == nil or aura.sourceUnit == "player"
 end
 
+-- The blessing each slot gives a member with this list: Might/Wisdom gives
+-- whichever the list ranks higher. nil when it gives neither.
+local SLOT_BLESSINGS = { K = KINGS, W = WISDOM, M = MIGHT, L = LIGHT }
+local function SlotBlessing(slot, list)
+    if slot ~= "MW" then return SLOT_BLESSINGS[slot] end
+    local might, wisdom = BuffBot.IndexOf(MIGHT, list), BuffBot.IndexOf(WISDOM, list)
+    if might and (not wisdom or might < wisdom) then return MIGHT end
+    if wisdom then return WISDOM end
+end
+
+-- The blessing a member gets from the player while BuffBot Paladins share out
+-- slots: the slot's blessing. When it does nothing for them, Light, unless
+-- another Paladin holds Light's slot. When another Paladin (outside BuffBot)
+-- already gave it, the next one on their list that no slot covers, then Light.
+local function SlotBlessingFor(unit, list)
+    local covered = {}
+    for _, slot in ipairs(BuffBot.OtherSlots()) do
+        local blessing = SlotBlessing(slot, list)
+        if blessing then covered[blessing] = true end
+    end
+    local mine = SlotBlessing(BuffBot.MySlot(), list)
+    if mine and (mine == LIGHT or BuffBot.IndexOf(mine, list)) then
+        if BlessingFree(unit, mine) then return mine end
+        for _, blessing in ipairs(list) do
+            if not covered[blessing] and BlessingFree(unit, blessing) then return blessing end
+        end
+    end
+    if not covered[LIGHT] and BlessingFree(unit, LIGHT) then return LIGHT end
+end
+
 -- The blessing a unit gets from the player, or nil when every blessing on
 -- their list is learned by nobody or already given by other Paladins. The
 -- player's blessing on them stands until it's due, then the list decides
 -- again; on the player, the one picked in the settings takes over as soon as
 -- it's free. A Greater Blessing went on for the class, not the member, so it
 -- only counts when the list still picks it. In a raid, the list is the
--- member's role's, with Light last.
+-- member's role's, with Light last. With a slot among other BuffBot
+-- Paladins, the slot decides, and the player is just another member.
 function BuffBot.BlessingFor(unit)
-    local isPlayer, inRaid = unit == "player", IsInRaid()
+    local inRaid = IsInRaid()
+    local slotted = inRaid and BuffBot.Coordinating() and BuffBot.MySlot() ~= "-"
+    local isPlayer = unit == "player" and not slotted
     local list = BuffBot.BlessingPriority[select(2, UnitClass(unit))] or {}
     if inRaid then
         list = BuffBot.RoleLists[BuffBot.RoleOf(unit)] or {}
@@ -167,11 +200,6 @@ function BuffBot.BlessingFor(unit)
         list = { BuffBot.config.PALADIN_BLESSING }
         for _, blessing in ipairs(BuffBot.BlessingPriority.PALADIN) do table.insert(list, blessing) end
     end
-    if inRaid then
-        list = { unpack(list) }
-        table.insert(list, LIGHT)
-    end
-
     for blessing in pairs(BuffBot.Blessings) do
         local aura, greater = BlessingAura(unit, blessing)
         if aura and aura.sourceUnit == "player" then
@@ -179,6 +207,11 @@ function BuffBot.BlessingFor(unit)
             local switch = isPlayer and blessing ~= list[1] and BlessingFree(unit, list[1])
             if stands and not switch then return blessing end
         end
+    end
+    if slotted then return SlotBlessingFor(unit, list) end
+    if inRaid then
+        list = { unpack(list) }
+        table.insert(list, LIGHT)
     end
     for _, blessing in ipairs(list) do
         if BlessingFree(unit, blessing) then return blessing end
