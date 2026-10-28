@@ -161,6 +161,8 @@ client derives *decisions* locally from the same rules. No negotiation.
   buffing back on. Zoning doesn't restart the add-on, so it sends nothing.
 - An answer (state) to every hello, after a random 0–2 s delay, unless the
   player already sent their state since the hello (a slot change does that).
+  A Paladin whose own hello is still settling answers at its settle instead,
+  once, even if its slot didn't change.
 - State whenever your own slot changes.
 - A send that doesn't return `0` (e.g. `AddOnMessageLockdown` in combat)
   is retried once on `PLAYER_REGEN_ENABLED`.

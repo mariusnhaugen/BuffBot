@@ -105,6 +105,28 @@ describe("coordination messages", function()
             assert.same({ "BB:v1:W" }, h:sent())
         end)
 
+        it("answers a hello heard while settling at the settle, once", function()
+            local h = paladin()
+            raid(h, { "Zed Peer" })
+            h:receive("Zed Peer", "BB?:v1:-")
+            h.state:advance(2)
+            assert.same({ "BB?:v1:-" }, h:sent())
+            h:settle()
+            assert.same({ "BB?:v1:-", "BB:v1:K" }, h:sent())
+        end)
+
+        it("answers a hello heard while settling even when its slot doesn't change", function()
+            local h = paladin()
+            raid(h, { "Ann Peer", "Bob Peer", "Cid Peer", "Dan Peer", "Zed Peer" })
+            for name, slot in pairs({ ["Ann Peer"] = "K", ["Bob Peer"] = "W", ["Cid Peer"] = "M", ["Dan Peer"] = "L" }) do
+                h:receive(name, "BB:v1:" .. slot)
+            end
+            h:receive("Zed Peer", "BB?:v1:-")
+            h:settle()
+            assert.equal("-", h.ns.MySlot())
+            assert.same({ "BB?:v1:-", "BB:v1:-" }, h:sent())
+        end)
+
         it("splits Might/Wisdom when a third Paladin says hello", function()
             local h = settled({ "Ann Peer", "Zed Peer" })
             h:receive("Ann Peer", "BB:v1:K")

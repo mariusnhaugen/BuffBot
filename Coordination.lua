@@ -129,6 +129,7 @@ local settling = false -- the player's own hello is waiting for answers
 local helloCount = 0 -- so an old hello's settle timer does nothing
 local holdUntil = 0 -- blessings wait until then, after a hello
 local lastStateAt = -1 -- when the player last sent their state
+local answerOwed = false -- a hello came in while the player's own was settling
 local unsent -- a message the game refused, to send again after combat
 
 local function Me()
@@ -159,10 +160,15 @@ local function HoldBlessings()
     C_Timer.After(SETTLE, BuffBot.CheckPlayerBuffs)
 end
 
+-- Ends the player's own hello. Hellos that came in meanwhile get the state
+-- now, once, even when the slot didn't change.
 local function Settle(count)
     if count ~= helloCount or not active then return end
     settling = false
+    local sentBefore = lastStateAt
     SetSlot(BuffBot.NextSlot(Me(), mySlot, peers, { kind = "settle" }))
+    if answerOwed and lastStateAt == sentBefore then SendState() end
+    answerOwed = false
 end
 
 local function SendHello()
@@ -198,7 +204,7 @@ local function CanTakePart()
 end
 
 local function Reset()
-    active, mySlot, peers, settling, holdUntil = false, "-", {}, false, 0
+    active, mySlot, peers, settling, holdUntil, answerOwed = false, "-", {}, false, 0, false
     BuffBot.charConfig.SLOT = nil
 end
 
@@ -253,7 +259,13 @@ function BuffBot.OnAddonMessage(text, sender)
         peers[sender] = HeldByOther(slot, sender) and "-" or slot
         local heardAt = GetTime()
         C_Timer.After(math.random() * ANSWER_DELAY, function()
-            if active and lastStateAt < heardAt then SendState() end
+            if not active or lastStateAt >= heardAt then return end
+            -- While settling, the slot may still change: answer at the settle
+            if settling then
+                answerOwed = true
+            else
+                SendState()
+            end
         end)
         HoldBlessings()
     else
