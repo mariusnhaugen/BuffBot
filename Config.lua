@@ -134,14 +134,14 @@ function BuffBot.RegisterSettings()
     local tracker = addSetting("TRACKER", Settings.VarType.String, "Auto tracking", function()
         local value = BuffBot.charConfig.TRACKER
         if value == "Off" then return end
-        BuffBot.UpdateTracking(value ~= "" and value or BuffBot.DefaultTracker())
+        BuffBot.CastMissingTrackers(value ~= "" and value or BuffBot.GetDefaultTracker())
     end, BuffBot.charConfig, BuffBot.GetDefaultCharConfig().TRACKER)
     local function trackerOptions()
         local container = Settings.CreateControlTextContainer()
-        local default = BuffBot.DefaultTracker()
+        local default = BuffBot.GetDefaultTracker()
         container:Add("", "Default (" .. (default and BuffBot.SpellName(default) or "Off") .. ")")
         for _, key in ipairs(BuffBot.Trackers) do
-            if BuffBot.KnowsTracker(key) then container:Add(key, BuffBot.SpellName(key)) end
+            if BuffBot.IsTrackerKnown(key) then container:Add(key, BuffBot.SpellName(key)) end
         end
         container:Add("Off", "Off")
         return container:GetData()
@@ -150,7 +150,7 @@ function BuffBot.RegisterSettings()
         "Turned back on after you die or log in. Default will pick up when you learn a profession. Prio list: Find Minerals > Herbs > Track Beasts. Saved per character. Triggers a global cooldown.")
     addCheckbox("TRACK_TREASURE", "Auto Find Treasure",
         "For Dwarves: Automatically cast Find Treasure. Triggers a 2nd global cooldown.",
-        function() BuffBot.UpdateTracking() end)
+        function() BuffBot.CastMissingTrackers() end)
 
     layout:AddInitializer(CreateSettingsListSectionHeaderInitializer("Group"))
 

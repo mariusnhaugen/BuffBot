@@ -58,7 +58,7 @@ end
 
 function events:SPELLS_CHANGED()
     BuffBot.UpdateClassBuffList()
-    BuffBot.TrackingSpellsChanged()
+    BuffBot.CheckForLearnedTrackers()
 end
 
 -- Fires on most power changes, so only re-tint while the button is up
@@ -74,12 +74,12 @@ end
 
 function events:PLAYER_ALIVE()
     BuffBot.CheckPlayerBuffs()
-    BuffBot.UpdateTracking()
+    BuffBot.CastMissingTrackers()
 end
 
 function events:PLAYER_UNGHOST()
     BuffBot.CheckPlayerBuffs()
-    BuffBot.UpdateTracking()
+    BuffBot.CastMissingTrackers()
 end
 
 -- Zoning, which includes entering or leaving a battleground, where tracking
@@ -87,7 +87,7 @@ end
 function events:PLAYER_ENTERING_WORLD(isInitialLogin)
     BuffBot.EnteredWorld(isInitialLogin)
     BuffBot.CheckPlayerBuffs()
-    BuffBot.UpdateTracking()
+    BuffBot.CastMissingTrackers()
 end
 
 -- These fire before UnitOnTaxi changes, so re-check a moment later
@@ -118,7 +118,7 @@ function events:PLAYER_REGEN_ENABLED()
     BuffBot.ResendUnsent()
     BuffBot.StartInspecting()
     BuffBot.CheckPlayerBuffs()
-    BuffBot.ResumeTracking()
+    BuffBot.ResumeTrackingAfterCombat()
 end
 
 function events:PLAYER_REGEN_DISABLED()
