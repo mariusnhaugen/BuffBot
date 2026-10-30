@@ -97,6 +97,12 @@ commit.
   own), and sending manual roles to the other Paladins. Short of that, a
   Paladin who finds Light already given by a BuffBot Paladin could give its
   slot's blessing anyway.
+- 38. A role whose blessing the class can't use gives nothing. `/bb role`
+  takes any role for any class, and the class skip list (`SkipOnClass`)
+  still applies after the role's list picks a blessing. A Mage set to
+  `melee` is picked Might, which `CanSeeUnit` then drops, so they get no
+  blessing from that Paladin instead of Kings. Fix: leave out blessings the
+  class can't use when `BlessingFor` builds the role's list.
 
 ## Decided against
 

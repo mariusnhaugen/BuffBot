@@ -114,6 +114,14 @@ Die in a battleground: nothing is cast there. Tracking comes back on after leavi
 
 Result:
 
+### Spell and item IDs for raid roles and Greater Blessings
+
+The IDs are Classic's. Each should print the English name. If Symbol of Kings is wrong, Greater Blessings never come up without Reagent Economy; if an aura's is wrong, Druids fall through to Inspect.
+
+`/dump C_Spell.GetSpellInfo(24858).name, C_Spell.GetSpellInfo(24907).name, C_Spell.GetSpellInfo(24932).name, C_Item.GetItemNameByID(21177)` should print Moonkin Form, Moonkin Aura, Leader of the Pack, Symbol of Kings
+
+Result:
+
 ## Test at launch
 
 Checks that can't be run on the beta, or are still waiting for a tester. The steps are in each check above. Tick one off once it has passed on the live servers, and write its result above.
@@ -142,6 +150,7 @@ For 2.5 (raid coordination, `docs/plan/SPEC.md`). Run in a raid unless noted; Gr
 - [ ] Goodbye: with three BuffBot Paladins, one turns "Buff your group" off; the others' `/bb raid` drops them and the slots close up. Turning it back on brings them back with a slot
 - [ ] [Raid blessings](#raid-blessings-25-at-level-60): the in-game run of 2.5 with two to four Paladins
 - [ ] [Raid blessing handovers](#raid-blessing-handovers-25-at-level-60): goodbye, reserves, waiting out an old holder's blessing, a joiner the roster doesn't show yet, and two Paladins on one slot
+- [ ] [Spell and item IDs for raid roles and Greater Blessings](#spell-and-item-ids-for-raid-roles-and-greater-blessings): Moonkin Form, Moonkin Aura, Leader of the Pack, Symbol of Kings
 - [ ] Sanctuary is gone from Forever (TODO 21)
 - [ ] Keybind on the settings page: `/dump C_KeyBindings.GetBindingIndex("CLICK BUFFBOT_MacroButton:LeftButton")` prints a number, and `/bb` shows a BuffBot Cast keybind row at the top. Set a key there: it casts, shows under Key Bindings > AddOns, and survives `/reload`. If the row is missing or broken, fall back to a button that calls `SetBindingClick` and `SaveBindings` (TODO 35)
 - [ ] Battlegrounds, for a later PvP release: which channel (`RAID` or `INSTANCE_CHAT`) reaches a battleground raid
