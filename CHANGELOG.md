@@ -2,50 +2,54 @@
 
 ## 2.5.0
 
+Massive Paladin buffing in raids release. TLDR: Automated role based coordination between several paladins.
+
+Only works for paladins with it installed. Reconciliation for other classes and proper fallback planned for later releases, not really sure what I want the user experience to be yet.
+
 ### New
 
-- **BuffBot Paladins in a raid share out the blessings.** They agree over
-  add-on messages on one blessing each for the whole raid: with two, Kings
-  and Might or Wisdom (whichever the member's role wants); with three,
-  Kings, Wisdom and Might; a fourth gives Light, and any more wait quietly
-  as reserves for a free slot. Each Paladin gives Light where their blessing
-  does nothing. There's nothing to set up: the button shows the next cast.
-  Your self-blessing setting is ignored while you share out blessings.
-  Paladins without BuffBot are worked around, never cast over. Turning off
-  "Buff your group" hands your blessing to another Paladin straight away.
-- **Greater Blessings in a raid.** One per class, for the blessing most of
-  the class gets, then single blessings for members who need a different
-  one, such as a Feral Druid among Restos. Needs Symbol of Kings or Reagent
-  Economy. A class with one member, or mostly out of range, gets singles.
-  The order: your own buffs (your blessing too, unless your class gets a
-  Greater Blessing), then the Greater Blessings, the class missing the most
-  first, then the singles. The text under the button names the
-  class: "Greater Blessing of Wisdom > Priests".
-- **In a raid, blessings follow each member's role.** Tanks get Kings, then
-  Might; melee Might, then Kings; ranged Kings, Wisdom, then Might; casters
-  and healers Wisdom, then Kings. Parties keep the class lists. A role
-  comes from, in order:
-  - `/bb role` (below)
+- **The cast keybind can now also be set on the settings page**, at the top, as
+  well as under Key Bindings > AddOns.
+
+- **BuffBot Paladins in a raid share out the blessings.** 
+  They agree over add-on messages on one blessing each for the whole raid:
+  - 2 paladins: Kings and Might or Wisdom (whichever the member's role wants);
+  - 3 paladins: Kings, Wisdom and Might. Light as a fallback.
+  - 4 paladins: gives Light, and any more wait quietly on the bench.
+  - Each Paladin gives Light where their blessing does nothing. The self blessing is ignored in raids. 
+  - Turning off "Buff your group" takes you out of the rotation: You only buff yourself (selfishly) and other paladins pick up your buff. (If there are any)
+
+- **Smart targeting** The addon will try to optimize for fewest casts when dealing with exceptions, so 2 Resto druids and a Feral will get a Greater Blessing of Wisdom, and a prompt to Might the feral.
+  Checks for Symbol of Kings or Reagent Economy before recommending Greaters. A class with one member, or mostly out of range, gets singles.
+  
+- **Buff Ordering**  
+  - your own buffs 
+  - Greater Blessings 
+  - Singles (Exceptions to Greaters)
+
+- **In a raid, blessings follow each member's role.** 
+  - Tanks: Kings>Might>Light 
+  - Melee: Might>Kings>Light 
+  - Ranged (Hunters): Kings>Wisdom>Might>Light
+  - Casters/Healers: Wisdom>Kings>Light
+
+- **Spec detection attempts to determine roles, your own included.**
+  Parties keep the class lists. A role comes from, in order:
+  - Manual overrides using `/bb role` (below)
   - the main-tank mark, or the group's tank and healer roles
   - talent auras: Druids in Moonkin Form are casters, Druids with their
-    own Leader of the Pack melee
+    own Leader of the Pack are melee.
   - talents, read by inspecting Druids, Shamans and Paladins (and Warriors
-    when nobody is marked main tank) out of combat, one every 1.5 seconds
-  - the class: Warriors and Rogues melee, Hunters ranged, Mages and
-    Warlocks casters, Priests, Druids, Shamans and Paladins healers.
+    when nobody is marked main tank) out of combat.
 
-  Spec detection attempts to determine roles, your own included.
-- **Blessing of Light**, as the blessing a Paladin gives when nothing else
-  on a raid member's list is left.
-- **`/bb role <name> <role>`** sets a raid member's role (tank, melee,
-  ranged, caster or healer), e.g. `/bb role oak melee` for a Feral Druid.
-  Part of the name will do. `/bb role <name>` clears it. Roles are saved
-  for your account.
+- **`/bb role <name> <role>`** 
+  Where the spec detection has made a mistake, manual overrides are possible.
+  the roles are: tank, melee, ranged, caster or healer e.g. `/bb role timmy melee` for a Feral Druid.
+  `/bb role <name>` clears it. Roles are saved for your account.
+  Sharing of manual overrides are coming in a future release. Hopefully the usefulness of this will diminish over time. 
 - **`/bb raid`** shows which blessing each BuffBot Paladin gives, the
   Paladins not on BuffBot, and every raid member's role and where it came
   from.
-- **The cast keybind can be set on the settings page**, at the top, as
-  well as under Key Bindings > AddOns.
 
 ### Changed
 
