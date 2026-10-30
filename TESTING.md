@@ -87,6 +87,21 @@ Needs a raid, and for sharing, two to four Paladins on BuffBot 2.5 (`/bb debug` 
 
 Result:
 
+### Raid blessing handovers (2.5, at level 60)
+
+Needs a raid with three BuffBot 2.5 Paladins (call them Ann, Bob and Cid, sorted by name) and a Warrior, plus a fourth and fifth for the reserve check. Turn `/bb debug` on everywhere: it prints each message sent. `/bb raid` shows who holds which slot. Expect Ann Kings, Bob Wisdom, Cid Might.
+
+1. **Goodbye.** Bob turns "Buff your group" off in `/bb`. Bob's chat shows `BB!:v1:-`. Within a second, Ann's and Cid's `/bb raid` drops Bob, and Cid takes Might and Wisdom. Bob turns it back on: Bob sends `BB?:v1:-` and gets a slot back, and the others agree on the slots.
+2. **Reserve.** A fourth Paladin joins and gets Light. A fifth waits as a reserve: their button shows no raid blessings, only self-buffs and auras. When a Paladin with a slot leaves, the reserve takes it.
+3. **Kings from a Paladin who left.** With the Warrior wearing Ann's Kings, Ann leaves the raid. Cid takes Kings and Bob takes Might and Wisdom. First, on Cid, `/dump C_UnitAuras.GetAuraDataBySpellName("raidN", "Greater Blessing of Kings").sourceUnit` for the Warrior's unit prints `nil` or something other than a raid unit. Cid's button doesn't offer Light or another blessing for the Warrior while Ann's Kings is up, and offers Kings once it runs out (right-click it off the Warrior to skip the wait).
+4. **Might from before a slot change.** Back to three. Cid's Might is on the Warrior. Cid leaves: Bob now holds Might and Wisdom, and isn't offered Light for the Warrior while Cid's Might is up. Then Cid rejoins and gets Might back. If Bob's blessing went on the Warrior meanwhile, Cid waits for it to run out too.
+5. **Joining straight away.** Invite a Paladin who already has BuffBot: within about 2 seconds of them joining, everyone's `/bb raid` lists them with a slot, without a `/reload`.
+6. **Two Paladins on one slot.** Hard to force. If `/bb raid` ever shows two Paladins with the same slot, the first by name sends its state again (`BB:v1:<slot>` in its chat) and the other moves within a second.
+
+No Lua errors throughout (`/console scriptErrors 1`).
+
+Result:
+
 ### Group versions and reagents (at the level of the group buffs)
 
 Untestable while the beta is capped. With two or more party members missing a buff and the reagent in the bags (or Reagent Economy), the button casts the group version on the first of them, and it covers the party. Without either it casts single-target. The reagent check takes any reagent for the buff, so a rank 2 caster holding only the rank 1 reagent (Wild Berries, Holy Candle) may get "Missing reagent".
@@ -126,6 +141,7 @@ For 2.5 (raid coordination, `docs/plan/SPEC.md`). Run in a raid unless noted; Gr
 - [ ] Blessings from a Paladin who left: after a Paladin leaves the raid, `/dump C_UnitAuras.GetAuraDataBySpellName("raid1", "Blessing of Kings").sourceUnit` on a member with their Kings prints `nil` or a unit outside the raid (such as a nameplate), never a raid unit. The new Kings holder relies on it to wait for the old Kings to run out instead of giving Light
 - [ ] Goodbye: with three BuffBot Paladins, one turns "Buff your group" off; the others' `/bb raid` drops them and the slots close up. Turning it back on brings them back with a slot
 - [ ] [Raid blessings](#raid-blessings-25-at-level-60): the in-game run of 2.5 with two to four Paladins
+- [ ] [Raid blessing handovers](#raid-blessing-handovers-25-at-level-60): goodbye, reserves, waiting out an old holder's blessing, a joiner the roster doesn't show yet, and two Paladins on one slot
 - [ ] Sanctuary is gone from Forever (TODO 21)
 - [ ] Keybind on the settings page: `/dump C_KeyBindings.GetBindingIndex("CLICK BUFFBOT_MacroButton:LeftButton")` prints a number, and `/bb` shows a BuffBot Cast keybind row at the top. Set a key there: it casts, shows under Key Bindings > AddOns, and survives `/reload`. If the row is missing or broken, fall back to a button that calls `SetBindingClick` and `SaveBindings` (TODO 35)
 - [ ] Battlegrounds, for a later PvP release: which channel (`RAID` or `INSTANCE_CHAT`) reaches a battleground raid
