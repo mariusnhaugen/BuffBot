@@ -150,6 +150,7 @@ Prefix `"BuffBot"` (registered on load), channel `"RAID"`.
 ```
 BB:v1:<slot>     state: the slot I hold        e.g. BB:v1:MW
 BB?:v1:<slot>    hello: everyone answer with state   e.g. BB?:v1:-
+BB!:v1:-         goodbye: I stopped buffing the group
 ```
 
 `<slot>` is `K`, `W`, `M`, `MW`, `L` or `-`. A message with another version
@@ -165,11 +166,18 @@ client derives *decisions* locally from the same rules. No negotiation.
   A Paladin whose own hello is still settling answers at its settle instead,
   once, even if its slot didn't change.
 - State whenever your own slot changes.
+- State again when a state claims the slot you hold and you keep it (you sort
+  first), so the claimant gives way. It may have missed or dropped you.
+- Goodbye when the player stops taking part while still in the raid
+  (turning group buffing off). Receivers treat it as the Paladin leaving.
+  Sent once; not retried.
+- A message from a sender the roster doesn't show yet (just joined) is tried
+  once more after 2 s.
 - A send that doesn't return `0` (e.g. `AddOnMessageLockdown` in combat) is
   retried on `PLAYER_REGEN_ENABLED`, or after 2 s out of combat, until it goes
   out. A lost hello goes out as a new hello (it carries the slot, so it also
   covers a lost state); a lost state goes out as the slot held at the time.
-- No timers otherwise. A newcomer costs 1 hello + 1 answer per Paladin, well
+- No other timers. A newcomer costs 1 hello + 1 answer per Paladin, well
   under the 10-message burst (excess is dropped, not queued).
 
 **Settle window:** after a hello, wait ~3 s for answers, then compute. Seeing
@@ -191,8 +199,8 @@ battleground or arena, and every non-Paladin.
   settled by name sort. The loser takes the first free slot or becomes a
   reserve, and re-announces.
 - **Reserves:** a freed slot goes to the first reserve by name sort. Until
-  then a reserve buffs as an outsider would (self-buffs plus the per-member
-  fallback).
+  then a reserve gives no raid blessings (self-buffs and auras only), so its
+  button stays out of the way.
 - **A Paladin leaving** (leaves the raid, or goes offline: `UNIT_CONNECTION`,
   since `GROUP_ROSTER_UPDATE` doesn't fire for it) frees their slot. Dying doesn't. Being elsewhere (in town, hearthed) doesn't.
 - **Shrink (Q29):** a reserve fills the freed slot first, and nothing merges.
@@ -201,10 +209,14 @@ battleground or arena, and every non-Paladin.
   - 3 → 2: M leaves → W becomes MW; W leaves → M becomes MW; K leaves → the M
     holder takes K and the W holder becomes MW.
   - 2 → 1: the last Paladin drops coordination.
-- **Opting out mid-raid (Q30):** not handled. A holder who turns group
-  buffing off keeps the slot in others' view until they leave or go offline.
+- **Opting out mid-raid (Q30):** turning group buffing off sends a goodbye,
+  which frees the slot as if the Paladin had left. Turning it back on sends a
+  hello at `-`, like joining.
 - **Handover:** the old owner's blessings stay until due; then the new owner
-  casts. Nothing that's up is overwritten.
+  casts. Nothing that's up is overwritten, and the new owner doesn't fill in
+  with another blessing or Light meanwhile. This covers a BuffBot Paladin's
+  blessing from before a slot change and one from a Paladin who has left the
+  raid (no `sourceUnit` in the raid).
 
 **How each client applies them:** `BuffBot.NextSlot(me, mySlot, peers,
 event)` (`Coordination.lua`) is a pure function that returns the player's own
@@ -256,7 +268,7 @@ restart the add-on. The collision rule handles stale saves.
   member's role, whichever is higher on their list); Light when it does
   nothing for them, unless another Paladin holds Light's slot (then
   nothing). If your slot's blessing is already on them from someone else
-  (an outsider), the next useful blessing nobody has given them, down their
+  (an outsider still in the raid), the next useful blessing nobody has given them, down their
   role list, skipping blessings another slot covers, then Light. The `PALADIN_BLESSING` dropdown is ignored:
   you're just another member.
 - Never cast over another Paladin's blessing, even when it's fading (only
@@ -344,8 +356,8 @@ Guardian, 105 Restoration). Results stay local.
   whole raid."
 - `GROUP_BUFFING` ("Buff your group", default on) is the single opt-out for
   every class: party in a party, whole raid in a raid, own subgroup first.
-  Off: self-buffs only, and a Paladin sends no messages (counts as an
-  outsider).
+  Off: self-buffs only, and a Paladin sends a goodbye and then no messages
+  (counts as an outsider).
 - Battlegrounds and arenas: group buffing off regardless (CHANGELOG
   "Changed").
 
@@ -363,7 +375,6 @@ of the class (covered members become exceptions).
 - Respecs (TODO 32).
 - PvP: maybe later, tested on live.
 - Combat log parsing (needs a probe; retail restricts it).
-- Opting out mid-raid (Q30).
 - Sharing Inspect results over messages (trust problems, small gain).
 - A Greater/reagent flag in messages; splitting a slot by class across extra
   Paladins; a zone-based "away" rule; a settings textbox for roles.

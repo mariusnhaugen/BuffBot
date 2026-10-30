@@ -87,6 +87,16 @@ commit.
   button (`SetSize`, out of combat only), and the text changes the font
   size of the suggestion list. Both use the game's own slider, with no
   library.
+- 37. Paladins can disagree on a member's role. Each BuffBot Paladin works
+  out roles on its own: `/bb role` is saved per player, Inspect results
+  land at different times, and Kings' slot doesn't inspect at all. With
+  three Paladins, Wisdom's and Might's holders each decide who gets Light
+  from them, so if they disagree on a hybrid, both may go for Light and the
+  member misses Might or Wisdom; a manual role set by one Paladin never
+  clears up. Most of the fix is sharing roles: 33 (hybrids announce their
+  own), and sending manual roles to the other Paladins. Short of that, a
+  Paladin who finds Light already given by a BuffBot Paladin could give its
+  slot's blessing anyway.
 
 ## Decided against
 

@@ -7,8 +7,8 @@
 - **BuffBot Paladins in a raid share out the blessings.** They agree over
   add-on messages on one blessing each for the whole raid: with two, Kings
   and Might or Wisdom (whichever the member's role wants); with three,
-  Kings, Wisdom and Might; a fourth gives Light, and any more wait as
-  reserves for a free slot. Each Paladin gives Light where their blessing
+  Kings, Wisdom and Might; a fourth gives Light, and any more wait quietly
+  as reserves for a free slot. Each Paladin gives Light where their blessing
   does nothing. There's nothing to set up: the button shows the next cast.
   Your self-blessing setting is ignored while you share out blessings.
   Paladins without BuffBot are worked around, never cast over.

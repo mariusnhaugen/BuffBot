@@ -162,8 +162,10 @@ end
 
 -- The blessing a member gets from the player while BuffBot Paladins share out
 -- slots: the slot's blessing. When it does nothing for them, Light, unless
--- another Paladin holds Light's slot. When another Paladin (outside BuffBot)
--- already gave it, the next one on their list that no slot covers, then Light.
+-- another Paladin holds Light's slot. When a Paladin outside BuffBot already
+-- gave it, the next one on their list that no slot covers, then Light. When
+-- a BuffBot Paladin gave it before a handover, or a Paladin who has left the
+-- raid, nothing until it runs out.
 local function SlotBlessingFor(unit, list)
     local covered = {}
     for _, slot in ipairs(BuffBot.OtherSlots()) do
@@ -173,6 +175,8 @@ local function SlotBlessingFor(unit, list)
     local mine = SlotBlessing(BuffBot.MySlot(), list)
     if mine and (mine == LIGHT or BuffBot.IndexOf(mine, list)) then
         if BlessingFree(unit, mine) then return mine end
+        local aura = BlessingAura(unit, mine)
+        if aura and not BuffBot.IsOutsider(aura.sourceUnit) then return nil end
         for _, blessing in ipairs(list) do
             if not covered[blessing] and BlessingFree(unit, blessing) then return blessing end
         end
@@ -187,10 +191,13 @@ end
 -- it's free. A Greater Blessing went on for the class, not the member, so it
 -- only counts when the list still picks it. In a raid, the list is the
 -- member's role's, with Light last. With a slot among other BuffBot
--- Paladins, the slot decides, and the player is just another member.
+-- Paladins, the slot decides, and the player is just another member; a
+-- reserve gives none.
 function BuffBot.BlessingFor(unit)
     local inRaid = IsInRaid()
-    local slotted = inRaid and BuffBot.Coordinating() and BuffBot.MySlot() ~= "-"
+    local slotted = inRaid and BuffBot.Coordinating()
+    -- A reserve leaves the raid's blessings to the Paladins with slots
+    if slotted and BuffBot.MySlot() == "-" then return nil end
     local isPlayer = unit == "player" and not slotted
     local list = BuffBot.BlessingPriority[select(2, UnitClass(unit))] or {}
     if inRaid then

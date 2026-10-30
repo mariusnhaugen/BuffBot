@@ -123,6 +123,8 @@ For 2.5 (raid coordination, `docs/plan/SPEC.md`). Run in a raid unless noted; Gr
 - [ ] Greater Blessings: they cover every raid member of the target's class (not just the subgroup), reach 40 yd, last 60 minutes, and replace the same Paladin's single blessing on that class
 - [ ] Light: Blessing of Light (19977) and Greater Blessing of Light (25890) are the right IDs, and Light stacks with Might, Wisdom and Kings from other Paladins
 - [ ] Two Paladins' blessings stacking in a raid: different blessings from two Paladins both stay on one member
+- [ ] Blessings from a Paladin who left: after a Paladin leaves the raid, `/dump C_UnitAuras.GetAuraDataBySpellName("raid1", "Blessing of Kings").sourceUnit` on a member with their Kings prints `nil` or a unit outside the raid (such as a nameplate), never a raid unit. The new Kings holder relies on it to wait for the old Kings to run out instead of giving Light
+- [ ] Goodbye: with three BuffBot Paladins, one turns "Buff your group" off; the others' `/bb raid` drops them and the slots close up. Turning it back on brings them back with a slot
 - [ ] [Raid blessings](#raid-blessings-25-at-level-60): the in-game run of 2.5 with two to four Paladins
 - [ ] Sanctuary is gone from Forever (TODO 21)
 - [ ] Keybind on the settings page: `/dump C_KeyBindings.GetBindingIndex("CLICK BUFFBOT_MacroButton:LeftButton")` prints a number, and `/bb` shows a BuffBot Cast keybind row at the top. Set a key there: it casts, shows under Key Bindings > AddOns, and survives `/reload`. If the row is missing or broken, fall back to a button that calls `SetBindingClick` and `SaveBindings` (TODO 35)

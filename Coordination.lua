@@ -135,6 +135,13 @@ local answerOwed = false -- a hello came in while the player's own was settling
 local helloUnsent, stateUnsent = false, false
 local resendPending = false
 local RESEND_DELAY = 2
+local ROSTER_WAIT = 2 -- seconds before a message from outside the roster is tried again
+
+local function PaladinCount()
+    local count = 1
+    for _ in pairs(peers) do count = count + 1 end
+    return count
+end
 
 local function Me()
     return GetUnitName("player", true)
@@ -219,7 +226,10 @@ local function CanTakePart()
         and not BuffBot.InPvP()
 end
 
+-- Stops taking part. Still in the raid, it says goodbye, so the others free
+-- the player's slot as if they'd left.
 local function Reset()
+    if IsInRaid() then Send("BB!:v" .. VERSION .. ":-") end
     active, mySlot, peers, settling, holdUntil, answerOwed = false, "-", {}, false, 0, false
     helloUnsent, stateUnsent = false, false
     BuffBot.charConfig.SLOT = nil
@@ -257,18 +267,29 @@ local function HeldByOther(slot, sender)
     return false
 end
 
-function BuffBot.OnAddonMessage(text, sender)
-    if not active or sender == Me() or not RaidUnit(sender) then return end
-    local kind, version, slot = text:match("^(BB%??):v(%d+):(%S+)$")
-    if not kind then return end
-    if version ~= VERSION or not VALID_SLOTS[slot] then
-        -- Another version is an outsider: it holds no slot here
-        local oldSlot = peers[sender]
-        if oldSlot then
-            peers[sender] = nil
-            Recompute({ kind = "peerLeft", name = sender, slot = oldSlot })
+-- Frees a Paladin's slot as if they'd left the raid
+local function Drop(name)
+    local oldSlot = peers[name]
+    if not oldSlot then return end
+    peers[name] = nil
+    Recompute({ kind = "peerLeft", name = name, slot = oldSlot })
+end
+
+-- BB!:v1:- is a goodbye from a Paladin who stopped buffing the group
+function BuffBot.OnAddonMessage(text, sender, retried)
+    if not active or sender == Me() then return end
+    if not RaidUnit(sender) then
+        -- The roster may not show a Paladin who has just joined yet
+        if not retried then
+            C_Timer.After(ROSTER_WAIT, function() BuffBot.OnAddonMessage(text, sender, true) end)
         end
         return
+    end
+    local kind, version, slot = text:match("^(BB[%?!]?):v(%d+):(%S+)$")
+    if not kind then return end
+    if version ~= VERSION or not VALID_SLOTS[slot] or kind == "BB!" then
+        -- A goodbye, or another version (an outsider): no slot here
+        return Drop(sender)
     end
 
     if kind == "BB?" then
@@ -289,6 +310,11 @@ function BuffBot.OnAddonMessage(text, sender)
         peers[sender] = slot
     end
     Recompute({ kind = "claim", name = sender })
+    -- A claim on the player's slot that the player keeps: say so, so the
+    -- other gives way. They may have missed or dropped the player.
+    if kind == "BB" and not settling and mySlot ~= "-" and Normalize(slot, PaladinCount()) == mySlot then
+        SendState()
+    end
     BuffBot.CheckPlayerBuffs()
 end
 
@@ -370,6 +396,13 @@ function BuffBot.RaidCommand()
     end
     local waiting = BuffBot.InspectsWaiting()
     if waiting > 0 then print(waiting .. " waiting for Inspect.") end
+end
+
+-- Whether a unit is in the raid and not a BuffBot Paladin sharing out slots
+-- with the player
+function BuffBot.IsOutsider(unit)
+    local name = unit and GetUnitName(unit, true)
+    return name ~= nil and name ~= Me() and RaidUnit(name) ~= nil and not peers[name]
 end
 
 -- Whether other BuffBot Paladins in the raid share out blessings with the player
