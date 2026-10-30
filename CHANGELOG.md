@@ -11,13 +11,15 @@
   as reserves for a free slot. Each Paladin gives Light where their blessing
   does nothing. There's nothing to set up: the button shows the next cast.
   Your self-blessing setting is ignored while you share out blessings.
-  Paladins without BuffBot are worked around, never cast over.
+  Paladins without BuffBot are worked around, never cast over. Turning off
+  "Buff your group" hands your blessing to another Paladin straight away.
 - **Greater Blessings in a raid.** One per class, for the blessing most of
   the class gets, then single blessings for members who need a different
   one, such as a Feral Druid among Restos. Needs Symbol of Kings or Reagent
   Economy. A class with one member, or mostly out of range, gets singles.
-  The order: your own buffs, then the Greater Blessings, the class missing
-  the most first, then the singles. The text under the button names the
+  The order: your own buffs (your blessing too, unless your class gets a
+  Greater Blessing), then the Greater Blessings, the class missing the most
+  first, then the singles. The text under the button names the
   class: "Greater Blessing of Wisdom > Priests".
 - **In a raid, blessings follow each member's role.** Tanks get Kings, then
   Might; melee Might, then Kings; ranged Kings, Wisdom, then Might; casters
@@ -32,7 +34,7 @@
   - the class: Warriors and Rogues melee, Hunters ranged, Mages and
     Warlocks casters, Priests, Druids, Shamans and Paladins healers.
 
-  Your own role comes from your talents.
+  Spec detection attempts to determine roles, your own included.
 - **Blessing of Light**, as the blessing a Paladin gives when nothing else
   on a raid member's list is left.
 - **`/bb role <name> <role>`** sets a raid member's role (tank, melee,
@@ -54,6 +56,11 @@
 ### Removed
 
 - "Buff the whole raid". BuffBot now always covers the whole raid.
+
+### Fixed
+
+- The text under the button shows party members' full names, not only
+  their first name.
 
 ## 2.4.0
 
