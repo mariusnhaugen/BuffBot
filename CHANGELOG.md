@@ -1,5 +1,9 @@
 # BuffBot
 
+## 2.5.1
+
+Removed Blessing of Light from 2.5.0 release
+
 ## 2.5.0
 
 Massive Paladin buffing in raids release. TLDR: Automated role based coordination between several paladins.

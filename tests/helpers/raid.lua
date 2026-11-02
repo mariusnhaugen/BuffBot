@@ -9,7 +9,7 @@ local TICK = 0.1
 local Raid = {}
 Raid.__index = Raid
 
-local KNOWN = { "Blessing of Might", "Blessing of Wisdom", "Blessing of Kings", "Blessing of Light" }
+local KNOWN = { "Blessing of Might", "Blessing of Wisdom", "Blessing of Kings" }
 
 function Raid.new()
     return setmetatable({ clients = {}, order = {}, queue = {}, dropped = 0, offline = {} }, Raid)

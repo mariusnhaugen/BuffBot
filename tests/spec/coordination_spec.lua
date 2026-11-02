@@ -25,18 +25,13 @@ describe("slot rules", function()
         { "Might/Wisdom's holder keeps Wisdom", "B", "MW", { A = "K", C = "-" }, claim("C"), "W" },
         { "Kings' holder stays put", "A", "K", { B = "MW", C = "-" }, claim("C"), "K" },
         { "a newcomer first by name still takes a free slot", "A", "-", { B = "K", C = "MW" }, settle, "M" },
-        -- Fourth and fifth
-        { "a fourth takes Light", "D", "-", { A = "K", B = "W", C = "M" }, settle, "L" },
-        { "a fifth is a reserve", "E", "-", { A = "K", B = "W", C = "M", D = "L" }, settle, "-" },
-        { "a reserve stays one when others come and go", "E", "-", { A = "K", B = "W", C = "M", D = "L" }, claim("D"), "-" },
+        -- Fourth and on
+        { "a fourth is a reserve", "D", "-", { A = "K", B = "W", C = "M" }, settle, "-" },
+        { "a reserve stays one when others come and go", "E", "-", { A = "K", B = "W", C = "M", D = "-" }, claim("D"), "-" },
         -- Leaving with a reserve: the first reserve by name takes the slot
-        { "a reserve takes a freed slot", "E", "-", { A = "K", C = "M", D = "L" }, left("B", "W"), "W" },
-        { "the first reserve by name takes it", "F", "-", { A = "K", C = "M", D = "L", E = "-" }, left("B", "W"), "-" },
-        { "Light's holder stays when a reserve fills the gap", "D", "L", { A = "K", C = "M", E = "-" }, left("B", "W"), "L" },
-        { "a reserve leaving moves nobody", "A", "K", { B = "W", C = "M", D = "L" }, left("E", "-"), "K" },
-        -- 4 -> 3
-        { "Light leaving moves nobody", "C", "M", { A = "K", B = "W" }, left("D", "L"), "M" },
-        { "Light's holder fills another gap", "D", "L", { A = "K", C = "M" }, left("B", "W"), "W" },
+        { "a reserve takes a freed slot", "D", "-", { A = "K", C = "M" }, left("B", "W"), "W" },
+        { "the first reserve by name takes it", "E", "-", { A = "K", C = "M", D = "-" }, left("B", "W"), "-" },
+        { "a reserve leaving moves nobody", "A", "K", { B = "W", C = "M", D = "-" }, left("E", "-"), "K" },
         -- 3 -> 2
         { "Might leaving: Wisdom becomes Might/Wisdom", "B", "W", { A = "K" }, left("C", "M"), "MW" },
         { "Wisdom leaving: Might becomes Might/Wisdom", "C", "M", { A = "K" }, left("B", "W"), "MW" },

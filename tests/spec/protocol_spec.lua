@@ -426,6 +426,13 @@ describe("coordination messages", function()
             assert.same({ "BB?:v1:W" }, h:sent())
         end)
 
+        it("drops a saved slot that no longer exists", function()
+            local h = reloaded("L")
+            h:fire("PLAYER_ENTERING_WORLD", false, true)
+            raid(h, { "Ann Peer" })
+            assert.same({ "BB?:v1:-" }, h:sent())
+        end)
+
         it("starts without a slot after logging in", function()
             local h = reloaded("W")
             h:fire("PLAYER_ENTERING_WORLD", true, false)
@@ -497,14 +504,15 @@ describe("coordination messages", function()
 
     describe("slots", function()
         local ALL = {
-            "Blessing of Might", "Blessing of Wisdom", "Blessing of Kings", "Blessing of Light",
+            "Blessing of Might", "Blessing of Wisdom", "Blessing of Kings",
             "Greater Blessing of Might", "Greater Blessing of Wisdom", "Greater Blessing of Kings",
-            "Greater Blessing of Light", "Reagent Economy",
+            "Reagent Economy",
         }
 
         -- Tester in a raid with Warriors (raid3, raid4) and Priests (raid5,
         -- raid6) after the other BuffBot Paladins, who announce slots.
-        -- opts.outsider adds a Paladin without BuffBot after them.
+        -- opts.outsider adds a Paladin without BuffBot after them, and
+        -- opts.hunter a Hunter last.
         local function slotted(slots, opts)
             opts = opts or {}
             opts.known = ALL
@@ -518,6 +526,7 @@ describe("coordination messages", function()
             end
             -- A Paladin without BuffBot, last in the raid
             if opts.outsider then table.insert(members, { class = "PALADIN", name = "Out Sider" }) end
+            if opts.hunter then table.insert(members, { class = "HUNTER" }) end
             h:joinRaid(members)
             for _, name in ipairs(names) do h:receive(name, "BB:v1:" .. slots[name]) end
             h:settle()
@@ -538,42 +547,29 @@ describe("coordination messages", function()
                 "Greater Blessing of Wisdom" }, h:buffUp())
         end)
 
-        it("gives Light where Wisdom's slot does nothing", function()
+        it("gives nothing where Wisdom's slot does nothing", function()
             local h = slotted({ ["Ann Peer"] = "K", ["Zed Peer"] = "M" })
             assert.equal("W", h.ns.MySlot())
-            -- The three Paladins are missing the most, so go first
-            assert.same({ "Greater Blessing of Wisdom", "Greater Blessing of Light > raid4",
-                "Greater Blessing of Wisdom > raid6" }, h:buffUp())
+            assert.same({ "Greater Blessing of Wisdom", "Greater Blessing of Wisdom > raid6" }, h:buffUp())
         end)
 
-        it("leaves Light to Light's slot", function()
-            local h = slotted({ ["Ann Peer"] = "K", ["Bob Peer"] = "M", ["Zed Peer"] = "L" })
-            assert.equal("W", h.ns.MySlot())
-            assert.same({ "Greater Blessing of Wisdom", "Greater Blessing of Wisdom > raid7" }, h:buffUp())
-        end)
-
-        it("gives the next uncovered blessing, then Light, when another Paladin's is there", function()
-            local h = slotted({ ["Ann Peer"] = "K" }, { outsider = true })
-            h:give("Blessing of Wisdom", { unit = "raid5", fromPlayer = false, source = "raid7" })
-            -- One Greater for the other Priest ties with one single, so the Greater wins
+        it("gives the next uncovered blessing when another Paladin's is there", function()
+            local h = slotted({ ["Ann Peer"] = "K" }, { outsider = true, hunter = true })
+            h:give("Blessing of Wisdom", { unit = "raid8", fromPlayer = false, source = "raid7" })
+            -- Kings is Ann's, so the Hunter gets Might, next on the ranged list
             assert.same({ "Greater Blessing of Wisdom", "Greater Blessing of Might > raid3",
-                "Greater Blessing of Wisdom > raid6", "Blessing of Light > raid5" }, h:buffUp())
+                "Greater Blessing of Wisdom > raid5", "Blessing of Might > raid8" }, h:buffUp())
         end)
 
         it("gives no blessings as a reserve", function()
-            local h = slotted({ ["Ann Peer"] = "K", ["Bob Peer"] = "W", ["Zed Peer"] = "M", ["Cid Peer"] = "L" })
+            local h = slotted({ ["Ann Peer"] = "K", ["Bob Peer"] = "W", ["Zed Peer"] = "M" })
             assert.equal("-", h.ns.MySlot())
             assert.is_true(h.ns.Coordinating())
             assert.is_nil(h:shown())
         end)
 
         describe("after a handover", function()
-            local function lightOn(h, unit)
-                local auras = h.state.members[unit].auras
-                return auras["Blessing of Light"] or auras["Greater Blessing of Light"]
-            end
-
-            it("waits for the Kings of a Paladin who left, rather than giving Light", function()
+            it("waits for the Kings of a Paladin who left", function()
                 local h = slotted({ ["Ann Peer"] = "K", ["Bob Peer"] = "W" })
                 assert.equal("M", h.ns.MySlot())
                 -- Ann leaves: Tester takes Kings, Bob merges to Might/Wisdom
@@ -601,9 +597,7 @@ describe("coordination messages", function()
                     h.state:giveAura("Blessing of Might", { unit = unit, fromPlayer = false, source = "raid3" })
                 end
                 h:refresh()
-                h:buffUp()
-                assert.is_nil(lightOn(h, "raid4"))
-                assert.is_nil(lightOn(h, "raid5"))
+                assert.same({}, h:buffUp())
                 -- Once Bob's has run out, Tester gives Might
                 h.state:removeAura("Blessing of Might", "raid4")
                 h.state:removeAura("Blessing of Might", "raid5")

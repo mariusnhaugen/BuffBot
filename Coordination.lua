@@ -2,16 +2,15 @@ local _, BuffBot = ...
 
 -- Slots: one blessing per BuffBot Paladin for the whole raid
 -- (docs/plan/SPEC.md). K Kings, MW Might or Wisdom by role, W Wisdom,
--- M Might, L Light, "-" none (alone, or a reserve once all are taken).
+-- M Might, "-" none (alone, or a reserve once all are taken).
 local SLOTS = {
     [2] = { "K", "MW" },
     [3] = { "K", "W", "M" },
-    [4] = { "K", "W", "M", "L" },
 }
 
 local function SlotsFor(count)
     if count < 2 then return {} end
-    return SLOTS[math.min(count, 4)]
+    return SLOTS[math.min(count, 3)]
 end
 
 -- A slot as it reads with count Paladins: Might/Wisdom's holder keeps Wisdom
@@ -54,9 +53,8 @@ local function Fill(me, peers, count)
 end
 
 -- The slot that a Paladin leaving frees goes to the first reserve by name.
--- Without a reserve, the slots close up: Light's holder fills a gap when 4
--- become 3, and Might and Wisdom merge back into MW when 3 become 2, Might's
--- holder taking Kings if that's the gap.
+-- Without a reserve, the slots close up: Might and Wisdom merge back into MW
+-- when 3 become 2, Might's holder taking Kings if that's the gap.
 local function AfterLeaving(me, mySlot, peers, freed, count)
     if freed == "-" then return mySlot end
     local reserves = {}
@@ -66,9 +64,6 @@ local function AfterLeaving(me, mySlot, peers, freed, count)
     end
     if #reserves > 0 then
         return reserves[1] == me and freed or mySlot
-    end
-    if count == 3 then
-        return mySlot == "L" and freed ~= "L" and freed or mySlot
     end
     if count == 2 then
         if freed == "K" then
@@ -120,7 +115,7 @@ end
 local VERSION = "1"
 local SETTLE = 3 -- seconds to wait for answers to a hello
 local ANSWER_DELAY = 2 -- answers go out at random within this many seconds
-local VALID_SLOTS = { K = true, W = true, M = true, MW = true, L = true, ["-"] = true }
+local VALID_SLOTS = { K = true, W = true, M = true, MW = true, ["-"] = true }
 
 local active = false -- taking part: a Paladin in a raid, buffing the group, not in PvP
 local mySlot = "-"
@@ -243,8 +238,10 @@ function BuffBot.UpdateCoordination()
         return
     end
     if not active then
-        -- After a /reload, the hello claims the saved slot back
-        active, mySlot = true, BuffBot.charConfig.SLOT or "-"
+        -- After a /reload, the hello claims the saved slot back. One that no
+        -- longer exists (Light's, from 2.5.0) is dropped.
+        local saved = BuffBot.charConfig.SLOT
+        active, mySlot = true, VALID_SLOTS[saved] and saved or "-"
         SendHello()
         return
     end
@@ -356,7 +353,7 @@ function BuffBot.OtherSlots()
     return slots
 end
 
-local SLOT_NAMES = { K = "Kings", MW = "Might/Wisdom", W = "Wisdom", M = "Might", L = "Light", ["-"] = "reserve" }
+local SLOT_NAMES = { K = "Kings", MW = "Might/Wisdom", W = "Wisdom", M = "Might", ["-"] = "reserve" }
 local ROLE_ORDER = { "tank", "melee", "ranged", "caster", "healer" }
 
 -- /bb raid: who gives which blessing, the Paladins outside BuffBot, and every

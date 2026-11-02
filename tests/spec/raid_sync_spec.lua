@@ -7,7 +7,6 @@ describe("raid coordination across clients", function()
         [1] = { "-" },
         [2] = { "K", "MW" },
         [3] = { "K", "M", "W" },
-        [4] = { "K", "L", "M", "W" },
     }
 
     -- Every client holds a different slot, the set fits the Paladin count, and
@@ -19,8 +18,8 @@ describe("raid coordination across clients", function()
             count = count + 1
         end
         table.sort(all)
-        local expected = { unpack(VALID[math.min(count, 4)]) }
-        for _ = 5, count do table.insert(expected, 1, "-") end
+        local expected = { unpack(VALID[math.min(count, 3)]) }
+        for _ = 4, count do table.insert(expected, 1, "-") end
         assert.same(expected, all)
         for name, view in pairs(raid:views()) do
             local others = {}
@@ -52,16 +51,13 @@ describe("raid coordination across clients", function()
         assertAgreed(raid)
     end)
 
-    it("gives a fourth Light and makes a fifth a reserve", function()
+    it("makes a fourth a reserve", function()
         local raid = Raid.new()
         raid:join("Ann Light", "Bob Stone", "Cid Oak")
         raid:run(5)
         raid:join("Dan Ash")
         raid:run(5)
-        assert.equal("L", raid:slots()["Dan Ash"])
-        raid:join("Eve Elm")
-        raid:run(5)
-        assert.equal("-", raid:slots()["Eve Elm"])
+        assert.equal("-", raid:slots()["Dan Ash"])
         assertAgreed(raid)
     end)
 
@@ -75,14 +71,16 @@ describe("raid coordination across clients", function()
         assertAgreed(raid)
     end)
 
-    it("fills a freed slot with the reserve", function()
+    it("fills a freed slot with the first reserve", function()
         local raid = Raid.new()
         raid:join("Ann Light", "Bob Stone", "Cid Oak", "Dan Ash", "Eve Elm")
         raid:run(5)
+        assert.equal("-", raid:slots()["Dan Ash"])
         assert.equal("-", raid:slots()["Eve Elm"])
         raid:leave("Bob Stone")
         raid:run(5)
-        assert.equal("W", raid:slots()["Eve Elm"])
+        assert.equal("W", raid:slots()["Dan Ash"])
+        assert.equal("-", raid:slots()["Eve Elm"])
         assertAgreed(raid)
     end)
 

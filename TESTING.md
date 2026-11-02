@@ -80,7 +80,7 @@ A Rogue in the party gets Blessing of Might. A tester's Paladin on 2.3 got Kings
 
 Needs a raid, and for sharing, two to four Paladins on BuffBot 2.5 (`/bb debug` on prints the messages). See [docs/plan/SPEC.md](docs/plan/SPEC.md) for the rules.
 
-- Alone in a raid: Greater Blessings per class (with Symbol of Kings or Reagent Economy), singles for a class of one, Light for members with every blessing on their list from other Paladins. The text under the button reads "Greater Blessing of Wisdom > Priests".
+- Alone in a raid: Greater Blessings per class (with Symbol of Kings or Reagent Economy), singles for a class of one, nothing for members with every blessing on their list from other Paladins. The text under the button reads "Greater Blessing of Wisdom > Priests".
 - Two Paladins: one gives Kings, the other Might or Wisdom by role; `/bb raid` agrees on both clients. A third joining splits Might and Wisdom; one leaving merges them back. A `/reload` keeps your slot.
 - Roles: `/bb role <name> melee` on a Druid switches them to Might; a main-tank mark makes a tank; Moonkin Form and Leader of the Pack are picked up; Inspect fills in the rest without opening the Inspect window or fighting it.
 - Battlegrounds: only you are buffed.
@@ -89,12 +89,12 @@ Result:
 
 ### Raid blessing handovers (2.5, at level 60)
 
-Needs a raid with three BuffBot 2.5 Paladins (call them Ann, Bob and Cid, sorted by name) and a Warrior, plus a fourth and fifth for the reserve check. Turn `/bb debug` on everywhere: it prints each message sent. `/bb raid` shows who holds which slot. Expect Ann Kings, Bob Wisdom, Cid Might.
+Needs a raid with three BuffBot 2.5 Paladins (call them Ann, Bob and Cid, sorted by name) and a Warrior, plus a fourth for the reserve check. Turn `/bb debug` on everywhere: it prints each message sent. `/bb raid` shows who holds which slot. Expect Ann Kings, Bob Wisdom, Cid Might.
 
 1. **Goodbye.** Bob turns "Buff your group" off in `/bb`. Bob's chat shows `BB!:v1:-`. Within a second, Ann's and Cid's `/bb raid` drops Bob, and Cid takes Might and Wisdom. Bob turns it back on: Bob sends `BB?:v1:-` and gets a slot back, and the others agree on the slots.
-2. **Reserve.** A fourth Paladin joins and gets Light. A fifth waits as a reserve: their button shows no raid blessings, only self-buffs and auras. When a Paladin with a slot leaves, the reserve takes it.
-3. **Kings from a Paladin who left.** With the Warrior wearing Ann's Kings, Ann leaves the raid. Cid takes Kings and Bob takes Might and Wisdom. First, on Cid, `/dump C_UnitAuras.GetAuraDataBySpellName("raidN", "Greater Blessing of Kings").sourceUnit` for the Warrior's unit prints `nil` or something other than a raid unit. Cid's button doesn't offer Light or another blessing for the Warrior while Ann's Kings is up, and offers Kings once it runs out (right-click it off the Warrior to skip the wait).
-4. **Might from before a slot change.** Back to three. Cid's Might is on the Warrior. Cid leaves: Bob now holds Might and Wisdom, and isn't offered Light for the Warrior while Cid's Might is up. Then Cid rejoins and gets Might back. If Bob's blessing went on the Warrior meanwhile, Cid waits for it to run out too.
+2. **Reserve.** A fourth Paladin joins and waits as a reserve: their button shows no raid blessings, only self-buffs and auras. When a Paladin with a slot leaves, the reserve takes it.
+3. **Kings from a Paladin who left.** With the Warrior wearing Ann's Kings, Ann leaves the raid. Cid takes Kings and Bob takes Might and Wisdom. First, on Cid, `/dump C_UnitAuras.GetAuraDataBySpellName("raidN", "Greater Blessing of Kings").sourceUnit` for the Warrior's unit prints `nil` or something other than a raid unit. Cid's button doesn't offer another blessing for the Warrior while Ann's Kings is up, and offers Kings once it runs out (right-click it off the Warrior to skip the wait).
+4. **Might from before a slot change.** Back to three. Cid's Might is on the Warrior. Cid leaves: Bob now holds Might and Wisdom, and isn't offered anything for the Warrior while Cid's Might is up. Then Cid rejoins and gets Might back. If Bob's blessing went on the Warrior meanwhile, Cid waits for it to run out too.
 5. **Joining straight away.** Invite a Paladin who already has BuffBot: within about 2 seconds of them joining, everyone's `/bb raid` lists them with a slot, without a `/reload`.
 6. **Two Paladins on one slot.** Hard to force. If `/bb raid` ever shows two Paladins with the same slot, the first by name sends its state again (`BB:v1:<slot>` in its chat) and the other moves within a second.
 
@@ -134,7 +134,7 @@ Checks that can't be run on the beta, or are still waiting for a tester. The ste
 - [ ] Someone else's fading buff isn't offered: with another Mage's Arcane Intellect on you or a party member, the button stays quiet until it drops off, then offers it
 - [ ] Two Paladins sharing blessings in a party: the second Paladin is offered Kings for a Warrior who has the first one's Might, and both blessings stay up
 
-For 2.5 (raid coordination, `docs/plan/SPEC.md`). Run in a raid unless noted; Greater Blessings and Light need level 60.
+For 2.5 (raid coordination, `docs/plan/SPEC.md`). Run in a raid unless noted; Greater Blessings need level 60.
 
 - [ ] Add-on messages on `RAID`: `C_ChatInfo.SendAddonMessage("BuffBot", "x", "RAID")` reaches every member, the sender included, and `CHAT_MSG_ADDON` gives the sender as "First Last" with channel `RAID`. The burst limit is 10 per prefix, refilling at 1 per second, as on PARTY
 - [ ] Sends in combat: does `select(-1, C_ChatInfo.SendAddonMessage(...))` return `11` (`AddOnMessageLockdown`) in combat inside a raid instance, and in the open world?
@@ -144,9 +144,8 @@ For 2.5 (raid coordination, `docs/plan/SPEC.md`). Run in a raid unless noted; Gr
 - [ ] Specs: do `GetSpecialization()` and, after Inspect, `GetInspectSpecialization(unit)` return a spec on Forever's talent trees? If not, `GetTalentTabInfo(tab)` for your own talents and `GetTalentTabInfo(tab, true)` after `NotifyInspect` and `INSPECT_READY` give the points per tab
 - [ ] Talent-only auras: Moonkin Form (and its aura on the party) only comes from the Balance talent, and Leader of the Pack only from the Feral talent, with `sourceUnit` being that Druid
 - [ ] Greater Blessings: they cover every raid member of the target's class (not just the subgroup), reach 40 yd, last 60 minutes, and replace the same Paladin's single blessing on that class
-- [ ] Light: Blessing of Light (19977) and Greater Blessing of Light (25890) are the right IDs, and Light stacks with Might, Wisdom and Kings from other Paladins
 - [ ] Two Paladins' blessings stacking in a raid: different blessings from two Paladins both stay on one member
-- [ ] Blessings from a Paladin who left: after a Paladin leaves the raid, `/dump C_UnitAuras.GetAuraDataBySpellName("raid1", "Blessing of Kings").sourceUnit` on a member with their Kings prints `nil` or a unit outside the raid (such as a nameplate), never a raid unit. The new Kings holder relies on it to wait for the old Kings to run out instead of giving Light
+- [ ] Blessings from a Paladin who left: after a Paladin leaves the raid, `/dump C_UnitAuras.GetAuraDataBySpellName("raid1", "Blessing of Kings").sourceUnit` on a member with their Kings prints `nil` or a unit outside the raid (such as a nameplate), never a raid unit. The new Kings holder relies on it to wait for the old Kings to run out
 - [ ] Goodbye: with three BuffBot Paladins, one turns "Buff your group" off; the others' `/bb raid` drops them and the slots close up. Turning it back on brings them back with a slot
 - [ ] [Raid blessings](#raid-blessings-25-at-level-60): the in-game run of 2.5 with two to four Paladins
 - [ ] [Raid blessing handovers](#raid-blessing-handovers-25-at-level-60): goodbye, reserves, waiting out an old holder's blessing, a joiner the roster doesn't show yet, and two Paladins on one slot

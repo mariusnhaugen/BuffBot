@@ -17,7 +17,7 @@ with as few settings as possible (TODO 18).
 | R2 | MUST | `GROUP_BUFFING` renamed "Buff your group", the single opt-out; off = self-buffs only, no `BB` messages | 01, 10 |
 | R3 | MUST | Battleground or arena: no group buffing and no messages | 02 |
 | R4 | MUST | Roles tank/melee/ranged/caster/healer, with role lists and class defaults; raids only, parties keep class lists | 03 |
-| R5 | MUST | Light is the filler when a blessing does nothing for a member; it's on no role list | 03 |
+| R5 | MUST | ~~Light is the filler when a blessing does nothing for a member~~ (2.5.1: Forever removed Blessing of Light; a useless slot blessing gives nothing) | 03 |
 | R6 | MUST | `/bb role <name> <role>` and `/bb role <name>`: manual roles saved account-wide, partial names | 04 |
 | R7 | MUST | Your own role comes from your talents, overridable by the manual list | 04 |
 | R8 | MUST | Greaters in raids: one per class by majority role; exceptions get singles; singles when the class has one member, the Greater can't be cast, or most of the class is out of range | 06 |
@@ -27,7 +27,7 @@ with as few settings as possible (TODO 18).
 | R12 | MUST | Protocol `BB:v1` on `RAID` under the `BuffBot` prefix; other versions are outsiders; `/bb debug` prints traffic | 08, 10 |
 | R13 | MUST | Slot rules: table by Paladin count, name sort, sticky, collisions, reserves, Might/Wisdom split, shrink merges | 09 |
 | R14 | MUST | Handshake: hello, answers, state, settle window; leaving or going offline frees a slot, dying doesn't | 10 |
-| R15 | MUST | Slot to blessing per member, Light filler, outsider fallback; the self-blessing dropdown ignored while coordinating | 11 |
+| R15 | MUST | Slot to blessing per member, outsider fallback; the self-blessing dropdown ignored while coordinating | 11 |
 | R16 | MUST | Reload restores your slot; login and leaving the raid clear it | 12 |
 | R17 | MUST | Multi-client tests show every client agrees on the slots | 13 |
 | R18 | SHOULD | Detection: main-tank mark, group-finder role | 14 |
@@ -43,8 +43,10 @@ with as few settings as possible (TODO 18).
   "Test at launch": `RAID` add-on messages and their burst limit,
   `GetPartyAssignment("MAINTANK", unit)`, `GetRaidRosterInfo`, Inspect and
   `GetTalentTabInfo` on Forever's trees, talent-only auras, Greater Blessing
-  rules, Light IDs.
-- Light and Greater Light use the Classic IDs (19977, 25890) until checked.
+  rules.
+- Forever has three blessings: Might, Wisdom and Kings. Blessing of Light is
+  gone (2.5.1); its place went to Oath of Light, a Holy talent that isn't a
+  blessing (TODO 39).
 - In a raid, assume everyone is level 60, but still check spells are learned
   (Kings at 20, Greater Blessings at 60).
 - Forever facts from the user (not Classic knowledge): single and Greater
@@ -98,7 +100,6 @@ In game: `./deploy.sh` copies the add-on into the AddOns folder.
 | healer | Wisdom > Kings | Priest; Druid, Shaman, Paladin by default |
 
 Feral, Enhancement and Ret are melee; Balance and Elemental are caster.
-Light is on no list: it's the filler (below).
 
 **Detection, first match wins:**
 1. Manual list (`/bb role`), saved account-wide in `BuffBotConfig.ROLES`
@@ -128,13 +129,12 @@ needed), overridden by the manual list.
 | 1 | No coordination: each member gets their role's first free choice |
 | 2 | `K` Kings · `MW` Might or Wisdom per member, by role |
 | 3 | `K` · `W` · `M` |
-| 4 | `K` · `W` · `M` · `L` Light |
-| 5+ | the rest hold `-` and are reserves |
+| 4+ | the rest hold `-` and are reserves |
 
-**Light filler:** when a Paladin's slot blessing does nothing for a member,
-that Paladin gives them Light. A member has at most one useless slot, so two
-Paladins never both give Light. E.g. with 3 Paladins, the Wisdom Paladin gives
-melee and tanks Light, and the Might Paladin gives casters and healers Light.
+**A useless slot blessing:** when a Paladin's slot blessing does nothing for a
+member (Wisdom on melee and tanks, Might on casters and healers), that Paladin
+gives them nothing. 2.5.0 gave Light here, and a 4th Paladin held an `L` slot;
+Forever removed Blessing of Light in 2.5.1.
 
 ### State
 
@@ -153,8 +153,8 @@ BB?:v1:<slot>    hello: everyone answer with state   e.g. BB?:v1:-
 BB!:v1:-         goodbye: I stopped buffing the group
 ```
 
-`<slot>` is `K`, `W`, `M`, `MW`, `L` or `-`. A message with another version
-makes its sender an outsider. Messages carry *facts* (who holds what); every
+`<slot>` is `K`, `W`, `M`, `MW` or `-`. A message with another version, or
+another slot (2.5.0's `L`), makes its sender an outsider. Messages carry *facts* (who holds what); every
 client derives *decisions* locally from the same rules. No negotiation.
 
 **When to send:**
@@ -191,7 +191,7 @@ battleground or arena, and every non-Paladin.
 ### Slot rules
 
 - **Fresh assignment** (a raid forming, simultaneous hellos): name sort by
-  `GetUnitName(unit, true)`, in slot order K, MW / K, W, M / L, then reserves.
+  `GetUnitName(unit, true)`, in slot order K, MW / K, W, M, then reserves.
 - **Sticky:** a newcomer takes the first free slot.
 - **Split (2 → 3):** the MW holder keeps W, the newcomer takes M.
 - **Collision:** a hello or state claiming a slot someone already holds gives
@@ -205,7 +205,6 @@ battleground or arena, and every non-Paladin.
   since `GROUP_ROSTER_UPDATE` doesn't fire for it) frees their slot. Dying doesn't. Being elsewhere (in town, hearthed) doesn't.
 - **Shrink (Q29):** a reserve fills the freed slot first, and nothing merges.
   Otherwise:
-  - 4 → 3: L leaving moves nothing; any other slot is filled by the L holder.
   - 3 → 2: M leaves → W becomes MW; W leaves → M becomes MW; K leaves → the M
     holder takes K and the W holder becomes MW.
   - 2 → 1: the last Paladin drops coordination.
@@ -214,7 +213,7 @@ battleground or arena, and every non-Paladin.
   hello at `-`, like joining.
 - **Handover:** the old owner's blessings stay until due; then the new owner
   casts. Nothing that's up is overwritten, and the new owner doesn't fill in
-  with another blessing or Light meanwhile. This covers a BuffBot Paladin's
+  with another blessing meanwhile. This covers a BuffBot Paladin's
   blessing from before a slot change and one from a Paladin who has left the
   raid (no `sourceUnit` in the raid).
 
@@ -263,13 +262,12 @@ restart the add-on. The collision rule handles stale saves.
   yourself).
 - **Raid, the only BuffBot Paladin (or a reserve, or outside coordination):**
   the member's role list; the first free blessing (learned, not on them from
-  another Paladin); then Light. Your own blessing follows the dropdown.
+  another Paladin). Your own blessing follows the dropdown.
 - **Raid, coordinating:** your slot's blessing (MW → Might or Wisdom by the
-  member's role, whichever is higher on their list); Light when it does
-  nothing for them, unless another Paladin holds Light's slot (then
-  nothing). If your slot's blessing is already on them from someone else
+  member's role, whichever is higher on their list); nothing when it does
+  nothing for them. If your slot's blessing is already on them from someone else
   (an outsider still in the raid), the next useful blessing nobody has given them, down their
-  role list, skipping blessings another slot covers, then Light. The `PALADIN_BLESSING` dropdown is ignored:
+  role list, skipping blessings another slot covers. The `PALADIN_BLESSING` dropdown is ignored:
   you're just another member.
 - Never cast over another Paladin's blessing, even when it's fading (only
   your own buffs are refreshed early).

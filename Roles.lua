@@ -4,8 +4,7 @@ local _, BuffBot = ...
 -- Parties keep the class lists in BuffBot.BlessingPriority.
 local MIGHT, WISDOM, KINGS = "Blessing of Might", "Blessing of Wisdom", "Blessing of Kings"
 
--- Blessings by role, best first. Light isn't on any list: it's the filler a
--- Paladin gives when nothing on the list is left.
+-- Blessings by role, best first
 BuffBot.RoleLists = {
     tank = { KINGS, MIGHT },
     melee = { MIGHT, KINGS },

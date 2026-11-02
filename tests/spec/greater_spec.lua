@@ -32,9 +32,9 @@ describe("Greater Blessings", function()
 
     describe("in a raid", function()
         local ALL = {
-            "Blessing of Might", "Blessing of Wisdom", "Blessing of Kings", "Blessing of Light",
+            "Blessing of Might", "Blessing of Wisdom", "Blessing of Kings",
             "Greater Blessing of Might", "Greater Blessing of Wisdom", "Greater Blessing of Kings",
-            "Greater Blessing of Light", "Reagent Economy",
+            "Reagent Economy",
         }
         local function raidPaladin(opts)
             opts = opts or {}

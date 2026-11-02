@@ -1,6 +1,6 @@
 local Addon = require("helpers.load_addon")
 
-local ALL = { "Blessing of Might", "Blessing of Wisdom", "Blessing of Kings", "Blessing of Light" }
+local ALL = { "Blessing of Might", "Blessing of Wisdom", "Blessing of Kings" }
 
 local function paladin(opts)
     opts = opts or {}
@@ -47,7 +47,7 @@ describe("roles", function()
             assert.same({ "Blessing of Kings > raid2", "Blessing of Kings > raid3" }, h:buffUp())
         end)
 
-        it("give Light once nothing on the role's list is left", function()
+        it("give nothing once nothing on the role's list is left", function()
             local h = paladin()
             h:give("Blessing of Might")
             h:joinRaid({ { class = "WARRIOR" }, { class = "PRIEST" } })
@@ -56,27 +56,6 @@ describe("roles", function()
             h:give("Blessing of Kings", { unit = "raid2", fromPlayer = false })
             h:give("Greater Blessing of Wisdom", { unit = "raid3", fromPlayer = false })
             h:give("Blessing of Kings", { unit = "raid3", fromPlayer = false })
-            assert.same({ "Blessing of Light > raid2", "Blessing of Light > raid3" }, h:buffUp())
-        end)
-
-        it("skip Light until it's learned", function()
-            local h = paladin({ known = { "Blessing of Might", "Blessing of Wisdom", "Blessing of Kings" } })
-            h:give("Blessing of Might")
-            h:joinRaid({ { class = "WARRIOR" } })
-            h:settle()
-            h:give("Blessing of Might", { unit = "raid2", fromPlayer = false })
-            h:give("Blessing of Kings", { unit = "raid2", fromPlayer = false })
-            assert.is_nil(h:shown())
-        end)
-
-        it("count a Greater Blessing of Light", function()
-            local h = paladin()
-            h:give("Blessing of Might")
-            h:joinRaid({ { class = "WARRIOR" } })
-            h:settle()
-            h:give("Blessing of Might", { unit = "raid2", fromPlayer = false })
-            h:give("Blessing of Kings", { unit = "raid2", fromPlayer = false })
-            h:give("Greater Blessing of Light", { unit = "raid2", fromPlayer = false })
             assert.is_nil(h:shown())
         end)
 
@@ -479,7 +458,7 @@ describe("roles", function()
     end)
 
     describe("blessings in a party", function()
-        it("never give Light", function()
+        it("give nothing once the class list is used up", function()
             local h = paladin()
             h:give("Blessing of Might")
             h:joinParty({ { class = "WARRIOR" } })
