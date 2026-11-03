@@ -2,7 +2,6 @@
 -- looks up by ID plus the auras it checks by name.
 local byName = {
     -- DRUID
-    ["Omen of Clarity"] = 16864,
     ["Moonkin Form"] = 24858,
     ["Moonkin Aura"] = 24907,
     ["Leader of the Pack"] = 24932,

@@ -1,9 +1,9 @@
 local Addon = require("helpers.load_addon")
 
 describe("per-class buff priority (vanilla spells)", function()
-    it("DRUID: Omen of Clarity, Mark of the Wild, Thorns", function()
-        local h = Addon.load({ class = "DRUID", known = { "Omen of Clarity", "Mark of the Wild", "Thorns" } })
-        assert.same({ "Omen of Clarity", "Mark of the Wild", "Thorns" }, h:buffUp())
+    it("DRUID: Mark of the Wild, Thorns", function()
+        local h = Addon.load({ class = "DRUID", known = { "Mark of the Wild", "Thorns" } })
+        assert.same({ "Mark of the Wild", "Thorns" }, h:buffUp())
     end)
 
     it("DRUID: unknown spells are left out", function()

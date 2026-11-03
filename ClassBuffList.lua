@@ -3,7 +3,7 @@ local class = BuffBot.playerclass
 local debug = BuffBot.debug
 
 local InitalClassBuffLists = {}
-InitalClassBuffLists.DRUID = { "Omen of Clarity", "Mark of the Wild", "Thorns" }
+InitalClassBuffLists.DRUID = { "Mark of the Wild", "Thorns" }
 InitalClassBuffLists.HUNTER = { "Trueshot Aura", "Aspect of the Hawk" }
 InitalClassBuffLists.MAGE = { "Unique", "Arcane Intellect", "Dampen Magic" }
 InitalClassBuffLists.PALADIN = { "Unique", "Blessing", "Righteous Fury", "Oath of Light" }
@@ -268,7 +268,6 @@ end
 -- keys: BuffBot.SpellName turns them into the client's names.
 local spellIDTable = {
     --DRUID
-    ["Omen of Clarity"] = 16864,
     ["Moonkin Form"] = 24858, -- talent auras, for raid roles
     ["Moonkin Aura"] = 24907,
     ["Leader of the Pack"] = 24932,
