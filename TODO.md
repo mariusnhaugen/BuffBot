@@ -10,18 +10,6 @@ commit.
   before the button moved on. Not reproduced since. A probe for
   `UNIT_INVENTORY_CHANGED` printed nothing, so the event may not always
   fire, or `C_Item.GetWeaponEnchantInfo` may lag behind it.
-- 30. Salvation, after 2.5. On Forever it is its own spell, not a
-  blessing, so it stacks with blessings. Wowhead lists Salvation as 1038
-  (the old Blessing of Salvation ID; a third-party site calls it
-  "renamed"), so Mass Salvation is probably the old Greater Blessing's ID
-  too. Mass Salvation's tooltip: 16% of base mana, 40 yd, instant; 30% less
-  threat for 1 hour on every raid or party member of the target's class.
-  No reagent listed. Check the IDs and the single version's duration at
-  launch.
-  - Never on the tank role (part 2, 29): main-tank mark, Inspect, or the
-    manual list.
-  - Share the casts out between BuffBot Paladins instead of giving it to
-    one slot, e.g. split the classes between them.
 - 31. Roles in parties. Part 2 (29) gives raid members a role (tank,
   melee, ranged, caster, healer) that picks their blessings; parties keep
   the class lists for now. Inspect doesn't help while leveling: talents
@@ -100,6 +88,8 @@ commit.
 
 ## Decided against
 
+- **Salvation (30).** Forever removed Salvation and Mass Salvation
+  (development notes, 2026-11-03), so there's nothing to share out.
 - **Timer-based refresh for expiring buffs.** `UNIT_AURA` fires often
   enough, and it fires when the buff drops, so the player is never left
   without it.
