@@ -166,5 +166,6 @@ For 2.5 (raid coordination, `docs/plan/SPEC.md`). Run in a raid unless noted; Gr
 - [ ] [Spell and item IDs for raid roles and Greater Blessings](#spell-and-item-ids-for-raid-roles-and-greater-blessings): Moonkin Form, Moonkin Aura, Leader of the Pack, Symbol of Kings
 - [ ] [Oath of Light](#oath-of-light-holy-paladin-252): the spell ID (step 6, any character) first, then the rest with a Holy Paladin who has the talent
 - [ ] Sanctuary is gone from Forever (TODO 21)
+- [ ] `/bb status` (2.6): prints the version, your class and level, your list, and the next cast or why it's quiet, with no Lua error; in a party it names members. With `/bb debug` on, casting a buff logs one "next:" line, not one per aura change
 - [ ] Keybind on the settings page: `/dump C_KeyBindings.GetBindingIndex("CLICK BUFFBOT_MacroButton:LeftButton")` prints a number, and `/bb` shows a BuffBot Cast keybind row at the top. Set a key there: it casts, shows under Key Bindings > AddOns, and survives `/reload`. If the row is missing or broken, fall back to a button that calls `SetBindingClick` and `SaveBindings` (TODO 35)
 - [ ] Battlegrounds, for a later PvP release: which channel (`RAID` or `INSTANCE_CHAT`) reaches a battleground raid

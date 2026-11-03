@@ -15,6 +15,11 @@ SlashCmdList.BUFFBOTSETTINGS = function(arg)
         return
     end
 
+    if arg == "status" then
+        BuffBot.StatusCommand()
+        return
+    end
+
     if arg == "buffs" then
         local buffs = BuffBot.classBuffList or {}
         if #buffs == 0 then

@@ -369,7 +369,7 @@ describe("coordination messages", function()
         it("prints what it sends in debug mode", function()
             local h = paladin({ config = { DEBUG_MODE = true } })
             raid(h, {})
-            assert.is_true(h:printed("BuffBot sent on RAID: BB?:v1:-"))
+            assert.is_true(h:printed("BuffBot:|r sent on RAID: BB?:v1:-"))
         end)
     end)
 

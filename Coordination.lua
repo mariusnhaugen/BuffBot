@@ -8,6 +8,8 @@ local SLOTS = {
     [3] = { "K", "W", "M" },
 }
 
+local SLOT_NAMES = { K = "Kings", MW = "Might/Wisdom", W = "Wisdom", M = "Might", ["-"] = "reserve" }
+
 local function SlotsFor(count)
     if count < 2 then return {} end
     return SLOTS[math.min(count, 3)]
@@ -145,7 +147,7 @@ end
 -- Sends text, and says whether the game took it
 local function Send(text)
     local result = select(-1, C_ChatInfo.SendAddonMessage(BuffBot.MESSAGE_PREFIX, text, "RAID"))
-    BuffBot.debug("BuffBot sent on RAID:", text, result ~= 0 and ("(failed: " .. tostring(result) .. ")") or "")
+    BuffBot.debug("sent on RAID:", text, result ~= 0 and ("(failed: " .. tostring(result) .. ")") or "")
     return result == 0
 end
 
@@ -167,6 +169,7 @@ end
 -- The slot is saved per character, so a /reload mid-raid can claim it again
 local function SetSlot(slot)
     if slot == mySlot then return end
+    BuffBot.debug("slot: " .. SLOT_NAMES[mySlot] .. " -> " .. SLOT_NAMES[slot])
     mySlot = slot
     BuffBot.charConfig.SLOT = slot ~= "-" and slot or nil
     SendState()
@@ -333,6 +336,16 @@ function BuffBot.BlessingsOnHold()
     return active and GetTime() < holdUntil
 end
 
+-- The player's slot and how many other BuffBot Paladins share them out, for
+-- /bb status; nil when not sharing
+function BuffBot.SlotStatus()
+    if not BuffBot.Coordinating() then return nil end
+    local others = 0
+    for _ in pairs(peers) do others = others + 1 end
+    return SLOT_NAMES[mySlot] .. ", with " .. others .. " other BuffBot Paladin" .. (others == 1 and "" or "s")
+        .. (BuffBot.BlessingsOnHold() and ", waiting for their answers" or "")
+end
+
 -- The player's slot, "-" for none
 function BuffBot.MySlot()
     return mySlot
@@ -353,7 +366,6 @@ function BuffBot.OtherSlots()
     return slots
 end
 
-local SLOT_NAMES = { K = "Kings", MW = "Might/Wisdom", W = "Wisdom", M = "Might", ["-"] = "reserve" }
 local ROLE_ORDER = { "tank", "melee", "ranged", "caster", "healer" }
 
 -- /bb raid: who gives which blessing, the Paladins outside BuffBot, and every

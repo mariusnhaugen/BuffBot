@@ -430,7 +430,6 @@ end
 local function GetSpellSkip(spellString)
     if class == "DRUID" then
         if spellString == "Thorns" and BuffBot.config.IGNORE_THORNS then
-            debug("Skipping thorns")
             return true
         end
     end
@@ -451,9 +450,13 @@ local function GetSpellSkip(spellString)
     return false
 end
 
+-- The entries left off the list at the last rebuild, as "Buff (reason)", for
+-- /bb status and the debug log
+BuffBot.leftOff = {}
+
 function BuffBot.FilterInitialList()
     FilterUniqueBuffs()
-    local FilteredClassBuffList = {}
+    local FilteredClassBuffList, leftOff = {}, {}
     for i = 1, #InitalClassBuffLists[BuffBot.playerclass], 1 do
         local spellString = InitalClassBuffLists[BuffBot.playerclass][i]
         if spellString == "Unique" then
@@ -478,12 +481,22 @@ function BuffBot.FilterInitialList()
         -- Poisons are items, so whether there are any is checked on each update
         local available = BuffBot.WeaponPoisons[spellString] or BuffBot.CheckSpellAvailable(spellString)
 
-        if available and not skipSpell then
-            debug(spellString, " Added to Filtered List")
-            table.insert(FilteredClassBuffList, spellString)
+        if spellString == nil then
+            -- No armor or aura to recommend: nothing to note
+        elseif skipSpell then
+            table.insert(leftOff, spellString .. " (off in settings)")
+        elseif not available then
+            local spellID = BuffBot.SpellID(spellString)
+            table.insert(leftOff, spellString .. " (not known" .. (spellID and (", spell " .. spellID) or "") .. ")")
         else
-            debug(InitalClassBuffLists[BuffBot.playerclass][i] .. " not found or intentionally skipped")
+            table.insert(FilteredClassBuffList, spellString)
         end
     end
-    BuffBot.classBuffList = FilteredClassBuffList
+    local changed = table.concat(FilteredClassBuffList, ", ") ~= table.concat(BuffBot.classBuffList or {}, ", ")
+        or table.concat(leftOff, ", ") ~= table.concat(BuffBot.leftOff, ", ")
+    BuffBot.classBuffList, BuffBot.leftOff = FilteredClassBuffList, leftOff
+    if changed then
+        debug("list: " .. (#FilteredClassBuffList > 0 and table.concat(FilteredClassBuffList, ", ") or "empty"))
+        if #leftOff > 0 then debug("left off: " .. table.concat(leftOff, ", ")) end
+    end
 end

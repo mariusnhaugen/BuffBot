@@ -38,7 +38,7 @@ end
 
 function events:CHAT_MSG_ADDON(prefix, text, channel, sender)
     if prefix ~= BuffBot.MESSAGE_PREFIX then return end
-    BuffBot.debug("BuffBot message from", sender, "on", channel .. ":", text)
+    BuffBot.debug("message from", sender, "on", channel .. ":", text)
     BuffBot.OnAddonMessage(text, sender)
 end
 

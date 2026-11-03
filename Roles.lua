@@ -94,6 +94,7 @@ local function AuraRole(unit, guid)
         local aura = C_UnitAuras.GetAuraDataBySpellName(unit, BuffBot.SpellName(talentAura.name))
         if aura and (not talentAura.own or (aura.sourceUnit and UnitIsUnit(aura.sourceUnit, unit))) then
             roleByGUID[guid] = { role = talentAura.role, source = "aura" }
+            BuffBot.debug("role: " .. BuffBot.NameOf(unit) .. " is " .. talentAura.role .. " (" .. talentAura.name .. ")")
             return talentAura.role
         end
     end
@@ -208,6 +209,7 @@ function BuffBot.InspectReady(guid)
         local role = SPEC_ROLES[GetInspectSpecialization and GetInspectSpecialization(unit) or 0]
             or TalentRole(select(2, UnitClass(unit)), true)
         if role then roleByGUID[guid] = { role = role, source = "inspect" } end
+        BuffBot.debug("role: " .. BuffBot.NameOf(unit) .. " is " .. (role or "unknown") .. " (Inspect)")
     end
     StopInspect()
     BuffBot.CheckPlayerBuffs()

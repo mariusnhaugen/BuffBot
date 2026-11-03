@@ -21,6 +21,6 @@ end
 BuffBot.config = {}
 function BuffBot.debug(...)
     if BuffBot.config.DEBUG_MODE then
-        print(...)
+        print("|cff00ccffBuffBot:|r", ...)
     end
 end

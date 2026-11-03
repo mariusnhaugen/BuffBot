@@ -82,6 +82,15 @@ a poison running low on charges counts as missing.
 
 `/bb buffs` prints your current buff list.
 
+`/bb status` prints what BuffBot sees, in one screenshot for a bug report:
+your list and why anything is left off it, what the button casts next or why
+it's quiet, buffs skipped for now (no poison in your bags, no weapon), your
+blessing slot and where your Oath of Light goes.
+
+`/bb debug` turns on a log in chat of what BuffBot decides as it happens: the
+next cast, slot changes, roles found by Inspect, add-on messages. It stays on
+until you turn it off.
+
 `/bb role <name> <role>` sets a raid member's role for blessings: tank,
 melee, ranged, caster or healer. Part of the name will do. `/bb role <name>`
 clears it. Roles are saved for your account; without one, a member's role

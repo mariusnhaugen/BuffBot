@@ -1,4 +1,4 @@
-local _, BuffBot = ...
+local addonName, BuffBot = ...
 
 local class = BuffBot.playerclass
 local REMINDER_DURA_MULTIPLIER = 0.2 -- aura.Duration * REMINDER_DURA_MULTIPLIER to get reminder duration
@@ -25,7 +25,6 @@ local function StartRangePoll()
 end
 
 function BuffBot.UpdateClassBuffList()
-    BuffBot.debug("UpdateClassBuffList")
     BuffBot.UpdateCoordination()
     BuffBot.UpdateRoles()
     BuffBot.FilterInitialList()
@@ -48,19 +47,28 @@ end
 
 local INVSLOT_MAINHAND = 16
 
-local function ShouldSkipBuff(buffString)
+-- Why a buff of the player's own is skipped for now, or nil when it isn't
+local function SkipReason(buffString)
     -- An imbue needs a main-hand weapon
     if BuffBot.WeaponImbues[buffString] and not GetInventoryItemID("player", INVSLOT_MAINHAND) then
-        return true
+        return "no main-hand weapon"
     end
     -- A poison needs a weapon in that hand and a poison in the bags
     local poison = BuffBot.WeaponPoisons[buffString]
-    if poison and not (GetInventoryItemID("player", poison.invSlot) and BuffBot.PoisonItem(buffString)) then
-        return true
+    if poison then
+        if not GetInventoryItemID("player", poison.invSlot) then return "no weapon in that hand" end
+        if not BuffBot.PoisonItem(buffString) then return "none in your bags" end
     end
     if BuffBot.IndexOf(buffString, BuffBot.uniqueBuffs) and BuffBot.HasUniqueClassBuff() then
-        return true -- check auras and armors
+        return "another one is already up" -- auras and armors
     end
+end
+
+-- A unit as a person reads it, for debug lines and /bb status
+function BuffBot.NameOf(unit)
+    if unit == "player" then return "you" end
+    if unit == "target" then return "your target" end
+    return GetUnitName(unit, true) or unit
 end
 
 -- Missing the buff and any group version of it
@@ -183,7 +191,9 @@ local function OathUnit()
     local name = BuffBot.SpellName("Oath of Light")
     for _, unit in ipairs(units) do
         if C_UnitAuras.GetAuraDataBySpellName(unit, name, "HELPFUL|PLAYER") then
-            oathTarget = GetUnitName(unit, true)
+            local wearer = GetUnitName(unit, true)
+            if wearer ~= oathTarget then BuffBot.debug("Oath of Light is on", wearer) end
+            oathTarget = wearer
             return unit
         end
     end
@@ -211,6 +221,16 @@ local function AddOath(missing)
     if not unit or not CanSeeUnit(unit, "Oath of Light") or not UnitMissing(unit, "Oath of Light") then return end
     if not InRange(unit, "Oath of Light") then return true end
     table.insert(missing, { buff = "Oath of Light", unit = unit })
+end
+
+-- Where the player's Oath of Light goes, for /bb status
+local function OathStatus()
+    if not IsInGroup() then return "not in a group" end
+    if BuffBot.InPvP() then return "not in battlegrounds" end
+    local unit = OathUnit()
+    if not unit then return "no tank, and not in a dungeon or raid" end
+    if unit == "target" then return "for your target, no tank found" end
+    return "for " .. BuffBot.NameOf(unit)
 end
 
 -- Fixed order for Greater Blessings on classes missing the same number
@@ -317,7 +337,8 @@ end
 -- button casts the first, and the suggestion list shows them all. A group
 -- buff goes on everyone before the next buff starts. Raid blessings come
 -- after the player's own buffs. The second result is true when a member in
--- view is missing a buff out of range.
+-- view is missing a buff out of range; the third lists the player's own buffs
+-- skipped for now, as "Buff (reason)".
 function BuffBot.MissingBuffs()
     local missing = {}
     if InCombatLockdown() then return missing end
@@ -325,7 +346,7 @@ function BuffBot.MissingBuffs()
     local classBuffs = BuffBot.classBuffList
     if classBuffs == nil then return missing end
 
-    local subgroups, outOfRange, later, last = GroupUnits(), false, {}, nil
+    local subgroups, outOfRange, later, last, skipped = GroupUnits(), false, {}, nil, {}
     for i = 1, #classBuffs do
         local currentBuff = classBuffs[i]
         if BuffBot.Blessings[currentBuff] and IsInRaid() then
@@ -341,33 +362,107 @@ function BuffBot.MissingBuffs()
             for _, units in ipairs(subgroups) do
                 outOfRange = AddGroupBuff(missing, currentBuff, units) or outOfRange
             end
-        elseif not ShouldSkipBuff(currentBuff) and UnitMissing("player", currentBuff) then
-            table.insert(missing, { buff = currentBuff, unit = "player" })
+        else
+            local reason = SkipReason(currentBuff)
+            if reason then
+                table.insert(skipped, currentBuff .. " (" .. reason .. ")")
+            elseif UnitMissing("player", currentBuff) then
+                table.insert(missing, { buff = currentBuff, unit = "player" })
+            end
         end
     end
     for _, entry in ipairs(later) do table.insert(missing, entry) end
     if last then table.insert(missing, last) end
-    return missing, outOfRange
+    return missing, outOfRange, skipped
 end
 
--- The last entry logged, so the range poll doesn't repeat it every few seconds
-local lastLogged
+-- Why the button has nothing to cast
+local function QuietReason(outOfRange)
+    if InCombatLockdown() then return "in combat, it waits until after" end
+    if UnitIsDeadOrGhost("player") then return "you're dead" end
+    if UnitOnTaxi("player") then return "you're on a flight" end
+    if #(BuffBot.classBuffList or {}) == 0 then return "no buffs on your list (/bb status)" end
+    if outOfRange then return "everything in range is up" end
+    return "everything is up"
+end
+
+-- The most suggestions /bb status names before "and N more"
+local STATUS_SHOWN = 5
+
+-- /bb status: what BuffBot sees and why the button shows what it does, in one
+-- screenshot for a bug report
+function BuffBot.StatusCommand()
+    local lines = {}
+    local function add(text) table.insert(lines, text) end
+
+    local version = C_AddOns.GetAddOnMetadata(addonName, "Version") or "?"
+    add("BuffBot " .. version .. " status" .. (BuffBot.config.DEBUG_MODE and " (debug on)" or ""))
+    local group = "solo"
+    if IsInRaid() then
+        group = "raid of " .. GetNumGroupMembers()
+    elseif IsInGroup() then
+        group = "party of " .. GetNumGroupMembers()
+    end
+    local _, instanceType = IsInInstance()
+    add("You: level " .. UnitLevel("player") .. " " .. UnitClass("player") .. ", " .. group .. ", "
+        .. (instanceType == "none" and "open world" or instanceType)
+        .. "; buff your group " .. (BuffBot.config.GROUP_BUFFING and "on" or "off"))
+
+    local list = BuffBot.classBuffList or {}
+    add("List: " .. (#list > 0 and table.concat(list, ", ") or "empty"))
+    if #BuffBot.leftOff > 0 then add("Left off: " .. table.concat(BuffBot.leftOff, ", ")) end
+
+    local missing, outOfRange, skipped = BuffBot.MissingBuffs()
+    if #missing > 0 then
+        local shown = {}
+        for i = 1, math.min(#missing, STATUS_SHOWN) do
+            shown[i] = missing[i].buff .. " on " .. BuffBot.NameOf(missing[i].unit)
+        end
+        local more = #missing - #shown
+        add("Next: " .. table.concat(shown, ", ") .. (more > 0 and (" and " .. more .. " more") or ""))
+        if outOfRange then add("Someone else missing a buff is out of range.") end
+    else
+        add("Nothing to cast: " .. QuietReason(outOfRange))
+    end
+    if skipped and #skipped > 0 then add("Skipped: " .. table.concat(skipped, ", ")) end
+
+    local slot = BuffBot.SlotStatus()
+    if slot then add("Blessing slot: " .. slot) end
+    if BuffBot.IndexOf("Oath of Light", list) then add("Oath of Light: " .. OathStatus()) end
+    if IsInRaid() then add("Roles: /bb raid") end
+
+    for _, text in ipairs(lines) do print(text) end
+end
+
+-- The last lines logged, so UNIT_AURA and the range poll only log changes
+local lastLogged, lastSkipped
+
+local function LogChanges(entry, outOfRange, skipped)
+    local line = entry and ("next: " .. entry.buff .. " on " .. BuffBot.NameOf(entry.unit))
+        or ("nothing to cast: " .. QuietReason(outOfRange))
+    if line ~= lastLogged then
+        lastLogged = line
+        BuffBot.debug(line)
+    end
+    local skips = table.concat(skipped or {}, ", ")
+    if skips ~= (lastSkipped or "") then
+        lastSkipped = skips
+        BuffBot.debug("skipped: " .. (skips ~= "" and skips or "nothing"))
+    end
+end
 
 function BuffBot.CheckPlayerBuffs()
-    local missing, outOfRange = BuffBot.MissingBuffs()
+    local missing, outOfRange, skipped = BuffBot.MissingBuffs()
     if outOfRange then StartRangePoll() end
     local entry = missing[1]
+    -- In combat the list is always empty; leave the log as it was
+    if not InCombatLockdown() then LogChanges(entry, outOfRange, skipped) end
     if not entry then
-        lastLogged = nil
         if InCombatLockdown() then return end
         BuffBot.macroButton:Hide()
         return
     end
     local buff = entry.buff
-    if lastLogged ~= buff .. entry.unit then
-        lastLogged = buff .. entry.unit
-        BuffBot.debug(buff, " Missing on ", entry.unit)
-    end
     local poison = BuffBot.WeaponPoisons[buff]
     if poison then
         BuffBot.UpdateItemMacro(BuffBot.PoisonItem(buff), poison.invSlot)
