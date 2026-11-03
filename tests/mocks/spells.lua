@@ -40,6 +40,7 @@ local byName = {
     ["Blessing of Kings"] = 20217,
     ["Greater Blessing of Kings"] = 25898,
     ["Righteous Fury"] = 25780,
+    ["Oath of Light"] = 1328548,
     -- PRIEST
     ["Power Word: Fortitude"] = 1243,
     ["Prayer of Fortitude"] = 21562,

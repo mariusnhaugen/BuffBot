@@ -155,6 +155,64 @@ local function AddGroupBuff(missing, buffString, units)
     return outOfRange
 end
 
+-- The unit the player's Oath of Light last went on, by full name, so it goes
+-- back there once it runs out
+local oathTarget
+
+-- The group without the player: Oath of Light is for someone else. It isn't
+-- a group buff, so it ignores the group buffing setting.
+local function OathCandidates()
+    local units = {}
+    local prefix, count = "party", GetNumSubgroupMembers()
+    if IsInRaid() then prefix, count = "raid", GetNumGroupMembers() end
+    for i = 1, count do
+        local unit = prefix .. i
+        if not UnitIsUnit(unit, "player") then table.insert(units, unit) end
+    end
+    return units
+end
+
+-- The unit for the player's Oath of Light: wherever it is now, else where it
+-- was last, else the main tank, else another tank, else "target" for the
+-- player to pick one, only in a dungeon or raid, where a party without a
+-- tank still has someone to keep it on. nil when the last target is still
+-- in the group but can't take it, since the player picks the target and the
+-- button never moves it.
+local function OathUnit()
+    local units = OathCandidates()
+    local name = BuffBot.SpellName("Oath of Light")
+    for _, unit in ipairs(units) do
+        if C_UnitAuras.GetAuraDataBySpellName(unit, name, "HELPFUL|PLAYER") then
+            oathTarget = GetUnitName(unit, true)
+            return unit
+        end
+    end
+    for _, unit in ipairs(units) do
+        if oathTarget and GetUnitName(unit, true) == oathTarget then return unit end
+    end
+    for _, unit in ipairs(units) do
+        if GetPartyAssignment("MAINTANK", unit) then return unit end
+    end
+    for _, unit in ipairs(units) do
+        if BuffBot.RoleOf(unit) == "tank" then return unit end
+    end
+    local _, instanceType = IsInInstance()
+    if instanceType == "party" or instanceType == "raid" then return "target" end
+end
+
+-- The player's Oath of Light, when it's due on its unit, in a group and out
+-- of PvP. True when its unit is out of range. Without a target to keep it
+-- on, the second result is an entry for the player's target, to go last so
+-- it never holds up the other buffs.
+local function AddOath(missing)
+    if not IsInGroup() or BuffBot.InPvP() then return end
+    local unit = OathUnit()
+    if unit == "target" then return false, { buff = "Oath of Light", unit = unit } end
+    if not unit or not CanSeeUnit(unit, "Oath of Light") or not UnitMissing(unit, "Oath of Light") then return end
+    if not InRange(unit, "Oath of Light") then return true end
+    table.insert(missing, { buff = "Oath of Light", unit = unit })
+end
+
 -- Fixed order for Greater Blessings on classes missing the same number
 local CLASS_ORDER = { "WARRIOR", "ROGUE", "HUNTER", "MAGE", "WARLOCK", "PRIEST", "DRUID", "SHAMAN", "PALADIN" }
 
@@ -267,7 +325,7 @@ function BuffBot.MissingBuffs()
     local classBuffs = BuffBot.classBuffList
     if classBuffs == nil then return missing end
 
-    local subgroups, outOfRange, later = GroupUnits(), false, {}
+    local subgroups, outOfRange, later, last = GroupUnits(), false, {}, nil
     for i = 1, #classBuffs do
         local currentBuff = classBuffs[i]
         if BuffBot.Blessings[currentBuff] and IsInRaid() then
@@ -275,6 +333,10 @@ function BuffBot.MissingBuffs()
             if not BuffBot.BlessingsOnHold() then
                 outOfRange = AddRaidBlessings(missing, later, subgroups) or outOfRange
             end
+        elseif currentBuff == "Oath of Light" then
+            local away, onTarget = AddOath(missing)
+            outOfRange = away or outOfRange
+            last = onTarget
         elseif BuffBot.GroupBuffs[currentBuff] then
             for _, units in ipairs(subgroups) do
                 outOfRange = AddGroupBuff(missing, currentBuff, units) or outOfRange
@@ -284,6 +346,7 @@ function BuffBot.MissingBuffs()
         end
     end
     for _, entry in ipairs(later) do table.insert(missing, entry) end
+    if last then table.insert(missing, last) end
     return missing, outOfRange
 end
 

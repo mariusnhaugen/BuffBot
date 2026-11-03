@@ -25,7 +25,7 @@ Made for **WoW Forever**. The Classic Era version is no longer updated.
 | Druid | Omen of Clarity, Mark of the Wild, Thorns |
 | Hunter | Trueshot Aura, Aspect of the Hawk (any other combat aspect also counts) |
 | Mage | Ice Armor or Frost Armor (Mage Armor in a raid), Arcane Intellect, Dampen Magic |
-| Paladin | An aura (Sanctity, Devotion or Retribution), Blessing of Might, Wisdom or Kings, Righteous Fury if you tank. Party members get a blessing by class, shared out with other Paladins |
+| Paladin | An aura (Sanctity, Devotion or Retribution), Blessing of Might, Wisdom or Kings, Righteous Fury if you tank, Oath of Light on your tank (or your target) if you have the talent. Party members get a blessing by class, shared out with other Paladins |
 | Priest | Power Word: Fortitude, Shadowform, Divine Spirit, Inner Fire |
 | Rogue | A poison on each weapon |
 | Shaman | Lightning Shield, a weapon imbue |

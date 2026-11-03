@@ -1,5 +1,14 @@
 # BuffBot
 
+## 2.5.2
+
+- **Oath of Light** for Holy Paladins with the talent: the button puts it on
+  the main tank (or a `/bb role` tank), then keeps it on whoever you cast it
+  on, and offers it again when it's about to run out. With no tank in a
+  dungeon or raid, it's offered last as "Oath of Light > Target", for
+  whoever you have targeted.
+  Never on yourself, alone, or in battlegrounds.
+
 ## 2.5.1
 
 Removed Blessing of Light from 2.5.0 release

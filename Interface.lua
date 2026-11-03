@@ -63,7 +63,10 @@ function BuffBot.UpdateMacro(spellName, unit, firstSpell)
     if InCombatLockdown() then return end
     macroButton.spell = spellName
     macroButton.hasFirstSpell = firstSpell ~= nil
-    local macro = "/cast [target=" .. unit .. "]" .. BuffBot.SpellName(spellName)
+    -- On the player's target only when it's friendly and alive, so a press
+    -- without one casts nothing, not even on the player
+    local conditions = unit == "target" and "target,help,nodead" or unit
+    local macro = "/cast [target=" .. conditions .. "]" .. BuffBot.SpellName(spellName)
     if firstSpell then
         macro = "/cast [nocombat] " .. BuffBot.SpellName(firstSpell) .. "\n" .. macro
     end
@@ -174,6 +177,8 @@ function BuffBot.UpdateSuggestionList(missing)
         -- "→" isn't in the game font
         if missing[i].class then
             text = text .. " > " .. ClassLabel(missing[i].class)
+        elseif missing[i].unit == "target" then
+            text = text .. " > " .. TARGET
         elseif missing[i].unit ~= "player" then
             -- UnitName splits Forever's "First Last" names in two
             text = text .. " > " .. (GetUnitName(missing[i].unit, true) or missing[i].unit)

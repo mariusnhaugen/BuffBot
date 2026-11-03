@@ -20,6 +20,7 @@ globals = {
 -- IsUsableSpell are removed there, so they are deliberately not listed.
 read_globals = {
     "C_AddOns",
+    "TARGET",
     "C_ChatInfo",
     "C_Item",
     "C_KeyBindings",

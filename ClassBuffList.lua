@@ -6,7 +6,7 @@ local InitalClassBuffLists = {}
 InitalClassBuffLists.DRUID = { "Omen of Clarity", "Mark of the Wild", "Thorns" }
 InitalClassBuffLists.HUNTER = { "Trueshot Aura", "Aspect of the Hawk" }
 InitalClassBuffLists.MAGE = { "Unique", "Arcane Intellect", "Dampen Magic" }
-InitalClassBuffLists.PALADIN = { "Unique", "Blessing", "Righteous Fury" }
+InitalClassBuffLists.PALADIN = { "Unique", "Blessing", "Righteous Fury", "Oath of Light" }
 InitalClassBuffLists.PRIEST = { "Power Word: Fortitude", "Shadowform", "Divine Spirit", "Inner Fire" }
 InitalClassBuffLists.ROGUE = { "Main Hand Poison", "Off Hand Poison" }
 InitalClassBuffLists.SHAMAN = { "Lightning Shield", "Imbue" }
@@ -79,6 +79,8 @@ BuffBot.OwnOnlyBuffs = {}
 for _, aura in ipairs(UniqueBuffsByClass.PALADIN) do
     BuffBot.OwnOnlyBuffs[aura] = true
 end
+-- Every Holy Paladin has their own Oath, and they stack
+BuffBot.OwnOnlyBuffs["Oath of Light"] = true
 
 -- Group versions that cover a single-target buff
 BuffBot.GroupVersions = {
@@ -297,6 +299,7 @@ local spellIDTable = {
     ["Blessing of Kings"] = 20217,
     ["Greater Blessing of Kings"] = 25898,
     ["Righteous Fury"] = 25780,
+    ["Oath of Light"] = 1328548, -- Holy talent, from Wowhead
     -- PRIEST
     ["Power Word: Fortitude"] = 1243,
     ["Prayer of Fortitude"] = 21562,

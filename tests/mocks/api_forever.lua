@@ -162,6 +162,7 @@ return function(state, env)
 
     function env.GetLocale() return state.locale end
 
+    env.TARGET = "Target"
     env.LOCALIZED_CLASS_NAMES_MALE = {}
     for _, class in ipairs({ "WARRIOR", "ROGUE", "HUNTER", "MAGE", "WARLOCK", "PRIEST", "DRUID", "SHAMAN", "PALADIN" }) do
         env.LOCALIZED_CLASS_NAMES_MALE[class] = "Class " .. class

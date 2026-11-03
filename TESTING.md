@@ -54,6 +54,18 @@ Tick the setting in `/bb`, then press the BuffBot button until the blessing is u
 
 Result:
 
+### Oath of Light (Holy Paladin, 2.5.2)
+
+A Holy Paladin with the Oath of Light talent (spell 1328548, from Wowhead) keeps their Oath on one group member, never themselves, and never in a battleground or alone. The button puts it on the main tank, or a member set to `tank` with `/bb role`. With no tank, in a dungeon or raid only, it offers "Oath of Light > Target" last, cast on whoever you have targeted. After that it stays on whoever you put it on: it's offered again on them in its last minute or once it's gone, never on someone else while they're in the group, even if they're dead.
+
+1. In a raid, mark a Warrior as main tank: the button offers Oath of Light on them, before any raid blessings. Check that `/dump IsPlayerSpell(1328548)` prints `true` with the talent and `false` without it.
+2. Cast it on a Priest yourself. The button doesn't offer to move it to the tank. Right-click it off the Priest: the button offers it on the Priest again.
+3. With "Buff your group" off, the Oath is still offered.
+4. In a dungeon party without a tank, the list ends with "Oath of Light > Target" (and outside an instance, the Oath isn't offered at all). Pressing the button with nothing targeted, an enemy, or a dead member targeted casts nothing (no error, no Oath on you). With a party member targeted, it lands on them, and the button then keeps it there.
+5. Assumptions to confirm: it lasts 5 minutes, casting it on a new target moves it there (the old one loses it), and two Paladins' Oaths both stay on one target.
+
+Result:
+
 ### No aura errors in combat
 
 `UNIT_AURA` payloads can be secret in combat. The handler should now ignore other units' payloads, and the button should keep updating in combat.

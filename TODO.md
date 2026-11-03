@@ -103,26 +103,6 @@ commit.
   `melee` is picked Might, which `CanSeeUnit` then drops, so they get no
   blessing from that Paladin instead of Kings. Fix: leave out blessings the
   class can't use when `BlessingFor` builds the role's list.
-- 39. Oath of Light. A deep Holy talent that took Blessing of Light's
-  place on Forever. Not a blessing: it increases healing done to a single
-  target of the Paladin's choosing, usually a tank, one per Paladin. So it
-  stays out of the blessing slots and `BlessingFor` entirely, and only
-  Paladins who took the talent (`CheckSpellAvailable`) ever see it.
-  Spell ID 1328548 (Wowhead), 5 minutes. Assumed until checked in game:
-  casting it on a new target moves it there, and two Paladins' Oaths stack
-  on one target. Ideas:
-  - Remind, don't choose: once the player's Oath is on someone, keep it
-    there and only suggest a recast on that target once it's due (like
-    Righteous Fury, opt-in).
-  - With no Oath up, suggest the main tank (main-tank mark, then the tank
-    role from `/bb role`); without one, leave it to the player rather than
-    guess.
-  - Never move it on its own: a recast elsewhere would pull it off the
-    Paladin's chosen target. Another Paladin's Oath on the same tank is
-    fine, since they stack.
-  - 5 minutes is short next to blessings, and the button hides in combat,
-    so it runs out mid-fight on long pulls. Out of combat, refresh it early
-    like the player's own buffs so each pull starts with a full one.
 
 ## Decided against
 
@@ -141,6 +121,7 @@ commit.
 
 ## Done
 
+- [x] 39. Oath of Light for Holy Paladins (2.5.2): on the main tank or a `/bb role` tank, else the player's target, then kept on whoever the player cast it on; never on the player or in PvP. Spell ID, duration and stacking are launch checks in TESTING.md
 - [x] Blessing of Light removed: three blessings, no Light filler, a 4th Paladin is a reserve (2.5.1)
 - [x] 29, part 2. Raid coordination for 2.5: roles, Greater Blessings with exceptions, slots shared out over add-on messages, `/bb role` and `/bb raid` (`d57f9d6`, `9999d4a`, `267d427`, `de356f9`, `4ea5463`; design in `docs/plan/SPEC.md`)
 - [x] 21. Blessing of Light as the raid filler (`2a815e1`). Sanctuary is a launch check in TESTING.md
