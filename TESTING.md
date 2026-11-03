@@ -63,6 +63,8 @@ A Holy Paladin with the Oath of Light talent (spell 1328548, from Wowhead) keeps
 3. With "Buff your group" off, the Oath is still offered.
 4. In a dungeon party without a tank, the list ends with "Oath of Light > Target" (and outside an instance, the Oath isn't offered at all). Pressing the button with nothing targeted, an enemy, or a dead member targeted casts nothing (no error, no Oath on you). With a party member targeted, it lands on them, and the button then keeps it there.
 5. Assumptions to confirm: it lasts 5 minutes, casting it on a new target moves it there (the old one loses it), and two Paladins' Oaths both stay on one target.
+6. On any character, `/dump C_Spell.GetSpellInfo(1328548).name` prints `Oath of Light`. The ID is from Wowhead; if it's wrong, the talent is never found and the Oath is never offered, with no error.
+7. In a party with your Oath on party1, `/dump C_UnitAuras.GetAuraDataBySpellName("party1", "Oath of Light", "HELPFUL|PLAYER") ~= nil` prints `true`, and `false` when only another Paladin's Oath is on them. The button finds its target by this.
 
 Result:
 
@@ -162,6 +164,7 @@ For 2.5 (raid coordination, `docs/plan/SPEC.md`). Run in a raid unless noted; Gr
 - [ ] [Raid blessings](#raid-blessings-25-at-level-60): the in-game run of 2.5 with two to four Paladins
 - [ ] [Raid blessing handovers](#raid-blessing-handovers-25-at-level-60): goodbye, reserves, waiting out an old holder's blessing, a joiner the roster doesn't show yet, and two Paladins on one slot
 - [ ] [Spell and item IDs for raid roles and Greater Blessings](#spell-and-item-ids-for-raid-roles-and-greater-blessings): Moonkin Form, Moonkin Aura, Leader of the Pack, Symbol of Kings
+- [ ] [Oath of Light](#oath-of-light-holy-paladin-252): the spell ID (step 6, any character) first, then the rest with a Holy Paladin who has the talent
 - [ ] Sanctuary is gone from Forever (TODO 21)
 - [ ] Keybind on the settings page: `/dump C_KeyBindings.GetBindingIndex("CLICK BUFFBOT_MacroButton:LeftButton")` prints a number, and `/bb` shows a BuffBot Cast keybind row at the top. Set a key there: it casts, shows under Key Bindings > AddOns, and survives `/reload`. If the row is missing or broken, fall back to a button that calls `SetBindingClick` and `SaveBindings` (TODO 35)
 - [ ] Battlegrounds, for a later PvP release: which channel (`RAID` or `INSTANCE_CHAT`) reaches a battleground raid
