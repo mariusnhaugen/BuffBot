@@ -196,7 +196,13 @@ function BuffBot.BlessingFor(unit)
     local isPlayer = unit == "player" and not slotted
     local list = BuffBot.BlessingPriority[select(2, UnitClass(unit))] or {}
     if inRaid then
-        list = BuffBot.RoleLists[BuffBot.RoleOf(unit)] or {}
+        -- Any role can go on any class, so leave out what the class can't use
+        local class = select(2, UnitClass(unit))
+        list = {}
+        for _, blessing in ipairs(BuffBot.RoleLists[BuffBot.RoleOf(unit)] or {}) do
+            local skip = BuffBot.SkipOnClass[blessing]
+            if not (skip and skip[class]) then table.insert(list, blessing) end
+        end
     end
     if isPlayer then
         list = { BuffBot.config.PALADIN_BLESSING }

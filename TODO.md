@@ -97,12 +97,6 @@ commit.
   own), and sending manual roles to the other Paladins. Short of that, a
   Paladin could give its slot's blessing to a hybrid whatever role it
   worked out.
-- 38. A role whose blessing the class can't use gives nothing. `/bb role`
-  takes any role for any class, and the class skip list (`SkipOnClass`)
-  still applies after the role's list picks a blessing. A Mage set to
-  `melee` is picked Might, which `CanSeeUnit` then drops, so they get no
-  blessing from that Paladin instead of Kings. Fix: leave out blessings the
-  class can't use when `BlessingFor` builds the role's list.
 
 ## Decided against
 
@@ -121,6 +115,7 @@ commit.
 
 ## Done
 
+- [x] 38. A role whose blessing the class can't use falls through to the next on the role's list (a Mage set to `melee` gets Kings, not nothing) (2.5.2)
 - [x] 39. Oath of Light for Holy Paladins (2.5.2): on the main tank or a `/bb role` tank, else the player's target, then kept on whoever the player cast it on; never on the player or in PvP. Spell ID, duration and stacking are launch checks in TESTING.md
 - [x] Blessing of Light removed: three blessings, no Light filler, a 4th Paladin is a reserve (2.5.1)
 - [x] 29, part 2. Raid coordination for 2.5: roles, Greater Blessings with exceptions, slots shared out over add-on messages, `/bb role` and `/bb raid` (`d57f9d6`, `9999d4a`, `267d427`, `de356f9`, `4ea5463`; design in `docs/plan/SPEC.md`)

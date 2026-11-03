@@ -8,6 +8,9 @@
   dungeon or raid, it's offered last as "Oath of Light > Target", for
   whoever you have targeted.
   Never on yourself, alone, or in battlegrounds.
+- A member given a role their class can't use the blessing for (a Mage set
+  to `melee` with `/bb role`) now gets the next blessing on that role's
+  list instead of nothing.
 
 ## 2.5.1
 
