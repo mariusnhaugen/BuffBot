@@ -63,17 +63,6 @@ commit.
   and a dropdown or click to set the role (saved to the manual list) or
   clear it. Maybe also re-inspect a member or drop their cached result
   (TODO 32).
-- 35. Bring back the usage text on the settings page. The Settings API
-  rewrite (`cfb530f`) dropped the old canvas page's lines: set a keybind
-  in the game's Key Bindings > AddOns for a spammable button, Alt+drag to
-  move the button, and `/bb`, `/buffbot` to open the page. Now they only
-  appear in the Hide Icon and Reset Button Position tooltips. The
-  vertical-layout category may need a section header or a custom
-  initializer for plain text.
-  - The keybind now has its own row at the top of the page
-    (`CreateKeybindingEntryInitializer`), written without the game to test
-    it on; check it at launch (TESTING.md, Test at launch). If it works, the
-    text only needs the Alt+drag and slash command lines.
 - 36. Share out other classes' raid buffs, as the Paladins' blessings are
   (29). Two Mages both offer Arcane Intellect to the whole raid; they could
   split it by subgroup instead (Mage A groups 1–4, B 5–8), and the same for
@@ -121,6 +110,7 @@ commit.
 
 ## Done
 
+- [x] 35. Usage text on the settings page (2.6): Alt+drag on the Reset row, and a Commands section with a button and tooltip per command; `/bb help` and unknown commands list them. Only proven initializers (button rows, section headers); pull back on the design after launch if it's cluttered
 - [x] 38. A role whose blessing the class can't use falls through to the next on the role's list (a Mage set to `melee` gets Kings, not nothing) (2.5.2)
 - [x] 39. Oath of Light for Holy Paladins (2.5.2): on the main tank or a `/bb role` tank, else the player's target, then kept on whoever the player cast it on; never on the player or in PvP. Spell ID, duration and stacking are launch checks in TESTING.md
 - [x] Blessing of Light removed: three blessings, no Light filler, a 4th Paladin is a reserve (2.5.1)

@@ -238,8 +238,46 @@ describe("settings panel", function()
                 table.insert(order, init.setting.name)
             end
         end
-        assert.same({ "keybind", "button", "Tracking", "Auto tracking", "Auto Find Treasure", "Group", "Buff your group",
-            "Class Settings" }, order)
+        assert.same({ "keybind", "button", "Commands: /bb or /buffbot opens this page", "button", "button", "button",
+            "button", "Tracking", "Auto tracking", "Auto Find Treasure", "Group", "Buff your group", "Class Settings" },
+            order)
+    end)
+
+    local function button(h, buttonText)
+        for _, init in ipairs(h.state.categories.BuffBot.initializers) do
+            if init.kind == "button" and init.buttonText == buttonText then return init end
+        end
+    end
+
+    it("says how to move the button", function()
+        local h = Addon.load()
+        assert.equal("Alt+drag the button to move it", button(h, "Reset Button Position").name)
+    end)
+
+    it("lists the commands, each with a button that runs it", function()
+        local h = Addon.load()
+        local status = button(h, "Print Status")
+        assert.equal("/bb status", status.name)
+        assert.is_truthy(status.tooltip:find("bug report", 1, true))
+        status.onClick()
+        assert.is_true(h:printed(" status"))
+
+        button(h, "Toggle Debug Log").onClick()
+        assert.is_true(h.ns.config.DEBUG_MODE)
+        button(h, "Show Raid").onClick()
+        assert.is_true(h:printed("BuffBot: not in a raid."))
+        button(h, "Show Usage").onClick()
+        assert.is_true(h:printed("/bb role <name> <tank|melee|ranged|caster|healer>"))
+    end)
+
+    it("/bb help and unknown commands list the commands", function()
+        local h = Addon.load()
+        h:slash("help")
+        assert.is_true(h:printed("BuffBot commands:"))
+        assert.is_true(h:printed("/bb status - Prints what BuffBot sees"))
+        h.state.printed = {}
+        h:slash("nonsense")
+        assert.is_true(h:printed("BuffBot commands:"))
     end)
 
     it("starts with the game's keybind row for the cast button", function()

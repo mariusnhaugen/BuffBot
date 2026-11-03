@@ -8,6 +8,9 @@
   why there's none, buffs left off the list or skipped and why, blessing
   slot changes, and roles found by Inspect. Lines start with "BuffBot:" and
   name players instead of raid slots.
+- The settings page lists the commands again, each with a button that
+  runs it, and says how to move the button (Alt+drag). `/bb help`, or any
+  command BuffBot doesn't know, prints the commands in chat.
 - Omen of Clarity is gone from the Druid list: it's a passive on Forever.
 
 ## 2.5.2
