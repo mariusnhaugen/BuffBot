@@ -6,10 +6,6 @@ commit.
 ## Feature ideas
 
 - 18. Settings page cleanup. Show only the current class's settings. General UX. Make paladin prio?
-- 26. Known issue: the first Rockbiter cast once needed a second press
-  before the button moved on. Not reproduced since. A probe for
-  `UNIT_INVENTORY_CHANGED` printed nothing, so the event may not always
-  fire, or `C_Item.GetWeaponEnchantInfo` may lag behind it.
 - 31. Roles in parties. Part 2 (29) gives raid members a role (tank,
   melee, ranged, caster, healer) that picks their blessings; parties keep
   the class lists for now. Inspect doesn't help while leveling: talents
@@ -20,6 +16,26 @@ commit.
     fill goes to them (3 Mages, a Priest and a Druid: the Druid tanks).
     Keep the tank and healer classes in a table, since Forever may change
     them.
+- 40. Role detection for Paladins whose talent points don't match their
+  job. `Roles.lua` `TalentRole` picks the tree with the most points, so a
+  36/0/15 damage Paladin reads as healer, and a 21/30/0 healer as tank.
+  Forever reshuffled the Holy, Protection and Retribution talents, so point
+  layouts are even less reliable. Only missing a Paladin who wants Might
+  really costs anything: healer and caster share Wisdom > Kings.
+  - Infusion of Light lookup: `C_SpecializationInfo.GetTalentInfo({
+    specializationIndex, talentIndex, isInspect })` returns `rank` and
+    `spellID`; deep Holy without Infusion of Light means damage. Unknown:
+    whether it survived the reshuffle, its ID, and whether every Holy
+    healer takes it.
+  - Weapon check after Inspect: a two-hander in `GetInventoryItemLink(unit,
+    16)`, or an empty slot 17, means melee. Unknown: whether Forever returns
+    item links after Inspect.
+  - An own-role dropdown on the settings page ("My role: Auto / Tank /
+    Healer / Melee / Caster"), announced to the raid with 33: the exact
+    answer for BuffBot users.
+  - Rejected: counting casts in the combat log (too late, too costly).
+  - Leaning: the talent and weapon checks as a guess ahead of point count,
+    the dropdown as the exact answer.
 - 32. Stale roles after a respec, after 2.5. Part 2 (29) caches Inspect
   results per GUID for the session, so a Resto Druid who goes Feral
   mid-raid keeps getting Wisdom until the session ends; for now the manual
