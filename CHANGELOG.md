@@ -4,26 +4,16 @@
 
 - `/bb status` prints what BuffBot sees and why the button shows what it
   does, for bug reports.
-- `/bb debug` logs more, and only when something changes: the next cast or
-  why there's none, buffs left off the list or skipped and why, blessing
-  slot changes, and roles found by Inspect. Lines start with "BuffBot:" and
-  name players instead of raid slots.
-- The settings page lists the commands again, each with a button that
+- `/bb debug` improvements 
+- Usability: The settings page lists the commands again, each with a button that
   runs it, and says how to move the button (Alt+drag). `/bb help`, or any
   command BuffBot doesn't know, prints the commands in chat.
-- Omen of Clarity is gone from the Druid list: it's a passive on Forever.
+- Bugfix: Omen of Clarity removed. 
 
 ## 2.5.2
 
-- **Oath of Light** for Holy Paladins with the talent: the button puts it on
-  the main tank (or a `/bb role` tank), then keeps it on whoever you cast it
-  on, and offers it again when it's about to run out. With no tank in a
-  dungeon or raid, it's offered last as "Oath of Light > Target", for
-  whoever you have targeted.
-  Never on yourself, alone, or in battlegrounds.
-- A member given a role their class can't use the blessing for (a Mage set
-  to `melee` with `/bb role`) now gets the next blessing on that role's
-  list instead of nothing.
+- **Oath of Light** for Holy Paladins: Remembers your previous target, will try to find a Tank, otherwise suggest you pick a target.  Never on yourself, alone, or in battlegrounds.
+- Bugfix: A member given a role their class can't use the blessing for (a Mage set to `melee` with `/bb role`) now gets the next blessing on that role's list instead of nothing.
 
 ## 2.5.1
 
