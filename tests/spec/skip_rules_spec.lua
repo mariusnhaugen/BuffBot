@@ -65,6 +65,15 @@ describe("skip rules", function()
         assert.same({ "Arcane Intellect" }, h:buffUp())
     end)
 
+    it("IGNORE_LIGHTNING_SHIELD skips Lightning Shield but not the imbue", function()
+        local h = Addon.load({
+            class = "SHAMAN",
+            known = { "Lightning Shield", "Rockbiter Weapon" },
+            config = { IGNORE_LIGHTNING_SHIELD = true },
+        })
+        assert.same({ "Rockbiter Weapon" }, h:buffUp())
+    end)
+
     describe("unique armors and auras", function()
         it("any active Mage armor satisfies the armor slot", function()
             local h = Addon.load({ class = "MAGE", known = { "Frost Armor", "Ice Armor", "Arcane Intellect" } })

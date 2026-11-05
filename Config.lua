@@ -76,6 +76,7 @@ function BuffBot.GetDefaultConfig()
     defaultConfig.STRICT_ARMOR = false
     defaultConfig.IGNORE_THORNS = false
     defaultConfig.IGNORE_DAMPEN = false
+    defaultConfig.IGNORE_LIGHTNING_SHIELD = false
     defaultConfig.CHEETAH_REMINDER = true
     defaultConfig.SHAMAN_IMBUE = "Rockbiter Weapon"
     defaultConfig.ROGUE_POISON_MAINHAND = "Instant Poison"
@@ -204,6 +205,7 @@ function BuffBot.RegisterSettings()
         "Cast Bloodrage before Battle Shout out of combat. \n\nCan cause error spam while Bloodrage is on cooldown.")
     addCheckbox("RIGHTEOUS_FURY", "Recommend Righteous Fury", "Cast Righteous Fury, for tanking.")
     addCheckbox("IGNORE_THORNS", "Skip Thorns", "Skip recommending Thorns.")
+    addCheckbox("IGNORE_LIGHTNING_SHIELD", "Skip Lightning Shield", "Skip recommending Lightning Shield.")
     addCheckbox("CHEETAH_REMINDER", "Reminder to leave Cheetah",
         "Shows Aspect of the Hawk if you are in Aspect of the Cheetah/Pack")
 

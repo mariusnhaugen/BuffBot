@@ -440,6 +440,12 @@ local function GetSpellSkip(spellString)
         end
     end
 
+    if class == "SHAMAN" then
+        if spellString == "Lightning Shield" and BuffBot.config.IGNORE_LIGHTNING_SHIELD then
+            return true
+        end
+    end
+
     -- Only tanks want the extra threat
     if class == "PALADIN" then
         if spellString == "Righteous Fury" and not BuffBot.config.RIGHTEOUS_FURY then
