@@ -625,3 +625,12 @@ Tick the setting in `/bb`, then press the BuffBot button until the blessing is u
 
 Result:
 Works on the live servers (2026-11-05)
+
+## Scroll buff auras (TODO 41)
+
+Whether a scroll's aura can be identified, and whether it reports its strength.
+
+Use a Scroll of Spirit, then `/dump C_UnitAuras.GetAuraDataBySpellName("player","Spirit")`
+
+Result:
+On the live servers (2026-11-05): `spellId` 8112, `name` Spirit, `duration` 30 minutes, `points` empty. The aura can be identified, but its strength has to come from a table
