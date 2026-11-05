@@ -269,7 +269,8 @@ return function(state, env)
         return m and m.mainTank == true or false
     end
 
-    function env.UnitLevel() return 60 end
+    function env.UnitLevel() return state.level or 60 end
+    function env.GetMaxPlayerLevel() return 60 end
 
     function env.InCombatLockdown() return state.combat end
 

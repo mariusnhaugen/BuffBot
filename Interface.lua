@@ -2,6 +2,7 @@ local _, BuffBot = ...
 local macroButton;
 
 local LEFTBUTTON = 'LeftButton';
+local REMINDER_ICON = "Interface\\Icons\\Spell_Misc_Food"
 
 -- Define blizzard Keybind
 _G["BINDING_NAME_" .. "CLICK BUFFBOT_MacroButton:LeftButton"] = "BuffBot Cast"
@@ -80,6 +81,15 @@ function BuffBot.UpdateItemMacro(itemID, invSlot)
     macroButton.spell = nil
     macroButton.hasFirstSpell = false
     ShowMacro(C_Item.GetItemIconByID(itemID), "/use item:" .. itemID .. "\n/use " .. invSlot)
+end
+
+-- A reminder with nothing to cast. The text hangs off the button, so the button
+-- has to show, with no macro: a press does nothing.
+function BuffBot.UpdateReminder(spellName)
+    if InCombatLockdown() then return end
+    macroButton.spell = nil
+    macroButton.hasFirstSpell = false
+    ShowMacro(C_Spell.GetSpellTexture(BuffBot.SpellID(spellName)) or REMINDER_ICON, nil)
 end
 
 function BuffBot.SetMacroButtonDefaultPosition()
@@ -174,6 +184,7 @@ function BuffBot.UpdateSuggestionList(missing)
             BuffBot.suggestionList[i]:SetPoint("TOPLEFT", macroButton, 0, -35 + (i * -15))
         end
         local text = BuffBot.DisplayName(missing[i].buff)
+        if missing[i].reminder then text = "Eat food (" .. text .. ")" end
         -- "→" isn't in the game font
         if missing[i].class then
             text = text .. " > " .. ClassLabel(missing[i].class)

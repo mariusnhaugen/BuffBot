@@ -363,6 +363,7 @@ function M.load(opts)
     local state = State.new(opts.class)
     state.translate = opts.translate
     state.playerName = opts.name or state.playerName
+    state.level = opts.level
     state:learn(unpack(opts.known or {}))
     if opts.raid then state.group, state.raid = true, true end
     if opts.bindings then state.bindings = opts.bindings end

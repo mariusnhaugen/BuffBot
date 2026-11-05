@@ -64,6 +64,7 @@ function BuffBot.GetDefaultConfig()
     local defaultConfig = {}
     defaultConfig.HIDE_ICON = false
     defaultConfig.HIDE_TEXT = false
+    defaultConfig.EAT_REMINDER = false
     defaultConfig.DEBUG_MODE = false
 
     defaultConfig.BLOODRAGE = false
@@ -142,6 +143,8 @@ function BuffBot.RegisterSettings()
         BuffBot.UpdateIconVisibility)
     addCheckbox("HIDE_TEXT", "Hide Text", "Hides the list of upcoming buffs under the button.",
         BuffBot.UpdateSuggestionList)
+    addCheckbox("EAT_REMINDER", "Remind me to eat while leveling",
+        "Below the level cap, reminds you when you aren't Well Fed. Cooked food gives more XP from kills. The button can't eat for you, so pressing it does nothing while the reminder shows.")
 
     layout:AddInitializer(CreateSettingsButtonInitializer("Button Position", "Reset Button Position", function()
         -- Moving the secure button is blocked in combat

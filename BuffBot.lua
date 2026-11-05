@@ -339,6 +339,17 @@ end
 -- after the player's own buffs. The second result is true when a member in
 -- view is missing a buff out of range; the third lists the player's own buffs
 -- skipped for now, as "Buff (reason)".
+-- Below the level cap, Forever's cooked food also gives more XP. Any Well Fed
+-- counts, and eating takes a while, so it stays quiet during the Food aura.
+local function EatReminderDue()
+    if not BuffBot.config.EAT_REMINDER or BuffBot.InPvP() then return false end
+    if UnitLevel("player") >= GetMaxPlayerLevel() then return false end
+    local function hasAura(name)
+        return C_UnitAuras.GetAuraDataBySpellName("player", BuffBot.SpellName(name)) ~= nil
+    end
+    return not hasAura("Well Fed") and not hasAura("Food")
+end
+
 function BuffBot.MissingBuffs()
     local missing = {}
     if InCombatLockdown() then return missing end
@@ -373,6 +384,8 @@ function BuffBot.MissingBuffs()
     end
     for _, entry in ipairs(later) do table.insert(missing, entry) end
     if last then table.insert(missing, last) end
+    -- Always last, so it never gets in the way of a cast
+    if EatReminderDue() then table.insert(missing, { buff = "Well Fed", unit = "player", reminder = true }) end
     return missing, outOfRange, skipped
 end
 
@@ -464,7 +477,9 @@ function BuffBot.CheckPlayerBuffs()
     end
     local buff = entry.buff
     local poison = BuffBot.WeaponPoisons[buff]
-    if poison then
+    if entry.reminder then
+        BuffBot.UpdateReminder(buff)
+    elseif poison then
         BuffBot.UpdateItemMacro(BuffBot.PoisonItem(buff), poison.invSlot)
     else
         BuffBot.UpdateMacro(buff, entry.unit, ShouldBloodrageFirst(buff) and "Bloodrage" or nil)

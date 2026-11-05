@@ -66,6 +66,10 @@ a poison running low on charges counts as missing.
 
 - **Hide Icon / Hide Text:** text-only or icon-only buffing.
 - **Reset Button Position.**
+- **Remind me to eat while leveling:** below the level cap, reminds you when
+  you aren't Well Fed, since cooked food gives more XP from kills. It can't eat
+  for you, so pressing the button does nothing while the reminder shows. Off by
+  default.
 - **Buff your group:** your party, or the whole raid starting with your own
   subgroup. On by default.
 - **Strict Mage Armors:** only the recommended armor counts.

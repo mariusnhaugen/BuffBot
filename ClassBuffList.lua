@@ -325,6 +325,9 @@ local spellIDTable = {
     -- WARRIOR
     ["Battle Shout"] = 6673,
     ["Bloodrage"] = 2687,
+    -- FOOD
+    ["Well Fed"] = 19705,
+    ["Food"] = 433,
     -- TRACKING
     ["Find Minerals"] = 2580,
     ["Find Herbs"] = 2383,

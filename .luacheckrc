@@ -37,6 +37,7 @@ read_globals = {
     "GetInspectSpecialization",
     "GetInventoryItemID",
     "GetLocale",
+    "GetMaxPlayerLevel",
     "GetNumGroupMembers",
     "GetNumSubgroupMembers",
     "GetPartyAssignment",

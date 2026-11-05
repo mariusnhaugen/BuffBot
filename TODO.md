@@ -116,6 +116,7 @@ commit.
 
 ## Done
 
+- [x] 42. Remind players to eat while leveling (2.6.2), since Forever's cooked food gives 5% more XP from kills. A reminder only, off by default: no food list or bag check, and any Well Fed counts. Offering the food on the button is a possible next step
 - [x] 35. Usage text on the settings page (2.6.1): one small line at the top on opening the page and Alt+drag, from a plain label template (`SettingsText.xml`); `/bb help` and unknown commands list the commands. The 2.6 Commands section with a button per command was clunky and is gone
 - [x] 38. A role whose blessing the class can't use falls through to the next on the role's list (a Mage set to `melee` gets Kings, not nothing) (2.5.2)
 - [x] 39. Oath of Light for Holy Paladins (2.5.2): on the main tank or a `/bb role` tank, else the player's target, then kept on whoever the player cast it on; never on the player or in PvP. Spell ID, duration and stacking are launch checks in TESTING.md
