@@ -1,5 +1,9 @@
 # BuffBot
 
+## 2.6.2
+
+- New option: Remind me to eat while leveling, since cooked food gives more XP from kills. Off by default.
+
 ## 2.6.1
 
 - New option: Skip Lightning Shield.
