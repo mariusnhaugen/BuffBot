@@ -1,5 +1,10 @@
 # BuffBot
 
+## 2.6.1
+
+- New option: Skip Lightning Shield.
+- Usability: Cleaned up settings page.
+
 ## 2.6.0
 
 - `/bb status` prints what BuffBot sees and why the button shows what it
