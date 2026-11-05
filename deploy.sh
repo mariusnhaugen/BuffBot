@@ -9,7 +9,7 @@
 set -euo pipefail
 
 src="$(cd "$(dirname "$0")" && pwd)"
-addons="${WOW_ADDONS:-/mnt/c/Program Files (x86)/World of Warcraft/_classic_beta_/Interface/AddOns}"
+addons="${WOW_ADDONS:-/mnt/c/Program Files (x86)/World of Warcraft/_forever_/Interface/AddOns}"
 
 if [ ! -d "$addons" ]; then
     echo "AddOns folder not found: $addons" >&2

@@ -22,7 +22,7 @@ behaves the same.
 
 ## Forever client probe
 
-From WSL, `./deploy.sh` copies the addon into the `_classic_beta_` (Forever)
+From WSL, `./deploy.sh` copies the addon into the `_forever_`
 AddOns folder. Run it after each change and `/reload`; restart the client
 for new files or TOC changes.
 
@@ -168,5 +168,5 @@ For 2.5 (raid coordination, `docs/plan/SPEC.md`). Run in a raid unless noted; Gr
 - [ ] Sanctuary is gone from Forever (TODO 21)
 - [ ] Commands on the settings page (2.6): `/bb` shows "Alt+drag the button to move it" on the Reset row, then a "Commands" header and four rows. Each label is readable (not cut off), its tooltip shows on hover, and its button prints to chat (Toggle Debug Log twice to leave it off). `/bb help` lists the commands
 - [ ] `/bb status` (2.6): prints the version, your class and level, your list, and the next cast or why it's quiet, with no Lua error; in a party it names members. With `/bb debug` on, casting a buff logs one "next:" line, not one per aura change
-- [ ] Keybind on the settings page: `/dump C_KeyBindings.GetBindingIndex("CLICK BUFFBOT_MacroButton:LeftButton")` prints a number, and `/bb` shows a BuffBot Cast keybind row at the top. Set a key there: it casts, shows under Key Bindings > AddOns, and survives `/reload`. If the row is missing or broken, fall back to a button that calls `SetBindingClick` and `SaveBindings` (TODO 35)
+- [x] Keybind on the settings page ([result](PROBE_RESULTS.md#keybind-on-the-settings-page-26)): `/dump C_KeyBindings.GetBindingIndex("CLICK BUFFBOT_MacroButton:LeftButton")` prints a number, and `/bb` shows a BuffBot Cast keybind row at the top. Set a key there: it casts, shows under Key Bindings > AddOns, and survives `/reload`. If the row is missing or broken, fall back to a button that calls `SetBindingClick` and `SaveBindings` (TODO 35)
 - [ ] Battlegrounds, for a later PvP release: which channel (`RAID` or `INSTANCE_CHAT`) reaches a battleground raid

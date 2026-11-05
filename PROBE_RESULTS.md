@@ -137,6 +137,15 @@ Bind "BuffBot Cast" under Key Bindings > AddOns and press it once with a buff mi
 Result:
 The binding is listed and casts the missing buff
 
+## Keybind on the settings page (2.6)
+
+`/bb`, set a key on the BuffBot Cast row at the top, press it with a buff missing, and `/reload`. Then rebind it on that row and under Key Bindings > AddOns, out of combat and in combat, and rebind a Blizzard action in combat
+
+Result:
+The row sets a working key and it survives `/reload`. Out of combat, rebinding works on both pages. In combat, Blizzard's own rows still rebind, but BuffBot's row fails on both pages with `[ADDON_ACTION_BLOCKED] AddOn 'BuffBot' tried to call the protected function 'SetBinding()'`. BuffBot never calls `SetBinding`: the stack is only Blizzard's `KeybindListener` (`ProcessInput`, then `ClearBindingsForKeys` or `UnbindKey`). Leatrix Plus's row has the same issue, so this isn't BuffBot's registration, and the row stays. Probable cause, not proven: the addon-set `BINDING_NAME_` global is tainted, and the row's `Init` reads it through `GetBindingName` without `securecallfunction`, which taints the key capture. Rebind out of combat
+
+Not settled: a tester saw the "blocked from an action only available to the Blizzard UI" popup while changing keybinds, which looks like `ADDON_ACTION_FORBIDDEN`, not this error. To try: press Print Screen while a slot waits for a key, which runs `RunBinding("SCREENSHOT")` in the same handler
+
 ## Holy buff in Shadowform
 
 Cast Power Word: Fortitude while in Shadowform
