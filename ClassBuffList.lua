@@ -93,6 +93,42 @@ BuffBot.GroupVersions = {
     ["Blessing of Kings"] = { "Greater Blessing of Kings" },
 }
 
+-- Scrolls that block a weaker cast of a buff ("A more powerful spell is
+-- active"), with amounts by spell ID. The aura can't report its amount: points
+-- is empty (PROBE_RESULTS.md). Divine Spirit isn't here, since its rank 1 beats
+-- the best Spirit scroll.
+local ScrollConflicts = {
+    ["Arcane Intellect"] = {
+        scroll = "Intellect",
+        best = 16,
+        scrolls = { [8096] = 4, [8097] = 8, [8098] = 12, [12176] = 16 },
+        ranks = { [1459] = 2, [1460] = 7, [1461] = 15, [10156] = 22, [10157] = 31 },
+    },
+    ["Power Word: Fortitude"] = {
+        scroll = "Stamina",
+        best = 16,
+        scrolls = { [8099] = 4, [8100] = 8, [8101] = 12, [12178] = 16 },
+        ranks = { [1243] = 4, [1244] = 10, [1245] = 26, [2791] = 42, [10937] = 56, [10938] = 70 },
+    },
+}
+
+-- True when the unit has a scroll stronger than the rank the player would cast.
+-- A rank that beats every scroll never looks at the unit's auras, and that
+-- covers group versions too, which come later. A tie still offers the buff,
+-- since the cast replaces the scroll. So does an amount not in the table: a
+-- wasted press beats hiding one. Assumes the highest rank goes out, so a lower
+-- rank landing on a low-level target isn't covered.
+function BuffBot.HasStrongerScroll(unit, buffString)
+    local conflict = ScrollConflicts[buffString]
+    if not conflict then return false end
+    local info = C_Spell.GetSpellInfo(BuffBot.SpellName(buffString))
+    local rank = info and conflict.ranks[info.spellID]
+    if not rank or rank >= conflict.best then return false end
+    local aura = C_UnitAuras.GetAuraDataBySpellName(unit, BuffBot.SpellName(conflict.scroll))
+    local scroll = aura and conflict.scrolls[aura.spellId]
+    return scroll ~= nil and scroll > rank
+end
+
 -- Single-target buffs the button also casts on group members
 BuffBot.GroupBuffs = {
     ["Mark of the Wild"] = true,
@@ -325,6 +361,9 @@ local spellIDTable = {
     -- WARRIOR
     ["Battle Shout"] = 6673,
     ["Bloodrage"] = 2687,
+    -- SCROLLS, by the lowest rank: every rank's aura has the same name
+    ["Intellect"] = 8096,
+    ["Stamina"] = 8099,
     -- FOOD
     ["Well Fed"] = 19705,
     ["Food"] = 433,

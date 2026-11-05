@@ -20,7 +20,9 @@ return function(state, env)
             end
             local english = state:englishName(spell)
             if not english or not state:knows(english) then return nil end
-            return info(spell, Spells.idOf(english) or 0)
+            -- By name gives the learned rank's ID
+            local rank = state.learnedRanks and state.learnedRanks[english]
+            return info(spell, rank or Spells.idOf(english) or 0)
         end,
 
         IsSpellUsable = function(name)

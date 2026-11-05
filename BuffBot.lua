@@ -138,13 +138,16 @@ end
 -- One subgroup's entries for a group buff: the group version when two or
 -- more who'd benefit are missing it and it can be cast, else one per member.
 -- Blessings are always single-target. True when a member in view is missing
--- it out of range.
-local function AddGroupBuff(missing, buffString, units)
+-- it out of range. A member with a stronger scroll goes on the skipped list,
+-- since the cast would fail.
+local function AddGroupBuff(missing, skipped, buffString, units)
     local targets, outOfRange = {}, false
     for _, unit in ipairs(units) do
         local buff = BuffForUnit(buffString, unit)
         if buff and CanSeeUnit(unit, buff) and UnitMissing(unit, buff) then
-            if InRange(unit, buff) then
+            if BuffBot.HasStrongerScroll(unit, buff) then
+                table.insert(skipped, buff .. " on " .. BuffBot.NameOf(unit) .. " (stronger scroll)")
+            elseif InRange(unit, buff) then
                 table.insert(targets, { buff = buff, unit = unit })
             else
                 outOfRange = true
@@ -333,12 +336,6 @@ local function AddRaidBlessings(missing, later, subgroups)
     return outOfRange
 end
 
--- Every cast the button would make, in order, as { buff, unit } entries. The
--- button casts the first, and the suggestion list shows them all. A group
--- buff goes on everyone before the next buff starts. Raid blessings come
--- after the player's own buffs. The second result is true when a member in
--- view is missing a buff out of range; the third lists the player's own buffs
--- skipped for now, as "Buff (reason)".
 -- Below the level cap, Forever's cooked food also gives more XP. Any Well Fed
 -- counts, and eating takes a while, so it stays quiet during the Food aura.
 local function EatReminderDue()
@@ -350,6 +347,12 @@ local function EatReminderDue()
     return not hasAura("Well Fed") and not hasAura("Food")
 end
 
+-- Every cast the button would make, in order, as { buff, unit } entries. The
+-- button casts the first, and the suggestion list shows them all. A group
+-- buff goes on everyone before the next buff starts. Raid blessings come
+-- after the player's own buffs. The second result is true when a member in
+-- view is missing a buff out of range; the third lists buffs skipped for now,
+-- as "Buff (reason)".
 function BuffBot.MissingBuffs()
     local missing = {}
     if InCombatLockdown() then return missing end
@@ -371,7 +374,7 @@ function BuffBot.MissingBuffs()
             last = onTarget
         elseif BuffBot.GroupBuffs[currentBuff] then
             for _, units in ipairs(subgroups) do
-                outOfRange = AddGroupBuff(missing, currentBuff, units) or outOfRange
+                outOfRange = AddGroupBuff(missing, skipped, currentBuff, units) or outOfRange
             end
         else
             local reason = SkipReason(currentBuff)

@@ -1,5 +1,9 @@
 # BuffBot
 
+## 2.6.3
+
+- Bugfix: Arcane Intellect and Power Word: Fortitude are no longer offered to someone with a stronger scroll, where the cast would fail.
+
 ## 2.6.2
 
 - New option: Remind me to eat while leveling, since cooked food gives more XP from kills. Off by default.

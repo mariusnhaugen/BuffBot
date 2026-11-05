@@ -90,12 +90,6 @@ commit.
   own), and sending manual roles to the other Paladins. Short of that, a
   Paladin could give its slot's blessing to a hybrid whatever role it
   worked out.
-- 41. Also check scroll buffs before recommending a buff. A Mage with a
-  stronger Intellect from a scroll is still offered Arcane Intellect, and
-  casting it fails with "A more powerful spell is active". Other classes'
-  buffs probably hit the same thing, such as Power Word: Fortitude and
-  Divine Spirit with Stamina and Spirit scrolls (unchecked). A weaker scroll
-  shouldn't block the buff, so compare strength, or skip until it drops.
 
 ## Decided against
 
@@ -116,6 +110,7 @@ commit.
 
 ## Done
 
+- [x] 41. Skip a buff under a stronger scroll (2.6.3), since the cast fails with "A more powerful spell is active". Arcane Intellect (2, 7, 15, 22, 31) and Power Word: Fortitude (4, 10, 26, 42, 56, 70) against scrolls of 4, 8, 12, 16, from Wowhead's Forever database. Divine Spirit rank 1 (17) beats the best Spirit scroll (15), so it's left out. Ranks that beat every scroll never look at auras. Not covered, until someone reports it: a high-rank caster's buff dropping to a lower rank on a low-level target
 - [x] 42. Remind players to eat while leveling (2.6.2), since Forever's cooked food gives 5% more XP from kills. A reminder only, off by default: no food list or bag check, and any Well Fed counts. Offering the food on the button is a possible next step
 - [x] 35. Usage text on the settings page (2.6.1): one small line at the top on opening the page and Alt+drag, from a plain label template (`SettingsText.xml`); `/bb help` and unknown commands list the commands. The 2.6 Commands section with a button per command was clunky and is gone
 - [x] 38. A role whose blessing the class can't use falls through to the next on the role's list (a Mage set to `melee` gets Kings, not nothing) (2.5.2)

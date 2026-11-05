@@ -121,7 +121,7 @@ function State:giveAura(name, opts)
     local remaining = opts.remaining or duration
     self:aurasOf(opts.unit or "player")[name] = {
         name = name,
-        spellId = Spells.idOf(name),
+        spellId = opts.spellId or Spells.idOf(name),
         duration = duration,
         expirationTime = duration > 0 and (self.time + remaining) or 0,
         isFromPlayerOrPlayerPet = opts.fromPlayer ~= false,

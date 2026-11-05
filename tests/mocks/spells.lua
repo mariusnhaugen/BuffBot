@@ -59,6 +59,9 @@ local byName = {
     -- WARRIOR
     ["Battle Shout"] = 6673,
     ["Bloodrage"] = 2687,
+    -- SCROLLS
+    ["Intellect"] = 8096,
+    ["Stamina"] = 8099,
     -- FOOD
     ["Well Fed"] = 19705,
     ["Food"] = 433,
