@@ -1,0 +1,18 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+    <!-- The small line at the top of the settings page. The Settings API has
+         no text row, so this is a plain label like Blizzard's own
+         SettingsAddOnDisabledLabelTemplate. -->
+    <Frame name="BuffBotSettingsTextTemplate" virtual="true">
+        <Size y="20"/>
+        <Layers>
+            <Layer level="OVERLAY">
+                <FontString parentKey="Text" inherits="GameFontHighlightSmall" justifyH="LEFT" justifyV="TOP"
+                    text="/bb or /buffbot opens this page. Alt+drag to move button. /bb help for more commands.">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="7" y="0"/>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+    </Frame>
+</Ui>

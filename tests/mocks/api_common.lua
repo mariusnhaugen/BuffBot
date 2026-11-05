@@ -376,6 +376,7 @@ return function(state, env)
         end,
         RegisterAddOnCategory = function(category) category.registered = true end,
         OpenToCategory = function(id) state.openedCategory = id end,
+        CreateElementInitializer = function(template) return { kind = "element", template = template } end,
     }
 
     function env.CreateSettingsButtonInitializer(name, buttonText, onClick, tooltip)

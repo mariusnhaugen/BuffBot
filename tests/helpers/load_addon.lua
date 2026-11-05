@@ -9,7 +9,8 @@ local function tocFiles(path)
     local files = {}
     for line in io.lines(path) do
         line = line:gsub("\r$", ""):match("^%s*(.-)%s*$")
-        if line ~= "" and not line:match("^#") then
+        -- XML is for the game's UI only; there's no Lua to load from it
+        if line ~= "" and not line:match("^#") and not line:match("%.xml$") then
             table.insert(files, line)
         end
     end

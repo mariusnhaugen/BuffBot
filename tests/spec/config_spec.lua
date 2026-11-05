@@ -233,43 +233,34 @@ describe("settings panel", function()
         for _, init in ipairs(h.state.categories.BuffBot.initializers) do
             if init.kind == "header" then
                 table.insert(order, init.name)
-            elseif init.kind == "button" or init.kind == "keybind" then
+            elseif init.kind == "element" or init.kind == "button" or init.kind == "keybind" then
                 table.insert(order, init.kind)
             elseif init.setting.name == "Auto tracking" or init.setting.name == "Auto Find Treasure"
                 or init.setting.name == "Buff your group" then
                 table.insert(order, init.setting.name)
             end
         end
-        assert.same({ "keybind", "button", "Commands: /bb or /buffbot opens this page", "button", "button", "button",
-            "button", "Tracking", "Auto tracking", "Auto Find Treasure", "Group", "Buff your group", "Class Settings" },
-            order)
+        assert.same({ "element", "keybind", "button", "Tracking", "Auto tracking", "Auto Find Treasure", "Group",
+            "Buff your group", "Class Settings" }, order)
     end)
 
-    local function button(h, buttonText)
-        for _, init in ipairs(h.state.categories.BuffBot.initializers) do
-            if init.kind == "button" and init.buttonText == buttonText then return init end
-        end
-    end
-
-    it("says how to move the button", function()
+    it("starts with the line on how to open the page and move the button", function()
         local h = Addon.load()
-        assert.equal("Alt+drag the button to move it", button(h, "Reset Button Position").name)
+        local first = h.state.categories.BuffBot.initializers[1]
+        assert.equal("BuffBotSettingsTextTemplate", first.template)
+
+        local file = assert(io.open("SettingsText.xml"))
+        local xml = file:read("*a")
+        file:close()
+        assert.is_truthy(xml:find('name="BuffBotSettingsTextTemplate"', 1, true))
+        assert.is_truthy(xml:find("/bb or /buffbot opens this page. Alt+drag to move button. /bb help for more commands.", 1, true))
     end)
 
-    it("lists the commands, each with a button that runs it", function()
-        local h = Addon.load()
-        local status = button(h, "Print Status")
-        assert.equal("/bb status", status.name)
-        assert.is_truthy(status.tooltip:find("bug report", 1, true))
-        status.onClick()
-        assert.is_true(h:printed(" status"))
-
-        button(h, "Toggle Debug Log").onClick()
-        assert.is_true(h.ns.config.DEBUG_MODE)
-        button(h, "Show Raid").onClick()
-        assert.is_true(h:printed("BuffBot: not in a raid."))
-        button(h, "Show Usage").onClick()
-        assert.is_true(h:printed("/bb role <name> <tank|melee|ranged|caster|healer>"))
+    it("loads the settings text template from the TOC", function()
+        local file = assert(io.open("BuffBot.toc"))
+        local toc = file:read("*a")
+        file:close()
+        assert.is_truthy(toc:find("SettingsText.xml", 1, true))
     end)
 
     it("/bb help and unknown commands list the commands", function()
@@ -282,11 +273,11 @@ describe("settings panel", function()
         assert.is_true(h:printed("BuffBot commands:"))
     end)
 
-    it("starts with the game's keybind row for the cast button", function()
+    it("follows the line with the game's keybind row for the cast button", function()
         local h = Addon.load()
-        local first = h.state.categories.BuffBot.initializers[1]
-        assert.equal("keybind", first.kind)
-        assert.equal(1, first.bindingIndex)
+        local row = h.state.categories.BuffBot.initializers[2]
+        assert.equal("keybind", row.kind)
+        assert.equal(1, row.bindingIndex)
     end)
 
     it("leaves the keybind row out when the binding isn't found", function()

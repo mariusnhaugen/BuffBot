@@ -17,4 +17,5 @@ ClassBuffList.lua
 Interface.lua
 BuffBot.lua
 Tracking.lua
+SettingsText.xml
 Config.lua

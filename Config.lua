@@ -2,9 +2,9 @@ local _, BuffBot = ...
 
 local category
 
--- The chat commands, for /bb help and the settings page: command, what it does
+-- The chat commands, for /bb help: command, what it does
 local COMMANDS = {
-    { "/bb", "Opens this page (also /buffbot)." },
+    { "/bb", "Opens the settings page (also /buffbot)." },
     { "/bb status", "Prints what BuffBot sees and why the button shows what it does. Send a screenshot of it with a bug report." },
     { "/bb debug", "Turns a log in chat on or off: the next cast or why there's none, buffs left off or skipped, blessing slots, roles. Stays on until turned off." },
     { "/bb buffs", "Prints your current buff list." },
@@ -15,11 +15,6 @@ local COMMANDS = {
 local function PrintHelp()
     print("BuffBot commands:")
     for _, command in ipairs(COMMANDS) do print(command[1] .. " - " .. command[2]) end
-end
-
-function BuffBot.ToggleDebug()
-    BuffBot.config.DEBUG_MODE = not BuffBot.config.DEBUG_MODE
-    print("BuffBot Debug Mode -", BuffBot.config.DEBUG_MODE)
 end
 
 SLASH_BUFFBOTSETTINGS1 = "/bb";
@@ -57,7 +52,8 @@ SlashCmdList.BUFFBOTSETTINGS = function(arg)
     end
 
     if arg == "debug" then
-        BuffBot.ToggleDebug()
+        BuffBot.config.DEBUG_MODE = not BuffBot.config.DEBUG_MODE
+        print("BuffBot Debug Mode -", BuffBot.config.DEBUG_MODE)
         return
     end
 
@@ -132,6 +128,8 @@ function BuffBot.RegisterSettings()
         Settings.CreateDropdown(category, setting, options, tooltip)
     end
 
+    layout:AddInitializer(Settings.CreateElementInitializer("BuffBotSettingsTextTemplate"))
+
     -- The game's own keybind row for the cast button, so it can be set here
     -- as well as under Key Bindings > AddOns. Left out if the binding isn't found.
     local bindingIndex = C_KeyBindings.GetBindingIndex("CLICK BUFFBOT_MacroButton:LeftButton")
@@ -145,7 +143,7 @@ function BuffBot.RegisterSettings()
     addCheckbox("HIDE_TEXT", "Hide Text", "Hides the list of upcoming buffs under the button.",
         BuffBot.UpdateSuggestionList)
 
-    layout:AddInitializer(CreateSettingsButtonInitializer("Alt+drag the button to move it", "Reset Button Position", function()
+    layout:AddInitializer(CreateSettingsButtonInitializer("Button Position", "Reset Button Position", function()
         -- Moving the secure button is blocked in combat
         if InCombatLockdown() then
             print("BuffBot: can't move the button in combat.")
@@ -154,18 +152,6 @@ function BuffBot.RegisterSettings()
         BuffBot.debug("Macro button position reset ")
         BuffBot.SetMacroButtonDefaultPosition()
     end, "Moves the button back to the middle of the screen. You can move it by holding Alt and dragging.", true))
-
-    -- The chat commands, each with a button that runs it, so they can be
-    -- found without the README
-    layout:AddInitializer(CreateSettingsListSectionHeaderInitializer("Commands: /bb or /buffbot opens this page"))
-    local function addCommand(index, buttonText, onClick)
-        local command = COMMANDS[index]
-        layout:AddInitializer(CreateSettingsButtonInitializer(command[1], buttonText, onClick, command[2], true))
-    end
-    addCommand(2, "Print Status", BuffBot.StatusCommand)
-    addCommand(3, "Toggle Debug Log", BuffBot.ToggleDebug)
-    addCommand(5, "Show Raid", BuffBot.RaidCommand)
-    addCommand(6, "Show Usage", function() BuffBot.RoleCommand("") end)
 
     layout:AddInitializer(CreateSettingsListSectionHeaderInitializer("Tracking"))
 

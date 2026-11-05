@@ -110,7 +110,7 @@ commit.
 
 ## Done
 
-- [x] 35. Usage text on the settings page (2.6): Alt+drag on the Reset row, and a Commands section with a button and tooltip per command; `/bb help` and unknown commands list them. Only proven initializers (button rows, section headers); pull back on the design after launch if it's cluttered
+- [x] 35. Usage text on the settings page (2.6.1): one small line at the top on opening the page and Alt+drag, from a plain label template (`SettingsText.xml`); `/bb help` and unknown commands list the commands. The 2.6 Commands section with a button per command was clunky and is gone
 - [x] 38. A role whose blessing the class can't use falls through to the next on the role's list (a Mage set to `melee` gets Kings, not nothing) (2.5.2)
 - [x] 39. Oath of Light for Holy Paladins (2.5.2): on the main tank or a `/bb role` tank, else the player's target, then kept on whoever the player cast it on; never on the player or in PvP. Spell ID, duration and stacking are launch checks in TESTING.md
 - [x] Blessing of Light removed: three blessings, no Light filler, a 4th Paladin is a reserve (2.5.1)

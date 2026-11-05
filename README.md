@@ -80,8 +80,7 @@ a poison running low on charges counts as missing.
 - **Shaman weapon imbue:** Rockbiter, Flametongue, Frostbrand or Windfury.
 - **Rogue poisons:** one for each hand.
 
-`/bb help` lists the commands. The settings page lists them too, each with a
-button that runs it.
+`/bb help` lists the commands.
 
 `/bb buffs` prints your current buff list.
 
