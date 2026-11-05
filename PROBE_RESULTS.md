@@ -144,7 +144,7 @@ The binding is listed and casts the missing buff
 Result:
 The row sets a working key and it survives `/reload`. Out of combat, rebinding works on both pages. In combat, Blizzard's own rows still rebind, but BuffBot's row fails on both pages with `[ADDON_ACTION_BLOCKED] AddOn 'BuffBot' tried to call the protected function 'SetBinding()'`. BuffBot never calls `SetBinding`: the stack is only Blizzard's `KeybindListener` (`ProcessInput`, then `ClearBindingsForKeys` or `UnbindKey`). Leatrix Plus's row has the same issue, so this isn't BuffBot's registration, and the row stays. Probable cause, not proven: the addon-set `BINDING_NAME_` global is tainted, and the row's `Init` reads it through `GetBindingName` without `securecallfunction`, which taints the key capture. Rebind out of combat
 
-Not settled: a tester saw the "blocked from an action only available to the Blizzard UI" popup while changing keybinds, which looks like `ADDON_ACTION_FORBIDDEN`, not this error. To try: press Print Screen while a slot waits for a key, which runs `RunBinding("SCREENSHOT")` in the same handler
+A tester also saw the "blocked from an action only available to the Blizzard UI" popup while changing keybinds. Closed as the same taint from Blizzard's settings code, with no fix on BuffBot's side
 
 ## Holy buff in Shadowform
 
@@ -616,3 +616,12 @@ In a party with a buff missing on a member, read the list under the button and r
 
 Result:
 Both show the full two-part name (2026-11-05, 2.6.0): the list shows "Arcane Intellect > Oblivion Au", and `/bb status` shows "Next: Arcane Intellect on Oblivion Au"
+
+## Righteous Fury on the button (Paladin)
+
+With "Recommend Righteous Fury" ticked, the button should offer Righteous Fury after the blessing.
+
+Tick the setting in `/bb`, then press the BuffBot button until the blessing is up
+
+Result:
+Works on the live servers (2026-11-05)

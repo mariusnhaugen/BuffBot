@@ -121,7 +121,7 @@ commit.
 - [x] 39. Oath of Light for Holy Paladins (2.5.2): on the main tank or a `/bb role` tank, else the player's target, then kept on whoever the player cast it on; never on the player or in PvP. Spell ID, duration and stacking are launch checks in TESTING.md
 - [x] Blessing of Light removed: three blessings, no Light filler, a 4th Paladin is a reserve (2.5.1)
 - [x] 29, part 2. Raid coordination for 2.5: roles, Greater Blessings with exceptions, slots shared out over add-on messages, `/bb role` and `/bb raid` (`d57f9d6`, `9999d4a`, `267d427`, `de356f9`, `4ea5463`; design in `docs/plan/SPEC.md`)
-- [x] 21. Blessing of Light as the raid filler (`2a815e1`). Sanctuary is a launch check in TESTING.md
+- [x] 21. Blessing of Light as the raid filler (`2a815e1`). Sanctuary isn't on the live servers, so there's nothing to add for it
 - [x] 29, part 1. Blessings shared out between Paladins by class lists, and only your own buffs refreshed early (`5b6d413`, `472a85e`)
 - [x] Paladin blessings on the party by class, Kings, and a self-blessing dropdown (`7e411d7`)
 - [x] Group buffing: party, own raid subgroup and optional whole raid, with group versions and the class skip list (`7fc9031`)
