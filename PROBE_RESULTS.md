@@ -591,3 +591,28 @@ With the listener from the probe above up on both screens, one player sends 30 a
 
 Result:
 `0 10` and `3 20`: the first 10 go out and the other player gets those 10. The rest return `3` (throttled) and are dropped, not queued. Keep sends to a few at a time, and check the result
+
+## No aura errors in combat
+
+`UNIT_AURA` payloads can be secret in combat. The handler should now ignore other units' payloads, and the button should keep updating in combat.
+
+Fight a mob that puts a debuff on you, with `/console scriptErrors 1`, and let a buff run out or cast one mid-fight
+
+Result:
+No errors on the live servers (2026-11-05)
+
+## Spell and item IDs for raid roles and Greater Blessings
+
+The IDs are Classic's. Each should print the English name. If Symbol of Kings is wrong, Greater Blessings never come up without Reagent Economy; if an aura's is wrong, Druids fall through to Inspect.
+
+`/run for _,i in ipairs({1328548,24858,24907,24932}) do local s=C_Spell.GetSpellInfo(i) print(i,s and s.name) end`, then `/run print(C_Item.GetItemNameByID(21177))`
+
+Result:
+All correct on the live servers (2026-11-05): Oath of Light, Moonkin Form, Moonkin Aura, Leader of the Pack, Symbol of Kings
+
+## Party names on the live servers
+
+In a party with a buff missing on a member, read the list under the button and run `/bb status`
+
+Result:
+Both show the full two-part name (2026-11-05, 2.6.0): the list shows "Arcane Intellect > Oblivion Au", and `/bb status` shows "Next: Arcane Intellect on Oblivion Au"

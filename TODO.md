@@ -90,6 +90,12 @@ commit.
   own), and sending manual roles to the other Paladins. Short of that, a
   Paladin could give its slot's blessing to a hybrid whatever role it
   worked out.
+- 41. Also check scroll buffs before recommending a buff. A Mage with a
+  stronger Intellect from a scroll is still offered Arcane Intellect, and
+  casting it fails with "A more powerful spell is active". Other classes'
+  buffs probably hit the same thing, such as Power Word: Fortitude and
+  Divine Spirit with Stamina and Spirit scrolls (unchecked). A weaker scroll
+  shouldn't block the buff, so compare strength, or skip until it drops.
 
 ## Decided against
 

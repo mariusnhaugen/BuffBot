@@ -63,16 +63,8 @@ A Holy Paladin with the Oath of Light talent (spell 1328548, from Wowhead) keeps
 3. With "Buff your group" off, the Oath is still offered.
 4. In a dungeon party without a tank, the list ends with "Oath of Light > Target" (and outside an instance, the Oath isn't offered at all). Pressing the button with nothing targeted, an enemy, or a dead member targeted casts nothing (no error, no Oath on you). With a party member targeted, it lands on them, and the button then keeps it there.
 5. Assumptions to confirm: it lasts 5 minutes, casting it on a new target moves it there (the old one loses it), and two Paladins' Oaths both stay on one target.
-6. On any character, `/dump C_Spell.GetSpellInfo(1328548).name` prints `Oath of Light`. The ID is from Wowhead; if it's wrong, the talent is never found and the Oath is never offered, with no error.
+6. Passed on the live servers (2026-11-05). On any character, `/dump C_Spell.GetSpellInfo(1328548).name` prints `Oath of Light`. The ID is from Wowhead; if it's wrong, the talent is never found and the Oath is never offered, with no error.
 7. In a party with your Oath on party1, `/dump C_UnitAuras.GetAuraDataBySpellName("party1", "Oath of Light", "HELPFUL|PLAYER") ~= nil` prints `true`, and `false` when only another Paladin's Oath is on them. The button finds its target by this.
-
-Result:
-
-### No aura errors in combat
-
-`UNIT_AURA` payloads can be secret in combat. The handler should now ignore other units' payloads, and the button should keep updating in combat.
-
-Fight a mob that puts a debuff on you, with `/console scriptErrors 1`, and let a buff run out or cast one mid-fight
 
 Result:
 
@@ -128,14 +120,6 @@ Die in a battleground: nothing is cast there. Tracking comes back on after leavi
 
 Result:
 
-### Spell and item IDs for raid roles and Greater Blessings
-
-The IDs are Classic's. Each should print the English name. If Symbol of Kings is wrong, Greater Blessings never come up without Reagent Economy; if an aura's is wrong, Druids fall through to Inspect.
-
-`/dump C_Spell.GetSpellInfo(24858).name, C_Spell.GetSpellInfo(24907).name, C_Spell.GetSpellInfo(24932).name, C_Item.GetItemNameByID(21177)` should print Moonkin Form, Moonkin Aura, Leader of the Pack, Symbol of Kings
-
-Result:
-
 ## Test at launch
 
 Checks that can't be run on the beta, or are still waiting for a tester. The steps are in each check above. Tick one off once it has passed on the live servers, and write its result above.
@@ -163,10 +147,10 @@ For 2.5 (raid coordination, `docs/plan/SPEC.md`). Run in a raid unless noted; Gr
 - [ ] Goodbye: with three BuffBot Paladins, one turns "Buff your group" off; the others' `/bb raid` drops them and the slots close up. Turning it back on brings them back with a slot
 - [ ] [Raid blessings](#raid-blessings-25-at-level-60): the in-game run of 2.5 with two to four Paladins
 - [ ] [Raid blessing handovers](#raid-blessing-handovers-25-at-level-60): goodbye, reserves, waiting out an old holder's blessing, a joiner the roster doesn't show yet, and two Paladins on one slot
-- [ ] [Spell and item IDs for raid roles and Greater Blessings](#spell-and-item-ids-for-raid-roles-and-greater-blessings): Moonkin Form, Moonkin Aura, Leader of the Pack, Symbol of Kings
-- [ ] [Oath of Light](#oath-of-light-holy-paladin-252): the spell ID (step 6, any character) first, then the rest with a Holy Paladin who has the talent
+- [x] [Spell and item IDs for raid roles and Greater Blessings](PROBE_RESULTS.md#spell-and-item-ids-for-raid-roles-and-greater-blessings): Moonkin Form, Moonkin Aura, Leader of the Pack, Symbol of Kings
+- [ ] [Oath of Light](#oath-of-light-holy-paladin-252): the spell ID (step 6) passed; the rest needs a Holy Paladin who has the talent
 - [ ] Sanctuary is gone from Forever (TODO 21)
-- [ ] Settings page text (2.6.1): `/bb` shows "/bb or /buffbot opens this page. Alt+drag to move button. /bb help for more commands." in a small font at the very top, not overlapping the keybind row, and with no Lua error. `/bb help` lists the commands
-- [ ] `/bb status` (2.6): prints the version, your class and level, your list, and the next cast or why it's quiet, with no Lua error; in a party it names members. With `/bb debug` on, casting a buff logs one "next:" line, not one per aura change
+- [x] Settings page text (2.6.1): `/bb` shows "/bb or /buffbot opens this page. Alt+drag to move button. /bb help for more commands." in a small font at the very top, not overlapping the keybind row, and with no Lua error. `/bb help` lists the commands
+- [x] `/bb status` (2.6): prints the version, class and level, list, and next cast or why it's quiet, with no Lua error; with `/bb debug` on, casting a buff logs one "next:" line. In a party of 5 it names members ("Arcane Intellect on Oblivion Au")
 - [x] Keybind on the settings page ([result](PROBE_RESULTS.md#keybind-on-the-settings-page-26)): `/dump C_KeyBindings.GetBindingIndex("CLICK BUFFBOT_MacroButton:LeftButton")` prints a number, and `/bb` shows a BuffBot Cast keybind row at the top. Set a key there: it casts, shows under Key Bindings > AddOns, and survives `/reload`. If the row is missing or broken, fall back to a button that calls `SetBindingClick` and `SaveBindings` (TODO 35)
 - [ ] Battlegrounds, for a later PvP release: which channel (`RAID` or `INSTANCE_CHAT`) reaches a battleground raid
