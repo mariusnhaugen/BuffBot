@@ -90,6 +90,13 @@ commit.
   own), and sending manual roles to the other Paladins. Short of that, a
   Paladin could give its slot's blessing to a hybrid whatever role it
   worked out.
+- 43. Untangle Shaman weapon imbues from consumables. Mana oils stack with
+  imbues in Forever, but `HasWeaponEnchant` (`BuffBot.lua`) counts any
+  temporary enchant as the imbue, so an oil on the weapon stops the imbue
+  being offered. The imbue check should only look for an imbue
+  (`enchantType` 3), and an imbue running low shouldn't depend on the oil.
+- 44. Oil reminders (distant future). Remind players to apply a mana or
+  wizard oil, building on 43, along the lines of the eat reminder (42).
 
 ## Decided against
 
