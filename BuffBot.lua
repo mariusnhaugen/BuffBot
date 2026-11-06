@@ -25,8 +25,9 @@ local function StartRangePoll()
 end
 
 -- Aura lookups come back empty for everyone, the player included, in combat
--- and during a boss fight. A fight starts when the tank pulls, so the player
--- can be in one and still out of combat. Nothing can be called missing then.
+-- and during an encounter. One starts when the tank pulls a boss, and in
+-- Blackfathom Deeps it stayed on after a wipe with the mobs reset, so the
+-- player can be in one and out of combat. Nothing can be called missing then.
 function BuffBot.AurasUnreadable()
     return InCombatLockdown() or C_InstanceEncounter.IsEncounterInProgress()
 end
@@ -402,7 +403,7 @@ end
 -- Why the button has nothing to cast
 local function QuietReason(outOfRange)
     if InCombatLockdown() then return "in combat, it waits until after" end
-    if C_InstanceEncounter.IsEncounterInProgress() then return "in a boss fight, it waits until after" end
+    if C_InstanceEncounter.IsEncounterInProgress() then return "the game is hiding buffs during this encounter" end
     if UnitIsDeadOrGhost("player") then return "you're dead" end
     if UnitOnTaxi("player") then return "you're on a flight" end
     if #(BuffBot.classBuffList or {}) == 0 then return "no buffs on your list (/bb status)" end

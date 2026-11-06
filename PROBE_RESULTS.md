@@ -634,3 +634,14 @@ Use a Scroll of Spirit, then `/dump C_UnitAuras.GetAuraDataBySpellName("player",
 
 Result:
 On the live servers (2026-11-05): `spellId` 8112, `name` Spirit, `duration` 30 minutes, `points` empty. The aura can be identified, but its strength has to come from a table
+
+## Aura lookups during an encounter (Blackfathom Deeps)
+
+Why the button listed every buff from a boss pull until the player's own combat, and stayed that way in Blackfathom Deeps.
+
+`/dump C_Secrets.ShouldAurasBeSecret(), C_InstanceEncounter.IsEncounterInProgress(), InCombatLockdown()`, then `/run for i=0,5 do print(i, C_RestrictedActions.GetAddOnRestrictionState(i)) end`, then `/run local f=C_UnitAuras.GetAuraDataBySpellName print(f("player","<buff>")~=nil, f("party1","<buff>")~=nil)`. Later, in one line: `/run local f=C_UnitAuras.GetAuraDataBySpellName print(C_Secrets.ShouldAurasBeSecret(),C_InstanceEncounter.IsEncounterInProgress(),C_RestrictedActions.GetAddOnRestrictionState(4),f("player","<buff>")~=nil)`
+
+Result:
+On the live servers (2026-11-06), in Blackfathom Deeps after a wipe, out of combat with the mobs reset, with fresh buffs on the player and party1: `true`, `true`, `false`. Restrictions 1 (Encounter), 4 (Map) and 5 (Chat) were active (state 2); 0 (Combat), 2 (ChallengeMode) and 3 (PvPMatch) weren't. Both lookups returned nothing. The one-line version, also out of combat inside, printed `true true 2 false`. Outside any dungeon, on another character: `false false 0 true`.
+
+So aura lookups can return nothing out of combat, for the player too. Not known: why the encounter flag stays on there, what clears it, and whether the Map restriction outlasts it. If it does, `BuffBot.AurasUnreadable` has a gap, since it only checks the encounter flag

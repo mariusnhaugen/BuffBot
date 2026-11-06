@@ -48,11 +48,11 @@ describe("/bb status", function()
         assert.is_true(has(lines, "Nothing to cast: everything is up"))
     end)
 
-    it("says when a boss fight keeps the button quiet", function()
+    it("says when an encounter keeps the button quiet", function()
         local h = Addon.load({ class = "MAGE", known = { "Arcane Intellect" } })
         h:startEncounter()
         local lines = printedBy(h, function() h:slash("status") end)
-        assert.is_true(has(lines, "Nothing to cast: in a boss fight, it waits until after"))
+        assert.is_true(has(lines, "Nothing to cast: the game is hiding buffs during this encounter"))
     end)
 
     it("says why a buff of the player's own is skipped", function()
