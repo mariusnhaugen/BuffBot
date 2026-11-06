@@ -1,6 +1,6 @@
 ## Interface: 16001
-## Version: 2.6.3
-## Title: BuffBot |cff00ccff2.6.3|r
+## Version: 2.6.4
+## Title: BuffBot |cff00ccff2.6.4|r
 ## Author: Smiil
 ## Notes: |cff00ccffBuffBot|r - Maintenance buffs made easy.
 ## DefaultState: enabled

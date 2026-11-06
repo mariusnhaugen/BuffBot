@@ -1,5 +1,9 @@
 # BuffBot
 
+## 2.6.4
+
+- Bugfix: Hide addon during Encounters, so you don't get spammed during addon lockdown
+
 ## 2.6.3
 
 - Bugfix: Arcane Intellect and Power Word: Fortitude are no longer offered to someone with a stronger scroll.
