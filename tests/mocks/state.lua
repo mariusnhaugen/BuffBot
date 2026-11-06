@@ -28,6 +28,7 @@ function State.new(class)
         unusable = {},
         auras = {},
         combat = false,
+        encounter = false, -- a boss fight is on, which can start before the player's combat
         dead = false,
         ghost = false,
         taxi = false,

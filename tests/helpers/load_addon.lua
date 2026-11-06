@@ -164,6 +164,16 @@ function Harness:leaveCombat()
     self:fire("PLAYER_REGEN_ENABLED")
 end
 
+function Harness:startEncounter()
+    self.state.encounter = true
+    self:fire("ENCOUNTER_STATE_CHANGED", true)
+end
+
+function Harness:endEncounter()
+    self.state.encounter = false
+    self:fire("ENCOUNTER_STATE_CHANGED", false)
+end
+
 -- A member: { name, class, subgroup, dead, offline, visible, inRange };
 -- class defaults to WARRIOR
 local function addMembers(state, members, prefix, first)

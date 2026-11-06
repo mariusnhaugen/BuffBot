@@ -310,6 +310,8 @@ return function(state, env)
     -- Auras, for the player and the group members
     env.C_UnitAuras = {
         GetAuraDataBySpellName = function(unit, name, filter)
+            -- Nothing can be read during a boss fight, even out of combat
+            if state.encounter then return nil end
             local auras = state:aurasOf(unit)
             if not auras then return nil end
             local english = state:englishName(name)

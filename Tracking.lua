@@ -71,7 +71,8 @@ local generation = 0
 local resumeAfterCombat
 
 -- Casts the missing trackers one at a time, waiting out the GCD between them,
--- and gives up after GIVE_UP_AFTER seconds. Waits for the end of combat.
+-- and gives up after GIVE_UP_AFTER seconds. Waits for the end of combat or a
+-- boss fight, since every tracker looks off until then.
 -- picked is the tracker the player just chose in the settings, force cast even if another is on.
 function BuffBot.CastMissingTrackers(picked)
     resumeAfterCombat = nil
@@ -83,7 +84,7 @@ function BuffBot.CastMissingTrackers(picked)
     local function castNextTracker()
         if thisLoop ~= generation then return end
         if BuffBot.InPvP() or UnitIsDeadOrGhost("player") or GetTime() > deadline then return end
-        if InCombatLockdown() then
+        if BuffBot.AurasUnreadable() then
             resumeAfterCombat = function() BuffBot.CastMissingTrackers(picked) end
             return
         end

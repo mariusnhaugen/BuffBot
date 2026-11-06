@@ -24,6 +24,13 @@ local function StartRangePoll()
     C_Timer.After(RANGE_POLL, PollRange)
 end
 
+-- Aura lookups come back empty for everyone, the player included, in combat
+-- and during a boss fight. A fight starts when the tank pulls, so the player
+-- can be in one and still out of combat. Nothing can be called missing then.
+function BuffBot.AurasUnreadable()
+    return InCombatLockdown() or C_InstanceEncounter.IsEncounterInProgress()
+end
+
 function BuffBot.UpdateClassBuffList()
     BuffBot.UpdateCoordination()
     BuffBot.UpdateRoles()
@@ -355,7 +362,7 @@ end
 -- as "Buff (reason)".
 function BuffBot.MissingBuffs()
     local missing = {}
-    if InCombatLockdown() then return missing end
+    if BuffBot.AurasUnreadable() then return missing end
     if UnitIsDeadOrGhost("player") or UnitOnTaxi("player") then return missing end
     local classBuffs = BuffBot.classBuffList
     if classBuffs == nil then return missing end
@@ -395,6 +402,7 @@ end
 -- Why the button has nothing to cast
 local function QuietReason(outOfRange)
     if InCombatLockdown() then return "in combat, it waits until after" end
+    if C_InstanceEncounter.IsEncounterInProgress() then return "in a boss fight, it waits until after" end
     if UnitIsDeadOrGhost("player") then return "you're dead" end
     if UnitOnTaxi("player") then return "you're on a flight" end
     if #(BuffBot.classBuffList or {}) == 0 then return "no buffs on your list (/bb status)" end

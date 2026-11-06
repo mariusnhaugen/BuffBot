@@ -125,6 +125,13 @@ function events:PLAYER_REGEN_DISABLED()
     BuffBot.macroButton:Hide()
 end
 
+-- A boss fight starting or ending, which can be while the player is out of
+-- combat. Hides a button that's up, and picks up what waited for the end.
+function events:ENCOUNTER_STATE_CHANGED()
+    BuffBot.CheckPlayerBuffs()
+    BuffBot.ResumeTrackingAfterCombat()
+end
+
 function events:ADDON_LOADED(arg1)
     if (arg1 ~= addonName) then return end
 
@@ -202,6 +209,7 @@ events:RegisterEvent("PLAYER_CONTROL_GAINED")
 
 events:RegisterEvent("PLAYER_REGEN_ENABLED")
 events:RegisterEvent("PLAYER_REGEN_DISABLED")
+events:RegisterEvent("ENCOUNTER_STATE_CHANGED")
 
 --Fired when Spellbook is populated. On login as well as when spells are learned
 events:RegisterEvent("SPELLS_CHANGED")

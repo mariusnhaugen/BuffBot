@@ -116,6 +116,10 @@ return function(state, env)
         return value == state.SECRET
     end
 
+    env.C_InstanceEncounter = {
+        IsEncounterInProgress = function() return state.encounter end,
+    }
+
     env.C_Timer = {
         After = function(seconds, callback)
             table.insert(state.timers, { at = state.time + seconds, callback = callback })

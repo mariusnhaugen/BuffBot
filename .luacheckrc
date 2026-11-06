@@ -22,6 +22,7 @@ read_globals = {
     "C_AddOns",
     "TARGET",
     "C_ChatInfo",
+    "C_InstanceEncounter",
     "C_Item",
     "C_KeyBindings",
     "C_Spell",
