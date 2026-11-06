@@ -97,6 +97,9 @@ commit.
   (`enchantType` 3), and an imbue running low shouldn't depend on the oil.
 - 44. Oil reminders (distant future). Remind players to apply a mana or
   wizard oil, building on 43, along the lines of the eat reminder (42).
+- 45. Don't suggest weapon buffs while a fishing pole is equipped. Shaman
+  imbues for sure; Rogue poisons too, if that also applies. `SkipReason`
+  (`BuffBot.lua`) only checks that a weapon is in the hand.
 
 ## Decided against
 
