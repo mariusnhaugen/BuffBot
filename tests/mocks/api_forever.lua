@@ -179,8 +179,4 @@ return function(state, env)
             end
         end,
     }
-
-    state.templates.UICheckButtonTemplate = function(frame)
-        frame.text = frame:CreateFontString(frame:GetName() and (frame:GetName() .. "Text"))
-    end
 end
