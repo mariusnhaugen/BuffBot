@@ -74,6 +74,7 @@ function BuffBot.GetDefaultConfig()
     defaultConfig.IGNORE_THORNS = false
     defaultConfig.IGNORE_DAMPEN = false
     defaultConfig.IGNORE_LIGHTNING_SHIELD = false
+    defaultConfig.IGNORE_INNER_FIRE = false
     defaultConfig.CHEETAH_REMINDER = true
     defaultConfig.SHAMAN_IMBUE = "Rockbiter Weapon"
     defaultConfig.ROGUE_POISON_MAINHAND = "Instant Poison"
@@ -195,6 +196,7 @@ function BuffBot.RegisterSettings()
     addCheckbox("RIGHTEOUS_FURY", "Recommend Righteous Fury", "Cast Righteous Fury, for tanking.")
     addCheckbox("IGNORE_THORNS", "Skip Thorns", "Skip recommending Thorns.")
     addCheckbox("IGNORE_LIGHTNING_SHIELD", "Skip Lightning Shield", "Skip recommending Lightning Shield.")
+    addCheckbox("IGNORE_INNER_FIRE", "Skip Inner Fire", "Skip recommending Inner Fire.")
     addCheckbox("CHEETAH_REMINDER", "Reminder to leave Cheetah",
         "Shows Aspect of the Hawk if you are in Aspect of the Cheetah/Pack")
 

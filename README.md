@@ -73,7 +73,7 @@ a poison running low on charges counts as missing.
 - **Buff your group:** your party, or the whole raid starting with your own
   subgroup. On by default.
 - **Strict Mage Armors:** only the recommended armor counts.
-- **Skip Dampen Magic / Skip Thorns / Skip Lightning Shield.**
+- **Skip Dampen Magic / Skip Thorns / Skip Lightning Shield / Skip Inner Fire.**
 - **Always try Bloodrage out of combat:** casts Bloodrage before Battle Shout.
 - **Paladin blessing on yourself:** Might, Wisdom or Kings. Might until the
   one you pick is learned. If another Paladin has already put it on you, you

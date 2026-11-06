@@ -74,6 +74,15 @@ describe("skip rules", function()
         assert.same({ "Rockbiter Weapon" }, h:buffUp())
     end)
 
+    it("IGNORE_INNER_FIRE skips Inner Fire but not the other buffs", function()
+        local h = Addon.load({
+            class = "PRIEST",
+            known = { "Power Word: Fortitude", "Inner Fire" },
+            config = { IGNORE_INNER_FIRE = true },
+        })
+        assert.same({ "Power Word: Fortitude" }, h:buffUp())
+    end)
+
     describe("unique armors and auras", function()
         it("any active Mage armor satisfies the armor slot", function()
             local h = Addon.load({ class = "MAGE", known = { "Frost Armor", "Ice Armor", "Arcane Intellect" } })

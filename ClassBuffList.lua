@@ -482,6 +482,12 @@ local function GetSpellSkip(spellString)
         end
     end
 
+    if class == "PRIEST" then
+        if spellString == "Inner Fire" and BuffBot.config.IGNORE_INNER_FIRE then
+            return true
+        end
+    end
+
     if class == "SHAMAN" then
         if spellString == "Lightning Shield" and BuffBot.config.IGNORE_LIGHTNING_SHIELD then
             return true
