@@ -128,6 +128,7 @@ For 2.5 (raid coordination, `docs/plan/SPEC.md`). Run in a raid unless noted; Gr
 
 - [ ] Add-on messages on `RAID`: `C_ChatInfo.SendAddonMessage("BuffBot", "x", "RAID")` reaches every member, the sender included, and `CHAT_MSG_ADDON` gives the sender as "First Last" with channel `RAID`. The burst limit is 10 per prefix, refilling at 1 per second, as on PARTY
 - [ ] Sends in combat: does `select(-1, C_ChatInfo.SendAddonMessage(...))` return `11` (`AddOnMessageLockdown`) in combat inside a raid instance, and in the open world?
+- [ ] Sends during an encounter: the Chat restriction was active with the Encounter one in Blackfathom Deeps ([result](PROBE_RESULTS.md#aura-lookups-during-an-encounter-blackfathom-deeps)). Out of combat with an encounter in progress, does `select(-1, C_ChatInfo.SendAddonMessage(...))` fail? `Coordination.lua` only checks combat before resending, so a Paladin out of combat could lose messages
 - [ ] Offline members: `UNIT_CONNECTION` fires with the raid unit when a member goes offline and comes back
 - [ ] Main tank: `GetPartyAssignment("MAINTANK", unit)` is true after marking a member from the raid frame
 - [ ] Raid roster: `GetRaidRosterInfo(i)` gives the right subgroup, class and `online`; does `combatRole` (12th return) or `UnitGroupRolesAssigned(unit)` ever return `TANK` or `HEALER`?
