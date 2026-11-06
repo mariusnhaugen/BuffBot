@@ -1,5 +1,9 @@
 # BuffBot
 
+## 2.6.5
+
+- New option: Skip Inner Fire.
+
 ## 2.6.4
 
 - Bugfix: Hide addon during Encounters, so you don't get spammed during addon lockdown
