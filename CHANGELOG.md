@@ -1,6 +1,6 @@
 # BuffBot
 
-## Unreleased
+## 2.6.6
 
 - New options: Mage armor and Mage armor in a raid. Pick Ice Armor (Frost
   Armor at low level) or Mage Armor for each. Ice Armor and Mage Armor by
