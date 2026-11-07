@@ -150,6 +150,9 @@ function events:ADDON_LOADED(arg1)
     end
     -- Before 2.5.0, buffing the rest of the raid was its own setting
     BuffBotConfig.RAID_BUFFING = nil
+    -- Before 2.6.6, Strict Mage Armors was its own setting; the armor picks
+    -- replaced it
+    BuffBotConfig.STRICT_ARMOR = nil
     -- Fill in settings added since the config was saved
     for key, value in pairs(BuffBot.GetDefaultConfig()) do
         if BuffBotConfig[key] == nil then

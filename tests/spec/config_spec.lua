@@ -9,8 +9,10 @@ describe("saved config", function()
             DEBUG_MODE = false,
             BLOODRAGE = false,
             PALADIN_BLESSING = "Blessing of Might",
+            PALADIN_AURA = "Devotion Aura",
+            MAGE_ARMOR = "Ice Armor",
+            MAGE_ARMOR_RAID = "Mage Armor",
             RIGHTEOUS_FURY = false,
-            STRICT_ARMOR = false,
             IGNORE_THORNS = false,
             IGNORE_DAMPEN = false,
             IGNORE_LIGHTNING_SHIELD = false,
@@ -59,6 +61,11 @@ describe("saved config", function()
         h = Addon.load({ saved = { SUGGESTION_LIST = true } })
         assert.is_false(h.ns.config.HIDE_TEXT)
         assert.is_nil(h.ns.config.SUGGESTION_LIST)
+    end)
+
+    it("drops the old STRICT_ARMOR", function()
+        local h = Addon.load({ saved = { STRICT_ARMOR = true } })
+        assert.is_nil(h.ns.config.STRICT_ARMOR)
     end)
 
     it("drops the old RAID_BUFFING", function()
@@ -172,8 +179,6 @@ describe("settings panel", function()
             function(h) return h.button:GetNormalTexture():GetAlpha() end },
         { "Hide Text", "HIDE_TEXT", { class = "PRIEST", known = { "Power Word: Fortitude" } },
             function(h) return h:suggestions() end },
-        { "Strict Mage Armors", "STRICT_ARMOR", { class = "MAGE", known = { "Frost Armor", "Ice Armor", "Arcane Intellect" } },
-            shown, function(h) h:give("Frost Armor") end },
         { "Skip Dampen Magic", "IGNORE_DAMPEN", { class = "MAGE", known = { "Arcane Intellect", "Dampen Magic" } },
             shown, function(h) h:give("Arcane Intellect") end },
         { "Always try Bloodrage out of combat", "BLOODRAGE", { class = "WARRIOR", known = { "Battle Shout", "Bloodrage" } },

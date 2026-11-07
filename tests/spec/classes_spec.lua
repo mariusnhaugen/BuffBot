@@ -19,27 +19,37 @@ describe("per-class buff priority (vanilla spells)", function()
     describe("MAGE armor pick", function()
         local all = { "Frost Armor", "Ice Armor", "Mage Armor", "Arcane Intellect", "Dampen Magic" }
 
-        it("prefers Ice Armor outside a raid", function()
+        it("recommends Ice Armor outside a raid by default", function()
             local h = Addon.load({ class = "MAGE", known = all })
             assert.same({ "Ice Armor", "Arcane Intellect", "Dampen Magic" }, h:buffUp())
         end)
 
-        it("prefers Mage Armor in a raid", function()
+        it("recommends Mage Armor in a raid by default", function()
             local h = Addon.load({ class = "MAGE", known = all, raid = true })
             assert.same({ "Mage Armor", "Arcane Intellect", "Dampen Magic" }, h:buffUp())
         end)
 
-        it("switches to Mage Armor on joining a raid", function()
-            local h = Addon.load({ class = "MAGE", known = all })
+        it("uses the raid pick in a raid", function()
+            local h = Addon.load({ class = "MAGE", known = all, raid = true,
+                config = { MAGE_ARMOR = "Mage Armor", MAGE_ARMOR_RAID = "Ice Armor" } })
             assert.equal("Ice Armor", h:shown())
-            h:joinRaid()
-            assert.equal("Mage Armor", h:shown())
         end)
 
-        it("switches back to Ice Armor on leaving the group", function()
-            local h = Addon.load({ class = "MAGE", known = all, raid = true })
+        it("switches armor on joining and leaving a raid, the other armor not counting", function()
+            local h = Addon.load({ class = "MAGE", known = all })
+            h:give("Ice Armor")
+            h:give("Arcane Intellect")
+            h:give("Dampen Magic")
+            assert.is_nil(h:shown())
+            h:joinRaid()
+            assert.equal("Mage Armor", h:buffUp()[1])
             h:leaveGroup()
-            assert.equal("Ice Armor", h:shown())
+            assert.is_nil(h:shown())
+        end)
+
+        it("recommends Mage Armor when picked in the settings", function()
+            local h = Addon.load({ class = "MAGE", known = all, config = { MAGE_ARMOR = "Mage Armor" } })
+            assert.same({ "Mage Armor", "Arcane Intellect", "Dampen Magic" }, h:buffUp())
         end)
 
         it("falls back to Frost Armor at low level", function()
@@ -47,9 +57,35 @@ describe("per-class buff priority (vanilla spells)", function()
             assert.same({ "Frost Armor", "Arcane Intellect" }, h:buffUp())
         end)
 
-        it("recommends no armor when only Mage Armor is known outside a raid", function()
-            local h = Addon.load({ class = "MAGE", known = { "Mage Armor", "Arcane Intellect" } })
-            assert.same({ "Arcane Intellect" }, h:buffUp())
+        it("uses the Frost line until a picked Mage Armor is learned", function()
+            local h = Addon.load({ class = "MAGE", known = { "Frost Armor", "Arcane Intellect" },
+                config = { MAGE_ARMOR = "Mage Armor" } })
+            assert.equal("Frost Armor", h:shown())
+            h:learn("Mage Armor")
+            assert.equal("Mage Armor", h:shown())
+        end)
+
+        it("offers the Frost line and Mage Armor in the settings", function()
+            local h = Addon.load({ class = "MAGE", known = { "Frost Armor", "Arcane Intellect" } })
+            local texts = {}
+            for _, option in ipairs(h:dropdown("Mage armor")) do table.insert(texts, option.text) end
+            assert.same({ "Frost Armor", "Mage Armor" }, texts)
+            h:learn("Ice Armor")
+            assert.equal("Ice Armor", h:dropdown("Mage armor")[1].text)
+            h:learn("Mage Armor")
+            h:choose("Mage armor", "Mage Armor")
+            assert.equal("Mage Armor", h.ns.config.MAGE_ARMOR)
+            assert.equal("Mage Armor", h:shown())
+        end)
+
+        it("offers the same armors for a raid", function()
+            local h = Addon.load({ class = "MAGE", known = all, raid = true })
+            local texts = {}
+            for _, option in ipairs(h:dropdown("Mage armor in a raid")) do table.insert(texts, option.text) end
+            assert.same({ "Ice Armor", "Mage Armor" }, texts)
+            h:choose("Mage armor in a raid", "Ice Armor")
+            assert.equal("Ice Armor", h.ns.config.MAGE_ARMOR_RAID)
+            assert.equal("Ice Armor", h:shown())
         end)
     end)
 
@@ -59,9 +95,29 @@ describe("per-class buff priority (vanilla spells)", function()
             assert.same({ "Devotion Aura", "Blessing of Might" }, h:buffUp())
         end)
 
-        it("prefers Sanctity Aura over Devotion Aura", function()
-            local h = Addon.load({ class = "PALADIN", known = { "Devotion Aura", "Sanctity Aura" } })
-            assert.same({ "Sanctity Aura" }, h:buffUp())
+        it("recommends the aura picked in the settings", function()
+            local h = Addon.load({ class = "PALADIN", known = { "Devotion Aura", "Retribution Aura" },
+                config = { PALADIN_AURA = "Retribution Aura" } })
+            assert.same({ "Retribution Aura" }, h:buffUp())
+        end)
+
+        it("uses Devotion Aura until the picked aura is learned", function()
+            local h = Addon.load({ class = "PALADIN", known = { "Devotion Aura" },
+                config = { PALADIN_AURA = "Fire Resistance Aura" } })
+            assert.equal("Devotion Aura", h:shown())
+            h:learn("Fire Resistance Aura")
+            assert.equal("Fire Resistance Aura", h:shown())
+        end)
+
+        it("offers the auras in the settings", function()
+            local h = Addon.load({ class = "PALADIN", known = { "Devotion Aura", "Retribution Aura" } })
+            local texts = {}
+            for _, option in ipairs(h:dropdown("Paladin aura")) do table.insert(texts, option.text) end
+            assert.same({ "Retribution Aura", "Devotion Aura", "Fire Resistance Aura", "Frost Resistance Aura",
+                "Shadow Resistance Aura" }, texts)
+            h:choose("Paladin aura", "Retribution Aura")
+            assert.equal("Retribution Aura", h.ns.config.PALADIN_AURA)
+            assert.equal("Retribution Aura", h:shown())
         end)
 
         it("recommends the blessing picked in the settings", function()
@@ -87,10 +143,6 @@ describe("per-class buff priority (vanilla spells)", function()
             assert.same({ "Devotion Aura", "Blessing of Might", "Righteous Fury" }, h:buffUp())
         end)
 
-        it("recommends Retribution Aura when it is the only aura known", function()
-            local h = Addon.load({ class = "PALADIN", known = { "Retribution Aura" } })
-            assert.equal("Retribution Aura", h:shown())
-        end)
     end)
 
     it("PRIEST: Fortitude, Shadowform, Divine Spirit, Inner Fire", function()

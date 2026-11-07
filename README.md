@@ -24,8 +24,8 @@ Made for **WoW Forever**. The Classic Era version is no longer updated.
 |---|---|
 | Druid | Mark of the Wild, Thorns |
 | Hunter | Trueshot Aura, Aspect of the Hawk (any other combat aspect also counts) |
-| Mage | Ice Armor or Frost Armor (Mage Armor in a raid), Arcane Intellect, Dampen Magic |
-| Paladin | An aura (Sanctity, Devotion or Retribution), Blessing of Might, Wisdom or Kings, Righteous Fury if you tank, Oath of Light on your tank (or your target) if you have the talent. Party members get a blessing by class, shared out with other Paladins |
+| Mage | Ice Armor (Frost Armor at low level), Mage Armor in a raid, Arcane Intellect, Dampen Magic |
+| Paladin | An aura (Devotion by default), Blessing of Might, Wisdom or Kings, Righteous Fury if you tank, Oath of Light on your tank (or your target) if you have the talent. Party members get a blessing by class, shared out with other Paladins |
 | Priest | Power Word: Fortitude, Shadowform, Divine Spirit, Inner Fire |
 | Rogue | A poison on each weapon |
 | Shaman | Lightning Shield, a weapon imbue |
@@ -72,9 +72,14 @@ a poison running low on charges counts as missing.
   default.
 - **Buff your group:** your party, or the whole raid starting with your own
   subgroup. On by default.
-- **Strict Mage Armors:** only the recommended armor counts.
+- **Mage armor / Mage armor in a raid:** Ice Armor (Frost Armor until Ice is
+  learned) or Mage Armor, for outside a raid and in one. Ice Armor and Mage
+  Armor by default. Only the armor picked for where you are counts.
 - **Skip Dampen Magic / Skip Thorns / Skip Lightning Shield / Skip Inner Fire.**
 - **Always try Bloodrage out of combat:** casts Bloodrage before Battle Shout.
+- **Paladin aura:** Retribution, Devotion, Fire, Frost or Shadow Resistance.
+  Devotion until the one you pick is learned. Any of your own auras counts as
+  up, so switch by hand once to change it.
 - **Paladin blessing on yourself:** Might, Wisdom or Kings. Might until the
   one you pick is learned. If another Paladin has already put it on you, you
   get the next one on the Paladin list.

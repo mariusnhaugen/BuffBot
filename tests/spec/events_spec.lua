@@ -8,17 +8,17 @@ describe("event handling", function()
         return Addon.load(opts)
     end
 
-    -- Wearing the armor for where they are, with Arcane Intellect to cast. The
-    -- armor is strict, so a rebuilt list asks for the armor of the new place.
+    -- Wearing Ice Armor, with Arcane Intellect to cast and Dampen Magic
+    -- learned behind the list's back: only a rebuilt list picks it up
     local function armored(inRaid)
         local h = Addon.load({
             class = "MAGE",
-            known = { "Ice Armor", "Mage Armor", "Arcane Intellect" },
-            config = { STRICT_ARMOR = true },
+            known = { "Ice Armor", "Arcane Intellect" },
             raid = inRaid,
         })
-        h:give(inRaid and "Mage Armor" or "Ice Armor")
+        h:give("Ice Armor")
         assert.equal("Arcane Intellect", h:shown())
+        h.state:learn("Dampen Magic")
         return h
     end
 
@@ -48,8 +48,7 @@ describe("event handling", function()
     end)
 
     it("UNIT_AURA with a secret full update re-checks without rebuilding", function()
-        local h = armored(false)
-        setRaid(h, true)
+        local h = armored(true)
         h.state:giveAura("Arcane Intellect")
         h:fire("UNIT_AURA", "player", { isFullUpdate = h.state.SECRET })
         assert.is_nil(h:shown())
@@ -64,15 +63,14 @@ describe("event handling", function()
     end)
 
     it("UNIT_AURA full update rebuilds the list in a raid", function()
-        local h = armored(false)
-        setRaid(h, true)
+        local h = armored(true)
+        h.state:giveAura("Arcane Intellect")
         h:fire("UNIT_AURA", "player", { isFullUpdate = true })
-        assert.equal("Mage Armor", h:shown())
+        assert.equal("Dampen Magic", h:shown())
     end)
 
     it("UNIT_AURA full update outside a raid re-checks without rebuilding", function()
-        local h = armored(true)
-        setRaid(h, false)
+        local h = armored(false)
         h.state:giveAura("Arcane Intellect")
         h:fire("UNIT_AURA", "player", { isFullUpdate = true })
         assert.is_nil(h:shown())
@@ -81,15 +79,17 @@ describe("event handling", function()
     it("GROUP_ROSTER_UPDATE rebuilds the list", function()
         local h = armored(false)
         setRaid(h, true)
+        h.state:giveAura("Arcane Intellect")
         h:fire("GROUP_ROSTER_UPDATE")
-        assert.equal("Mage Armor", h:shown())
+        assert.equal("Dampen Magic", h:shown())
     end)
 
     it("GROUP_LEFT rebuilds the list", function()
         local h = armored(true)
         setRaid(h, false)
+        h.state:giveAura("Arcane Intellect")
         h:fire("GROUP_LEFT")
-        assert.equal("Ice Armor", h:shown())
+        assert.equal("Dampen Magic", h:shown())
     end)
 
     it("SPELLS_CHANGED rebuilds the list", function()

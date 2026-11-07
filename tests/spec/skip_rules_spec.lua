@@ -84,18 +84,8 @@ describe("skip rules", function()
     end)
 
     describe("unique armors and auras", function()
-        it("any active Mage armor satisfies the armor slot", function()
+        it("only the picked Mage armor satisfies the armor slot", function()
             local h = Addon.load({ class = "MAGE", known = { "Frost Armor", "Ice Armor", "Arcane Intellect" } })
-            h:give("Frost Armor")
-            assert.same({ "Arcane Intellect" }, h:buffUp())
-        end)
-
-        it("STRICT_ARMOR requires the recommended armor", function()
-            local h = Addon.load({
-                class = "MAGE",
-                known = { "Frost Armor", "Ice Armor", "Arcane Intellect" },
-                config = { STRICT_ARMOR = true },
-            })
             h:give("Frost Armor")
             assert.same({ "Ice Armor", "Arcane Intellect" }, h:buffUp())
         end)

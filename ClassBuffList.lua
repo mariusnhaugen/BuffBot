@@ -16,9 +16,9 @@ InitalClassBuffLists.WARRIOR = { "Battle Shout" }
 -- Buffs that cover each other: with any one up, the others aren't missing
 local UniqueBuffsByClass = {}
 UniqueBuffsByClass.HUNTER = { "Aspect of the Hawk", "Aspect of the Monkey", "Aspect of the Wild", "Aspect of the Beast" }
-UniqueBuffsByClass.MAGE = { "Mage Armor", "Frost Armor", "Ice Armor" }
+-- Mages have none: only the armor picked in the settings counts
 UniqueBuffsByClass.WARLOCK = { "Demon Skin", "Demon Armor" }
-UniqueBuffsByClass.PALADIN = { "Devotion Aura", "Sanctity Aura", "Concentration Aura", "Retribution Aura",
+UniqueBuffsByClass.PALADIN = { "Devotion Aura", "Concentration Aura", "Retribution Aura",
     "Frost Resistance Aura", "Shadow Resistance Aura", "Fire Resistance Aura" }
 
 -- Weapon enchants rather than auras, checked with BuffBot.HasWeaponEnchant
@@ -36,6 +36,14 @@ BuffBot.WeaponPoisons = {
 
 -- The blessings a Paladin can pick for themselves
 BuffBot.SelfBlessings = { "Blessing of Might", "Blessing of Wisdom", "Blessing of Kings" }
+
+-- The armors a Mage can pick. "Ice Armor" stands for Frost Armor until Ice
+-- Armor is learned.
+BuffBot.MageArmors = { "Ice Armor", "Mage Armor" }
+
+-- The auras a Paladin can pick
+BuffBot.PaladinAuras = { "Retribution Aura", "Devotion Aura",
+    "Fire Resistance Aura", "Frost Resistance Aura", "Shadow Resistance Aura" }
 
 -- Fallback order when the chosen poison runs out
 BuffBot.PoisonTypes = { "Instant Poison", "Deadly Poison", "Crippling Poison", "Mind-numbing Poison", "Wound Poison" }
@@ -327,7 +335,6 @@ local spellIDTable = {
     ["Dampen Magic"] = 604,
     -- PALADIN
     ["Devotion Aura"] = 465,
-    ["Sanctity Aura"] = 20218,
     ["Concentration Aura"] = 19746,
     ["Retribution Aura"] = 7294,
     ["Frost Resistance Aura"] = 19888,
@@ -428,24 +435,27 @@ local function FilterUniqueBuffs()
         table.insert(buffs, "Aspect of the Cheetah")
         table.insert(buffs, "Aspect of the Pack")
     end
-    -- Strict armors: only the recommended armor counts
-    if class == "MAGE" and BuffBot.config.STRICT_ARMOR then
-        buffs = {}
-    end
     BuffBot.uniqueBuffs = buffs
+end
+
+-- The Mage armor a setting stands for: the chosen one, with Ice Armor
+-- falling back to Frost Armor and Mage Armor to the Frost line until learned
+function BuffBot.ResolveMageArmor(choice)
+    if choice == "Mage Armor" and BuffBot.CheckSpellAvailable("Mage Armor") then
+        return "Mage Armor"
+    end
+    if BuffBot.CheckSpellAvailable("Ice Armor") then
+        return "Ice Armor"
+    end
+    if BuffBot.CheckSpellAvailable("Frost Armor") then
+        return "Frost Armor"
+    end
 end
 
 local function RecommendUniqueBuff()
     if BuffBot.playerclass == "MAGE" then
-        if BuffBot.CheckSpellAvailable("Mage Armor") and IsInRaid(LE_PARTY_CATEGORY_HOME) then
-            return "Mage Armor"
-        end
-        if BuffBot.CheckSpellAvailable("Ice Armor") then
-            return "Ice Armor"
-        end
-        if BuffBot.CheckSpellAvailable("Frost Armor") then
-            return "Frost Armor"
-        end
+        local inRaid = IsInRaid(LE_PARTY_CATEGORY_HOME)
+        return BuffBot.ResolveMageArmor(inRaid and BuffBot.config.MAGE_ARMOR_RAID or BuffBot.config.MAGE_ARMOR)
     end
 
     if BuffBot.playerclass == "WARLOCK" then
@@ -457,14 +467,12 @@ local function RecommendUniqueBuff()
         end
     end
     if BuffBot.playerclass == "PALADIN" then
-        if BuffBot.CheckSpellAvailable("Sanctity Aura") then
-            return "Sanctity Aura"
+        -- The chosen aura, or Devotion until it's learned
+        if BuffBot.CheckSpellAvailable(BuffBot.config.PALADIN_AURA) then
+            return BuffBot.config.PALADIN_AURA
         end
         if BuffBot.CheckSpellAvailable("Devotion Aura") then
             return "Devotion Aura"
-        end
-        if BuffBot.CheckSpellAvailable("Retribution Aura") then
-            return "Retribution Aura"
         end
     end
 end

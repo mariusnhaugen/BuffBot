@@ -69,8 +69,10 @@ function BuffBot.GetDefaultConfig()
 
     defaultConfig.BLOODRAGE = false
     defaultConfig.PALADIN_BLESSING = "Blessing of Might"
+    defaultConfig.PALADIN_AURA = "Devotion Aura"
+    defaultConfig.MAGE_ARMOR = "Ice Armor"
+    defaultConfig.MAGE_ARMOR_RAID = "Mage Armor"
     defaultConfig.RIGHTEOUS_FURY = false
-    defaultConfig.STRICT_ARMOR = false
     defaultConfig.IGNORE_THORNS = false
     defaultConfig.IGNORE_DAMPEN = false
     defaultConfig.IGNORE_LIGHTNING_SHIELD = false
@@ -117,7 +119,8 @@ function BuffBot.RegisterSettings()
         Settings.CreateCheckbox(category, setting, tooltip)
     end
 
-    -- options: { value, English name } pairs; nameOf gives the client's name
+    -- values: the English names; nameOf gives the client's name for each,
+    -- when the dropdown opens
     local function addDropdown(key, label, tooltip, values, nameOf)
         local setting = addSetting(key, Settings.VarType.String, label, BuffBot.UpdateClassBuffList)
         local function options()
@@ -188,8 +191,6 @@ function BuffBot.RegisterSettings()
 
     layout:AddInitializer(CreateSettingsListSectionHeaderInitializer("Class Settings"))
 
-    addCheckbox("STRICT_ARMOR", "Strict Mage Armors",
-        "Disallow any armor being valid when recommending a Mage armor buff. \n \n Open World:  Ice Armor \n In Raid:         Mage Armor")
     addCheckbox("IGNORE_DAMPEN", "Skip Dampen Magic", "Skip recommending Dampen Magic.")
     addCheckbox("BLOODRAGE", "Always try Bloodrage out of combat",
         "Cast Bloodrage before Battle Shout out of combat. \n\nCan cause error spam while Bloodrage is on cooldown.")
@@ -200,6 +201,20 @@ function BuffBot.RegisterSettings()
     addCheckbox("CHEETAH_REMINDER", "Reminder to leave Cheetah",
         "Shows Aspect of the Hawk if you are in Aspect of the Cheetah/Pack")
 
+    -- The Frost line shows as Frost Armor until Ice Armor is learned
+    local function mageArmorName(value)
+        if value == "Ice Armor" and not BuffBot.CheckSpellAvailable("Ice Armor") then value = "Frost Armor" end
+        return BuffBot.SpellName(value)
+    end
+    addDropdown("MAGE_ARMOR", "Mage armor",
+        "The armor the button puts on you outside a raid. Only this armor counts. Ice Armor is Frost Armor until learned, and Mage Armor is the Frost one until learned.",
+        BuffBot.MageArmors, mageArmorName)
+    addDropdown("MAGE_ARMOR_RAID", "Mage armor in a raid",
+        "The armor the button puts on you in a raid. Only this armor counts. Ice Armor is Frost Armor until learned, and Mage Armor is the Frost one until learned.",
+        BuffBot.MageArmors, mageArmorName)
+    addDropdown("PALADIN_AURA", "Paladin aura",
+        "The aura the button puts up, or Devotion until it's learned. Any of your own auras counts as up, so switch by hand once to change it.",
+        BuffBot.PaladinAuras, BuffBot.SpellName)
     addDropdown("PALADIN_BLESSING", "Paladin blessing on yourself",
         "The blessing the button puts on you, or Might until it's learned. If another Paladin has already put it on you, you get the next one on the Paladin list. Party members get one by class, and the next one when another Paladin's is already there. In a raid with other BuffBot Paladins, blessings follow the raid's assignment.",
         BuffBot.SelfBlessings, BuffBot.SpellName)

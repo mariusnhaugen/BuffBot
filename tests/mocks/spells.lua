@@ -26,7 +26,6 @@ local byName = {
     ["Dampen Magic"] = 604,
     -- PALADIN
     ["Devotion Aura"] = 465,
-    ["Sanctity Aura"] = 20218,
     ["Concentration Aura"] = 19746,
     ["Retribution Aura"] = 7294,
     ["Frost Resistance Aura"] = 19888,

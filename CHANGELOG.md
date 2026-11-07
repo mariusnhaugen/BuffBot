@@ -1,5 +1,15 @@
 # BuffBot
 
+## Unreleased
+
+- New options: Mage armor and Mage armor in a raid. Pick Ice Armor (Frost
+  Armor at low level) or Mage Armor for each. Ice Armor and Mage Armor by
+  default, as before.
+- New option: Paladin aura. Pick Retribution, Devotion or a resistance aura.
+  Devotion by default.
+- Removed: Strict Mage Armors. Only the armor you picked counts now.
+- Sanctity Aura is no longer suggested, since it isn't in Forever.
+
 ## 2.6.5
 
 - New option: Skip Inner Fire.
