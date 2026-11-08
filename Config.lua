@@ -121,8 +121,8 @@ function BuffBot.RegisterSettings()
 
     -- values: the English names; nameOf gives the client's name for each,
     -- when the dropdown opens
-    local function addDropdown(key, label, tooltip, values, nameOf)
-        local setting = addSetting(key, Settings.VarType.String, label, BuffBot.UpdateClassBuffList)
+    local function addDropdown(key, label, tooltip, values, nameOf, onChange)
+        local setting = addSetting(key, Settings.VarType.String, label, onChange or BuffBot.UpdateClassBuffList)
         local function options()
             local container = Settings.CreateControlTextContainer()
             for _, value in ipairs(values) do
@@ -213,8 +213,8 @@ function BuffBot.RegisterSettings()
         "The armor the button puts on you in a raid. Only this armor counts. Ice Armor is Frost Armor until learned, and Mage Armor is the Frost one until learned.",
         BuffBot.MageArmors, mageArmorName)
     addDropdown("PALADIN_AURA", "Paladin aura",
-        "The aura the button puts up, or Devotion until it's learned. Any of your own auras counts as up, so switch by hand once to change it.",
-        BuffBot.PaladinAuras, BuffBot.SpellName)
+        "The aura the button puts up, or Devotion until it's learned. Changing this swaps you to it once; after that, any of your own auras counts as up, so you can swap by hand.",
+        BuffBot.PaladinAuras, BuffBot.SpellName, BuffBot.PickedAura)
     addDropdown("PALADIN_BLESSING", "Paladin blessing on yourself",
         "The blessing the button puts on you, or Might until it's learned. If another Paladin has already put it on you, you get the next one on the Paladin list. Party members get one by class, and the next one when another Paladin's is already there. In a raid with other BuffBot Paladins, blessings follow the raid's assignment.",
         BuffBot.SelfBlessings, BuffBot.SpellName)

@@ -78,8 +78,9 @@ a poison running low on charges counts as missing.
 - **Skip Dampen Magic / Skip Thorns / Skip Lightning Shield / Skip Inner Fire.**
 - **Always try Bloodrage out of combat:** casts Bloodrage before Battle Shout.
 - **Paladin aura:** Retribution, Devotion, Fire, Frost or Shadow Resistance.
-  Devotion until the one you pick is learned. Any of your own auras counts as
-  up, so switch by hand once to change it.
+  Devotion until the one you pick is learned. Changing it swaps you to the
+  new aura once; after that, any of your own auras counts as up, so you can
+  swap by hand without being asked to swap back.
 - **Paladin blessing on yourself:** Might, Wisdom or Kings. Might until the
   one you pick is learned. If another Paladin has already put it on you, you
   get the next one on the Paladin list.

@@ -120,6 +120,37 @@ describe("per-class buff priority (vanilla spells)", function()
             assert.equal("Retribution Aura", h:shown())
         end)
 
+        it("swaps to a newly picked aura once, then lets any aura count", function()
+            local h = Addon.load({ class = "PALADIN", known = { "Devotion Aura", "Retribution Aura" } })
+            h:give("Retribution Aura")
+            assert.is_nil(h:shown())
+            h:choose("Paladin aura", "Retribution Aura")
+            assert.is_nil(h:shown()) -- already up: nothing to swap
+            h:choose("Paladin aura", "Fire Resistance Aura")
+            assert.is_nil(h:shown()) -- not learned: no swap to Devotion
+            h:learn("Frost Resistance Aura")
+            h:choose("Paladin aura", "Devotion Aura")
+            assert.equal("Devotion Aura", h:shown())
+            h:choose("Paladin aura", "Frost Resistance Aura")
+            assert.equal("Frost Resistance Aura", h:shown())
+            h:remove("Retribution Aura")
+            h:give("Frost Resistance Aura")
+            assert.is_nil(h:shown())
+            -- Swapping by hand afterwards is left alone
+            h:remove("Frost Resistance Aura")
+            h:give("Retribution Aura")
+            assert.is_nil(h:shown())
+        end)
+
+        it("swaps to a newly picked aura in a raid", function()
+            local h = Addon.load({ class = "PALADIN", known = { "Devotion Aura", "Retribution Aura" } })
+            h:joinRaid({ { name = "Tank", class = "WARRIOR" } })
+            h:give("Retribution Aura")
+            assert.is_nil(h:shown())
+            h:choose("Paladin aura", "Devotion Aura")
+            assert.equal("Devotion Aura", h:shown())
+        end)
+
         it("recommends the blessing picked in the settings", function()
             local h = Addon.load({
                 class = "PALADIN",

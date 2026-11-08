@@ -39,6 +39,25 @@ function BuffBot.UpdateClassBuffList()
     BuffBot.CheckPlayerBuffs()
 end
 
+-- Set when the Paladin aura setting changes: until the picked aura is up,
+-- the player's other auras don't count, so the button swaps to it once. Then
+-- any aura counts again, so swapping by hand stays quiet.
+local auraPicked = false
+function BuffBot.PickedAura()
+    auraPicked = true
+    BuffBot.UpdateClassBuffList()
+end
+
+function BuffBot.ForcingAura(buffString)
+    if not auraPicked then return false end
+    if buffString ~= BuffBot.config.PALADIN_AURA then return false end
+    if BuffBot.UnitHasAssignedBuff("player", buffString) then
+        auraPicked = false
+        return false
+    end
+    return true
+end
+
 function BuffBot.HasUniqueClassBuff()
     for i = 1, #BuffBot.uniqueBuffs, 1 do
         if BuffBot.UnitHasAssignedBuff("player", BuffBot.uniqueBuffs[i]) then
@@ -67,7 +86,8 @@ local function SkipReason(buffString)
         if not GetInventoryItemID("player", poison.invSlot) then return "no weapon in that hand" end
         if not BuffBot.PoisonItem(buffString) then return "none in your bags" end
     end
-    if BuffBot.IndexOf(buffString, BuffBot.uniqueBuffs) and BuffBot.HasUniqueClassBuff() then
+    if BuffBot.IndexOf(buffString, BuffBot.uniqueBuffs) and not BuffBot.ForcingAura(buffString)
+            and BuffBot.HasUniqueClassBuff() then
         return "another one is already up" -- auras and armors
     end
 end

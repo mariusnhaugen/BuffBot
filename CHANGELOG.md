@@ -1,5 +1,11 @@
 # BuffBot
 
+## 2.6.7
+
+- Bugfix: Changing the Paladin aura setting now swaps you to the new aura,
+  instead of counting the aura you already had up. After that, swapping by
+  hand still counts.
+
 ## 2.6.6
 
 - New options: Mage armor and Mage armor in a raid. Pick Ice Armor (Frost
