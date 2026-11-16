@@ -1,5 +1,11 @@
 # BuffBot
 
+## 2.6.8
+
+- Bugfix: In battlegrounds, should no longer show when auras are hidden.
+- Paladins: Any blessing you've put on yourself now counts as up. Setting change forces one cast.
+- Paladins: Druid group default changed to Kings. 
+
 ## 2.6.7
 
 - Bugfix: Changing the Paladin aura setting now swaps you to the new aura,
