@@ -83,7 +83,9 @@ a poison running low on charges counts as missing.
   swap by hand without being asked to swap back.
 - **Paladin blessing on yourself:** Might, Wisdom or Kings. Might until the
   one you pick is learned. If another Paladin has already put it on you, you
-  get the next one on the Paladin list.
+  get the next one on the Paladin list. Changing it swaps you to the new
+  blessing once; after that, any blessing of your own on yourself counts as
+  up.
 - **Recommend Righteous Fury:** for Paladin tanks. Off by default.
 - **Reminder to leave Cheetah:** shows Aspect of the Hawk while you're in
   Cheetah or Pack.

@@ -223,11 +223,21 @@ local function SlotBlessingFor(unit, list)
     end
 end
 
+-- Set when the self-blessing setting changes: until the picked blessing is
+-- on the player, their own other blessing on themselves doesn't stand, so the
+-- button swaps to it once. Then any of their own blessings stands again, so
+-- one cast by hand stays quiet. As with the Paladin aura (BuffBot.PickedAura).
+local blessingPicked = false
+function BuffBot.PickedBlessing()
+    blessingPicked = true
+    BuffBot.UpdateClassBuffList()
+end
+
 -- The blessing a unit gets from the player, or nil when every blessing on
 -- their list is learned by nobody or already given by other Paladins. The
 -- player's blessing on them stands until it's due, then the list decides
--- again; on the player, the one picked in the settings takes over as soon as
--- it's free. A Greater Blessing went on for the class, not the member, so it
+-- again; on the player, just after the setting changes, the one picked takes
+-- over as soon as it's free. A Greater Blessing went on for the class, not the member, so it
 -- only counts when the list still picks it. In a raid, the list is the
 -- member's role's. With a slot among other BuffBot
 -- Paladins, the slot decides, and the player is just another member; a
@@ -256,7 +266,8 @@ function BuffBot.BlessingFor(unit)
         local aura, greater = BlessingAura(unit, blessing)
         if aura and aura.sourceUnit == "player" then
             local stands = not greater and BuffBot.UnitHasAssignedBuff(unit, blessing)
-            local switch = isPlayer and blessing ~= list[1] and BlessingFree(unit, list[1])
+            if isPlayer and blessing == list[1] then blessingPicked = false end
+            local switch = isPlayer and blessingPicked and blessing ~= list[1] and BlessingFree(unit, list[1])
             if stands and not switch then return blessing end
         end
     end

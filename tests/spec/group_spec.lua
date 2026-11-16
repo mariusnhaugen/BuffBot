@@ -242,7 +242,31 @@ describe("group buffing", function()
             local h = paladin({ known = { "Blessing of Might" }, config = { PALADIN_BLESSING = "Blessing of Kings" } })
             assert.same({ "Blessing of Might" }, h:buffUp())
             h:learn("Blessing of Kings")
-            assert.same({ "Blessing of Kings" }, h:buffUp())
+            assert.is_nil(h:shown()) -- Might stands until the setting changes
+        end)
+
+        it("swaps to a picked blessing once it's learned, if picked since", function()
+            local h = paladin({ known = { "Blessing of Might" } })
+            h:give("Blessing of Might")
+            h:choose("Paladin blessing on yourself", "Blessing of Kings")
+            assert.is_nil(h:shown()) -- not learned: Might stands
+            h:learn("Blessing of Kings")
+            assert.equal("Blessing of Kings", h:shown())
+        end)
+
+        it("swaps the player to a newly picked blessing once, then lets any of their own count", function()
+            local h = paladin({ known = { "Blessing of Might", "Blessing of Wisdom", "Blessing of Kings" } })
+            h:give("Blessing of Wisdom")
+            assert.is_nil(h:shown()) -- Might picked, but their own Wisdom counts
+            h:choose("Paladin blessing on yourself", "Blessing of Kings")
+            assert.equal("Blessing of Kings", h:shown())
+            h:remove("Blessing of Wisdom")
+            h:give("Blessing of Kings")
+            assert.is_nil(h:shown())
+            -- Casting another by hand afterwards is left alone
+            h:remove("Blessing of Kings")
+            h:give("Blessing of Might")
+            assert.is_nil(h:shown())
         end)
 
         it("offers Might, Wisdom and Kings in the settings", function()
@@ -323,7 +347,7 @@ describe("group buffing", function()
             h:give("Blessing of Might", { fromPlayer = false })
             assert.same({ "Blessing of Kings" }, h:buffUp())
             h:remove("Blessing of Might")
-            assert.equal("Blessing of Might", h:shown())
+            assert.is_nil(h:shown()) -- their own Kings stands
         end)
 
         it("counts a Greater Blessing", function()
