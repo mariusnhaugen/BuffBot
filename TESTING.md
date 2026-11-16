@@ -112,6 +112,35 @@ Die in a battleground: nothing is cast there. Tracking comes back on after leavi
 
 Result:
 
+### Auras in battlegrounds (Hunter, from a player report 2026-11-15)
+
+A Hunter in a BG got Trueshot Aura and Aspect of the Hawk offered while both were up. Suspect: the PvPMatch add-on restriction (3) hides auras there, and `BuffBot.AurasUnreadable` only checks combat and the encounter flag (see "Aura lookups during an encounter" in PROBE_RESULTS.md). Out of combat, with both buffs up, in a BG before the gates open, after they open, and once in the open world for a baseline:
+
+`/run local f=C_UnitAuras.GetAuraDataBySpellName print(C_Secrets.ShouldAurasBeSecret(), C_RestrictedActions.GetAddOnRestrictionState(3), C_RestrictedActions.GetAddOnRestrictionState(4), f("player","Trueshot Aura")~=nil, f("player","Aspect of the Hawk")~=nil)`
+
+Plus `/bb status`. Expected open world: `false 0 0 true true`. `true 2 ... false false` in the BG confirms it (fix: TODO 47). Lookups `true` in the BG means auras are readable and the self-buff check is wrong instead.
+
+Result:
+
+### Does `ShouldAurasBeSecret` cover every case?
+
+`BuffBot.AurasUnreadable` checks combat, the encounter flag and `C_Secrets.ShouldAurasBeSecret()`. If the flag is `true` exactly when aura lookups come back empty, the other two checks can go and the function becomes that one call. So far it matched once each way: `true` with lookups empty in Blackfathom Deeps after a wipe, `false` with lookups working in the open world ([result](PROBE_RESULTS.md#aura-lookups-during-an-encounter-blackfathom-deeps)). With a buff of your own up (and in a party, on party1 too), run:
+
+`/run local f=C_UnitAuras.GetAuraDataBySpellName print(C_Secrets.ShouldAurasBeSecret(), InCombatLockdown(), C_InstanceEncounter.IsEncounterInProgress(), f("player","<buff>")~=nil, f("party1","<buff>")~=nil)`
+
+In combat it can't be typed, so bind it to a macro and press it mid-fight. `/bb status` shows the three checks too (`Auras: hidden (combat, encounter, game)`), so a player's status screenshot answers half of it. The lookups still need the line above. Run it:
+
+1. In the open world, out of combat (baseline, expected `false false false true true`).
+2. In the open world, in combat with a mob. The case that matters most: party1's lookup is known to come back empty here ([result](PROBE_RESULTS.md#party-aura-secret-check-in-a-party)). If the flag is `false` while a lookup is empty, the combat check stays.
+3. In a dungeon, out of combat, before any boss.
+4. In a dungeon during a boss pull, before your own combat starts, then in combat.
+5. Just after a boss kill, and after a wipe once the mobs reset, until the encounter flag clears. Does the flag clear at the same time?
+6. In a battleground (the TODO 47 probe above covers this).
+
+The flag can replace the other checks only if it's `true` every time a lookup with the buff up comes back empty, and `false` every time lookups work. A `true` while lookups work means it fires too often, and `AurasUnreadable` would hide buffs that are really missing.
+
+Result:
+
 ## Test at launch
 
 Checks that can't be run on the beta, or are still waiting for a tester. The steps are in each check above. Tick one off once it has passed on the live servers, and write its result above.

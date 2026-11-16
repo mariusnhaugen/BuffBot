@@ -29,6 +29,7 @@ function State.new(class)
         auras = {},
         combat = false,
         encounter = false, -- a boss fight is on, which can start before the player's combat
+        aurasSecret = false, -- C_Secrets.ShouldAurasBeSecret(), as in a battleground
         dead = false,
         ghost = false,
         taxi = false,

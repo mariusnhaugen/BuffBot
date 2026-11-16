@@ -120,6 +120,10 @@ return function(state, env)
         IsEncounterInProgress = function() return state.encounter end,
     }
 
+    env.C_Secrets = {
+        ShouldAurasBeSecret = function() return state.aurasSecret end,
+    }
+
     env.C_Timer = {
         After = function(seconds, callback)
             table.insert(state.timers, { at = state.time + seconds, callback = callback })

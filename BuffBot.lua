@@ -28,8 +28,12 @@ end
 -- and during an encounter. One starts when the tank pulls a boss, and in
 -- Blackfathom Deeps it stayed on after a wipe with the mobs reset, so the
 -- player can be in one and out of combat. Nothing can be called missing then.
+-- ShouldAurasBeSecret was true there too, and is the likely catch-all (a
+-- battleground's PvPMatch restriction, the Map restriction); until probes show
+-- it covers combat and encounters, all three are checked.
 function BuffBot.AurasUnreadable()
     return InCombatLockdown() or C_InstanceEncounter.IsEncounterInProgress()
+        or C_Secrets.ShouldAurasBeSecret()
 end
 
 function BuffBot.UpdateClassBuffList()
@@ -424,11 +428,23 @@ end
 local function QuietReason(outOfRange)
     if InCombatLockdown() then return "in combat, it waits until after" end
     if C_InstanceEncounter.IsEncounterInProgress() then return "the game is hiding buffs during this encounter" end
+    if C_Secrets.ShouldAurasBeSecret() then return "the game is hiding buffs here" end
     if UnitIsDeadOrGhost("player") then return "you're dead" end
     if UnitOnTaxi("player") then return "you're on a flight" end
     if #(BuffBot.classBuffList or {}) == 0 then return "no buffs on your list (/bb status)" end
     if outOfRange then return "everything in range is up" end
     return "everything is up"
+end
+
+-- Which checks say auras can't be read right now. All of them are shown, so a
+-- status screenshot tells whether ShouldAurasBeSecret covers the other two.
+local function AuraStatus()
+    local hiddenBy = {}
+    if InCombatLockdown() then table.insert(hiddenBy, "combat") end
+    if C_InstanceEncounter.IsEncounterInProgress() then table.insert(hiddenBy, "encounter") end
+    if C_Secrets.ShouldAurasBeSecret() then table.insert(hiddenBy, "game") end
+    if #hiddenBy == 0 then return "readable" end
+    return "hidden (" .. table.concat(hiddenBy, ", ") .. ")"
 end
 
 -- The most suggestions /bb status names before "and N more"
@@ -452,6 +468,7 @@ function BuffBot.StatusCommand()
     add("You: level " .. UnitLevel("player") .. " " .. UnitClass("player") .. ", " .. group .. ", "
         .. (instanceType == "none" and "open world" or instanceType)
         .. "; buff your group " .. (BuffBot.config.GROUP_BUFFING and "on" or "off"))
+    add("Auras: " .. AuraStatus())
 
     local list = BuffBot.classBuffList or {}
     add("List: " .. (#list > 0 and table.concat(list, ", ") or "empty"))

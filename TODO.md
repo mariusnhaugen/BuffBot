@@ -3,6 +3,86 @@
 Open work for the Forever branch. Tick items off as they land, and note the
 commit.
 
+## Bugs
+
+- 46. Taint blamed on BuffBot (BugSack reports from one player,
+  2026-11-13). All four are Blizzard code running tainted and then hitting
+  a secret value or a protected call:
+  - `CompactUnitFrame.lua:698` compares the secret `oldR` in
+    `CompactUnitFrame_UpdateHealthColor`, from `CompactPartyFrame`
+    `RefreshMembers` (27x).
+  - `ActionButton.lua:891` `SetCooldown` gets secret values, from
+    `ActionBarController_UpdateAll` (471x).
+  - `Blizzard_GamepadActionBars/ActionBarButton.lua:965` boolean test on a
+    secret, from `UpdateFlyoutActionIcon` / `ClassSpellFlyout` (127x).
+  - `ADDON_ACTION_FORBIDDEN` on `ClearTarget()`, from `EnterEditMode`
+    `RefreshTargetAndFocus` (1x).
+  None of the stacks has a BuffBot frame in it, so the code that spread
+  the taint isn't known. BuffBot sets no globals beyond the slash commands,
+  the binding name and its saved variables, and hooks nothing; the local
+  `Logs/taint.log` (2026-11-05) only shows reads of those globals inside
+  `securecallfunction`, which are harmless. The player is a Warrior who
+  briefly joined a party around the time. So tracking casts (no Warrior
+  trackers) and Inspect (Paladins in a raid only) are ruled out. What a
+  Warrior in a party runs: the roster and party `UNIT_AURA` re-checks, the
+  secure button's macro updates (Battle Shout, Bloodrage), and hiding the
+  button on `PLAYER_REGEN_DISABLED`. Then the player found the trigger: the
+  errors start after turning on a 4th action bar (in Settings or Edit
+  Mode). That fits every stack: action bars, the gamepad bars, Edit Mode
+  and the party frames all refresh after that change. So Blizzard's
+  settings or Edit Mode code is likely running tainted when it applies the
+  change. He also said "It's Ellesmere": EllesmereUI, a full UI
+  replacement that runs on Forever. Its source (github.com/EllesmereGaming/EllesmereUI,
+  read 2026-11-13) points at it:
+  - It replaces the action bars with its own buttons, hides
+    `ActionBarParent`, and turns on `SHOW_MULTI_ACTIONBAR_1`–`4` with
+    `C_CVar.SetCVar` from add-on code (`EUI_ActionBars_Secure.lua`,
+    `EUI_ActionBars_Setup.lua`). A CVar set from add-on code runs
+    Blizzard's CVar callbacks tainted, which would explain all four stacks.
+    BuffBot sets no CVars.
+  - Why BuffBot gets the blame is unknown. WoW names the add-on that
+    owns the last tainted value read, so it can be the wrong one.
+  - Leaning: not a BuffBot bug. Confirm by turning on bar 4 with EllesmereUI
+    and BuffBot disabled; if the errors still come, blamed on EllesmereUI
+    or nothing, report it to EllesmereUI.
+  Other EllesmereUI overlaps (no bug seen, worth a look):
+  - Its AuraBuff Reminders module ("raid buff, auras, consumables and
+    talent reminders") repeats what BuffBot does. Two reminders for the
+    same buff is noise; README could say to turn one off.
+  - Its own secure buttons register only `AnyUp` with
+    `useOnKeyDown = false`, citing double casts when a button registers
+    both phases under `ActionButtonUseKeyDown`. BuffBot's button
+    registers `AnyUp` and `AnyDown` (`Interface.lua`). Check that a mouse
+    click and a keybind each cast once, with the CVar on and off.
+  Suspects on BuffBot's side, if the test above clears EllesmereUI:
+  - The keybinding row on the settings page (`CreateKeybindingEntryInitializer`
+    in `Config.lua`), a Blizzard initializer built from add-on code. Now
+    the lead suspect: it lives in the same Settings panel as the action
+    bar toggles. Test by building without it.
+  - BuffBot's other settings-page parts: the custom
+    `BuffBotSettingsTextTemplate` row and the Reset Button Position button.
+  - Repro: only BuffBot, BugGrabber and BugSack; `/console taintLog 1`;
+    `/reload`; turn on Action Bar 4; check BugSack and `Logs/taint.log`.
+  - Next step: a taint log from a player who gets the errors
+    (`/console taintLog 1`, `/reload`, play until it happens, then send
+    `Logs/taint.log`), or reproduce with only BuffBot and BugSack on.
+
+- 47. Hunter in a battleground gets Trueshot Aura and Aspect of the Hawk
+  offered while both are up (player report, 2026-11-15). Not the PvP guard:
+  `BuffBot.InPvP()` already limits BGs to self-buffs. Likely aura lookups
+  return nothing there (PvPMatch restriction), and `BuffBot.AurasUnreadable`
+  (`BuffBot.lua:31`) only checks combat and the encounter flag, so every
+  buff reads as missing. Probe: "Auras in battlegrounds" in TESTING.md (the
+  player has stopped doing BGs for now). If confirmed, also return true from
+  `AurasUnreadable` when `C_Secrets.ShouldAurasBeSecret()` is true, which
+  keeps the button quiet in BGs and closes the Map-restriction gap from the
+  Blackfathom Deeps probe. Add a spec with auras secret in a BG.
+  - Done ahead of the probe: `AurasUnreadable` also checks
+    `ShouldAurasBeSecret()`, with specs in `combat_spec.lua` and a
+    `/bb status` reason. Whether the flag alone covers combat and
+    encounters too: "Does `ShouldAurasBeSecret` cover every case?" in
+    TESTING.md.
+
 ## Feature ideas
 
 - 18. Settings page cleanup. Show only the current class's settings. General UX. Make paladin prio?

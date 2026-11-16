@@ -55,6 +55,28 @@ describe("/bb status", function()
         assert.is_true(has(lines, "Nothing to cast: the game is hiding buffs during this encounter"))
     end)
 
+    it("says when the game hides auras outside an encounter", function()
+        local h = Addon.load({ class = "MAGE", known = { "Arcane Intellect" } })
+        h.state.aurasSecret = true
+        local lines = printedBy(h, function() h:slash("status") end)
+        assert.is_true(has(lines, "Nothing to cast: the game is hiding buffs here"))
+    end)
+
+    it("says auras are readable", function()
+        local h = Addon.load({ class = "MAGE", known = { "Arcane Intellect" } })
+        local lines = printedBy(h, function() h:slash("status") end)
+        assert.is_true(has(lines, "Auras: readable"))
+    end)
+
+    it("names every check that hides auras", function()
+        local h = Addon.load({ class = "MAGE", known = { "Arcane Intellect" } })
+        h:startEncounter()
+        h:enterCombat()
+        h.state.aurasSecret = true
+        local lines = printedBy(h, function() h:slash("status") end)
+        assert.is_true(has(lines, "Auras: hidden (combat, encounter, game)"))
+    end)
+
     it("says why a buff of the player's own is skipped", function()
         local h = Addon.load({ class = "ROGUE" })
         h:equipOffHand(2092)

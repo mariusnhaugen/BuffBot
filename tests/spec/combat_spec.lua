@@ -100,4 +100,30 @@ describe("combat", function()
             assert.equal("Arcane Intellect", h:shown())
         end)
     end)
+
+    -- A Hunter in a battleground was offered Trueshot Aura and Aspect of the
+    -- Hawk with both up (TODO 47): lookups there likely come back empty
+    describe("auras hidden by the game outside combat and encounters", function()
+        local function hunterInBG()
+            local b = Addon.load({ class = "HUNTER", known = { "Trueshot Aura", "Aspect of the Hawk" } })
+            b.state.instanceType = "pvp"
+            b.state.aurasSecret = true
+            b:refresh()
+            return b
+        end
+
+        it("keeps the button hidden", function()
+            local b = hunterInBG()
+            assert.is_false(b.button:IsShown())
+            assert.same({}, b.ns.MissingBuffs())
+        end)
+
+        it("re-checks once auras are readable again", function()
+            local b = hunterInBG()
+            b.state.instanceType = "none"
+            b.state.aurasSecret = false
+            b:fire("PLAYER_ENTERING_WORLD", false)
+            assert.equal("Trueshot Aura", b:shown())
+        end)
+    end)
 end)
