@@ -190,7 +190,7 @@ describe("group buffing", function()
                 h:buffUp())
         end)
 
-        it("gives casters, Druids, Shamans, Hunters and other Paladins Wisdom", function()
+        it("gives casters, Druids, Shamans, Hunters and other Paladins Wisdom before Kings is learned", function()
             local h = paladin()
             h:joinParty({ { class = "MAGE" }, { class = "DRUID" }, { class = "SHAMAN" }, { class = "PALADIN" } })
             h:give("Blessing of Might")
@@ -202,11 +202,13 @@ describe("group buffing", function()
             assert.same({ "Blessing of Wisdom > party1" }, hunter:buffUp())
         end)
 
-        it("gives Hunters and other Paladins Kings once it's learned", function()
+        it("gives Hunters, Druids and other Paladins Kings once it's learned", function()
             local h = paladin({ known = { "Blessing of Might", "Blessing of Wisdom", "Blessing of Kings" } })
-            h:joinParty({ { class = "HUNTER" }, { class = "PALADIN" }, { class = "MAGE" }, { class = "WARRIOR" } })
+            h:joinParty({ { class = "HUNTER" }, { class = "PALADIN" }, { class = "MAGE" }, { class = "WARRIOR" },
+                { class = "DRUID" } })
             assert.same({ "Blessing of Might", "Blessing of Kings > party1", "Blessing of Kings > party2",
-                "Blessing of Wisdom > party3", "Blessing of Might > party4" }, h:buffUp())
+                "Blessing of Wisdom > party3", "Blessing of Might > party4", "Blessing of Kings > party5" },
+                h:buffUp())
         end)
 
         it("gives Hunters Wisdom before Kings is learned, and Kings when Wisdom is due", function()

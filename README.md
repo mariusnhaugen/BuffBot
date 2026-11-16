@@ -38,8 +38,8 @@ while its group version (such as Gift of the Wild) is on you.
 **Group buffing:** Mark of the Wild, Arcane Intellect, Power Word: Fortitude,
 Divine Spirit and Paladin blessings also go on your party, one press per
 member, after you. Each class has a list of blessings, best first:
-Warriors and Rogues Might then Kings, Hunters and Paladins Kings then Wisdom
-then Might, Druids and Shamans Wisdom then Kings then Might, and Priests,
+Warriors and Rogues Might then Kings, Hunters, Druids and Paladins Kings then
+Wisdom then Might, Shamans Wisdom then Kings then Might, and Priests,
 Mages and Warlocks Wisdom then Kings. A member gets the first one no other
 Paladin has given them, so blessings from several Paladins stack. Kings comes
 at level 20.
