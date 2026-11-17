@@ -188,6 +188,15 @@ commit.
     IDs risks offering a poison over one that's already on.
 - 44. Oil reminders (distant future). Remind players to apply a mana or
   wizard oil, building on 43, along the lines of the eat reminder (42).
+- 48. Track camp buffs, and avoid overriding them, behind a setting.
+- 49. Pick Paladin auras by spell power (distant future), for Retribution
+  Aura specifically.
+- 50. Inspect for Feral Druids and Enhancement Shamans, in parties and
+  raids. The group role (31) can't tell melee from caster, so these fall to
+  the class lists: an Enhancement Shaman gets Wisdom before Might, and a
+  Feral cat gets Wisdom from a second Paladin. Inspect only runs for
+  Paladins in a raid today, and talents don't always match the job while
+  leveling (31, 40).
 
 ## Decided against
 
