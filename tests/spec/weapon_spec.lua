@@ -23,17 +23,31 @@ describe("Shaman weapon imbue", function()
         assert.equal("Rockbiter Weapon", h:shown())
     end)
 
-    it("counts an oil or stone", function()
+    it("is still offered with an oil or stone on, since they stack", function()
         local h = shaman()
         h:enchantWeapon(2)
+        assert.equal("Rockbiter Weapon", h:shown())
+    end)
+
+    it("finds the imbue in either of the game's two entries", function()
+        local h = shaman()
+        h.state.enchantEntry = 1
+        h:enchantWeapon(3)
         assert.is_nil(h:shown())
     end)
 
-    it("finds the enchant in either of the game's two entries", function()
+    it("is done with an imbue and an oil on", function()
         local h = shaman()
-        h.state.enchantEntry = 1
-        h:enchantWeapon(2)
+        h:enchantWeapon(2, nil, { entry = 1 })
+        h:enchantWeapon(3, nil, { entry = 2 })
         assert.is_nil(h:shown())
+    end)
+
+    it("shows when the imbue runs low, however long the oil has left", function()
+        local h = shaman()
+        h:enchantWeapon(2, 1800000, { entry = 1 })
+        h:enchantWeapon(3, 299000, { entry = 2 })
+        assert.equal("Rockbiter Weapon", h:shown())
     end)
 
     it("does not count a permanent enchant", function()

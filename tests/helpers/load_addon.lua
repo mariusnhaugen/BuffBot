@@ -132,7 +132,10 @@ end
 -- 1 hour). opts: slot (0 main hand, the default, or 1 off hand), charges.
 function Harness:enchantWeapon(type, timeLeft, opts)
     opts = opts or {}
-    self.state.weaponEnchants[opts.slot or 0] = { type = type, timeLeft = timeLeft or 3600000, charges = opts.charges }
+    local slot = opts.slot or 0
+    self.state.weaponEnchants[slot] = self.state.weaponEnchants[slot] or {}
+    self.state.weaponEnchants[slot][opts.entry or self.state.enchantEntry or 2] =
+        { type = type, timeLeft = timeLeft or 3600000, charges = opts.charges }
     self:fire("UNIT_INVENTORY_CHANGED", "player")
 end
 

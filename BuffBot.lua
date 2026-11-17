@@ -558,14 +558,16 @@ local WEAPON_MAINHAND = 0                     --0,1,2 are mh,oh,ranged
 local ENCHANT_TEMPORARY, ENCHANT_IMBUE = 2, 3 --enchantType
 local LOW_CHARGES = 10
 
--- Any temporary enchant counts, so an rsham oil isn't overwritten with an imbue.
-function BuffBot.HasWeaponEnchant(weaponSlot)
+-- Whether the weapon has an enchant of this type that isn't running low.
+-- Oils and stones stack with Shaman imbues on Forever, so an imbue only
+-- looks for an imbue. A poison is Temporary like an oil or stone, so it
+-- still counts them.
+function BuffBot.HasWeaponEnchant(weaponSlot, enchantType)
     for _, enchant in ipairs(C_Item.GetWeaponEnchantInfo(weaponSlot or WEAPON_MAINHAND) or {}) do
-        local temporary = enchant.enchantType == ENCHANT_TEMPORARY or enchant.enchantType == ENCHANT_IMBUE
         -- Expiring like a buff: under 5 minutes left (timeLeft is in ms), or
         -- low on charges. Enchants without charges report 0.
         local expiring = enchant.timeLeft < 300000 or (enchant.charges > 0 and enchant.charges < LOW_CHARGES)
-        if enchant.hasEnchant and temporary and not expiring then
+        if enchant.hasEnchant and enchant.enchantType == enchantType and not expiring then
             return true
         end
     end
@@ -575,11 +577,11 @@ end
 function BuffBot.UnitHasAssignedBuff(unit, buffString)
     if buffString == "" then return end
     if BuffBot.WeaponImbues[buffString] then
-        return unit == "player" and BuffBot.HasWeaponEnchant()
+        return unit == "player" and BuffBot.HasWeaponEnchant(WEAPON_MAINHAND, ENCHANT_IMBUE)
     end
     local poison = BuffBot.WeaponPoisons[buffString]
     if poison then
-        return unit == "player" and BuffBot.HasWeaponEnchant(poison.weaponSlot)
+        return unit == "player" and BuffBot.HasWeaponEnchant(poison.weaponSlot, ENCHANT_TEMPORARY)
     end
 
     local filter = BuffBot.OwnOnlyBuffs[buffString] and "HELPFUL|PLAYER" or nil

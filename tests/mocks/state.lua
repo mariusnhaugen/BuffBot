@@ -39,9 +39,10 @@ function State.new(class)
         casts = {}, -- spell names from CastSpellByID, including failed casts
         mainHand = 2361, -- equipped main-hand item ID, nil for none
         offHand = nil, -- equipped off-hand item ID
-        -- By weapon slot (0 main hand, 1 off hand): { type = 2 or 3, timeLeft = ms, charges }
+        -- By weapon slot (0 main hand, 1 off hand), then by GetWeaponEnchantInfo
+        -- entry (1 or 2): { type = 2 or 3, timeLeft = ms, charges }
         weaponEnchants = {},
-        enchantEntry = nil, -- which of GetWeaponEnchantInfo's two entries holds it (default 2)
+        enchantEntry = nil, -- entry Harness:enchantWeapon uses by default (2)
         bags = {}, -- item ID -> count
         group = false,
         raid = false,

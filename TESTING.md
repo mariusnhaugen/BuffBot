@@ -46,6 +46,22 @@ Press the BuffBot button, then right-click the poison icons by your buffs to rem
 
 Result:
 
+### Shaman imbue with an oil or stone (2.6.9)
+
+Oils and stones stack with imbues on Forever, so they no longer count as the imbue. With a weightstone or oil on and no imbue, the button should offer Rockbiter Weapon; once it lands, the button moves on, and the stone stays on. With both on, removing the imbue brings it back.
+
+`/dump C_Item.GetWeaponEnchantInfo(0)` with a stone and Rockbiter on: expected one entry with `enchantType=2` and one with `enchantType=3`
+
+Result:
+
+### Poison and weightstone together (Rogue)
+
+For the Rogue half of TODO 43. Both should report `enchantType=2`, so note the `enchantID` and `enchantIconID` of each, which entry each is in, and whether both stay on.
+
+`/dump C_Item.GetWeaponEnchantInfo(0)` with a weightstone on the main hand, then again after adding Instant Poison. Repeat with Deadly Poison, and with another rank if you have one, to see whether the `enchantID` changes by rank.
+
+Result:
+
 ### Weapon buffs with a fishing pole (2.6.9)
 
 With a fishing pole equipped, a Shaman shouldn't be offered an imbue and a Rogue shouldn't be offered poisons; `/bb status` lists them under Skipped as "fishing pole equipped". Swapping back to a weapon brings them back. The check reads the item's class and subclass:

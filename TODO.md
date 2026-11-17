@@ -170,11 +170,16 @@ commit.
   own), and sending manual roles to the other Paladins. Short of that, a
   Paladin could give its slot's blessing to a hybrid whatever role it
   worked out.
-- 43. Untangle Shaman weapon imbues from consumables. Mana oils stack with
-  imbues in Forever, but `HasWeaponEnchant` (`BuffBot.lua`) counts any
-  temporary enchant as the imbue, so an oil on the weapon stops the imbue
-  being offered. The imbue check should only look for an imbue
-  (`enchantType` 3), and an imbue running low shouldn't depend on the oil.
+- 43. Untangle weapon buffs from consumables. Oils and stones stack with
+  Shaman imbues and Rogue poisons on Forever, but `HasWeaponEnchant`
+  (`BuffBot.lua`) counted any Temporary enchant as the buff.
+  - [x] Shaman: an imbue only counts an imbue (`enchantType` 3), and its
+    running low doesn't depend on the oil. Uncommitted, 2.6.9.
+  - [ ] Rogue: a poison is Temporary (2) like a weightstone, so the type
+    can't tell them apart, and a weightstone still hides the poison. Waits
+    on the "Poison and weightstone together" probe in `TESTING.md` for how
+    the two show up: likely a table of poison `enchantID`s. Guessing the
+    IDs risks offering a poison over one that's already on.
 - 44. Oil reminders (distant future). Remind players to apply a mana or
   wizard oil, building on 43, along the lines of the eat reminder (42).
 

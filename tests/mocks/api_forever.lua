@@ -83,22 +83,23 @@ return function(state, env)
             return itemID, "Weapon", nil, "INVTYPE_WEAPON", 0, 2, subclass
         end,
 
-        -- Two entries, like the probe. In game the enchant can be in either
-        -- (Rockbiter was second, a weightstone first); here it's second unless
-        -- state.enchantEntry says 1.
+        -- Two entries, like the probe. In game an enchant can be in either
+        -- (Rockbiter was second, a weightstone first); here it's in the entry
+        -- Harness:enchantWeapon put it in.
         GetWeaponEnchantInfo = function(weaponSlot)
-            local empty = { hasEnchant = false, enchantType = 0, timeLeft = 0, charges = 0, enchantID = 0, enchantIconID = 0 }
-            local enchant = state.weaponEnchants[weaponSlot]
-            if not enchant then return { empty, empty } end
-            local entries = { empty, empty }
-            entries[state.enchantEntry or 2] = {
-                hasEnchant = true,
-                enchantType = enchant.type,
-                timeLeft = enchant.timeLeft,
-                charges = enchant.charges or 0,
-                enchantID = 29,
-                enchantIconID = 136086,
-            }
+            local enchants = state.weaponEnchants[weaponSlot] or {}
+            local entries = {}
+            for i = 1, 2 do
+                local enchant = enchants[i]
+                entries[i] = enchant and {
+                    hasEnchant = true,
+                    enchantType = enchant.type,
+                    timeLeft = enchant.timeLeft,
+                    charges = enchant.charges or 0,
+                    enchantID = 29,
+                    enchantIconID = 136086,
+                } or { hasEnchant = false, enchantType = 0, timeLeft = 0, charges = 0, enchantID = 0, enchantIconID = 0 }
+            end
             return entries
         end,
 
