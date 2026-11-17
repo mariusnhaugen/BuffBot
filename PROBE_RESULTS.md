@@ -1,7 +1,8 @@
 # Forever client probe results
 
-Finished probes from [TESTING.md](TESTING.md), run on the Forever beta.
-The results decided how the port handles each API.
+Finished probes from [TESTING.md](TESTING.md). The early ones ran on the
+Forever beta, which closed on 2026-10-23; since launch they run on the live
+servers. The results decided how the port handles each API.
 
 ## Interface number
 

@@ -26,8 +26,8 @@ From WSL, `./deploy.sh` copies the addon into the `_forever_`
 AddOns folder. Run it after each change and `/reload`; restart the client
 for new files or TOC changes.
 
-Results decided how the port handles spell ranks. Run on the Forever beta with
-`/console scriptErrors 1`, and fill in the results. Once a probe has a result,
+Run each probe on the live servers with `/console scriptErrors 1`, and fill
+in the results. Once a probe has a result,
 move it to [PROBE_RESULTS.md](PROBE_RESULTS.md).
 
 ### Poison enchant lookup (Rogue, dual wielding)
@@ -132,7 +132,7 @@ Result:
 
 ### Group versions and reagents (at the level of the group buffs)
 
-Untestable while the beta is capped. With two or more party members missing a buff and the reagent in the bags (or Reagent Economy), the button casts the group version on the first of them, and it covers the party. Without either it casts single-target. The reagent check takes any reagent for the buff, so a rank 2 caster holding only the rank 1 reagent (Wild Berries, Holy Candle) may get "Missing reagent".
+Needs a character of level 48 to 60; the beta was capped at 30. With two or more party members missing a buff and the reagent in the bags (or Reagent Economy), the button casts the group version on the first of them, and it covers the party. Without either it casts single-target. The reagent check takes any reagent for the buff, so a rank 2 caster holding only the rank 1 reagent (Wild Berries, Holy Candle) may get "Missing reagent".
 
 Result:
 
@@ -173,11 +173,11 @@ Result:
 
 ## Test at launch
 
-Checks that can't be run on the beta, or are still waiting for a tester. The steps are in each check above. Tick one off once it has passed on the live servers, and write its result above.
+Checks still waiting for a character of the right level or a tester. The steps are in each check above. Tick one off once it has passed on the live servers, and write its result above.
 
 - [ ] [Poison enchant lookup](#poison-enchant-lookup-rogue-dual-wielding): needs a dual-wielding Rogue
 - [ ] [Rogue poisons on the button](#rogue-poisons-on-the-button): the same Rogue, with poisons in the bags
-- [ ] [Group versions and reagents](#group-versions-and-reagents-at-the-level-of-the-group-buffs): Gift of the Wild, Arcane Brilliance, Prayer of Fortitude and Prayer of Spirit need level 48 to 60, above the beta's cap of 30. Includes Reagent Economy being detected by its spell ID
+- [ ] [Group versions and reagents](#group-versions-and-reagents-at-the-level-of-the-group-buffs): Gift of the Wild, Arcane Brilliance, Prayer of Fortitude and Prayer of Spirit need level 48 to 60, which the beta's cap of 30 kept out of reach. Includes Reagent Economy being detected by its spell ID
 - [ ] [Tracking in battlegrounds and combat](#tracking-in-battlegrounds-and-combat): dying in a battleground and getting resurrected in combat
 - [ ] Two Paladins, for blessing sharing: both cast Blessing of Might on the same target (does the second replace the first, or fail?), and `C_UnitAuras.GetAuraDataBySpellName("party1", "Blessing of Might", "HELPFUL|PLAYER")` returns `nil` when only the other Paladin's Might is on party1. Different Paladins' blessings stacking on one target is assumed, as in Classic
 - [ ] Someone else's fading buff isn't offered: with another Mage's Arcane Intellect on you or a party member, the button stays quiet until it drops off, then offers it
