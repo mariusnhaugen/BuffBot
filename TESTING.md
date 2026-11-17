@@ -22,9 +22,10 @@ behaves the same.
 
 ## Forever client probe
 
-From WSL, `./deploy.sh` copies the addon into the `_forever_`
-AddOns folder. Run it after each change and `/reload`; restart the client
-for new files or TOC changes.
+From WSL, `./deploy.sh` copies the addon into `BuffBot_Dev` in the
+`_forever_` AddOns folder, next to CurseForge's `BuffBot`; it shows as
+"BuffBot (dev)" in the AddOns list. Enable only one of the two. Run it after
+each change and `/reload`; restart the client for new files or TOC changes.
 
 Run each probe on the live servers with `/console scriptErrors 1`, and fill
 in the results. Once a probe has a result,
