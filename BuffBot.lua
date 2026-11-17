@@ -464,6 +464,22 @@ local function AuraStatus()
     return "hidden (" .. table.concat(hiddenBy, ", ") .. ")"
 end
 
+-- The party's roles that were set, from the group's roles or /bb role, with
+-- where each came from. Everyone else follows their class.
+local function PartyRoles()
+    local roles = {}
+    local units = { "player" }
+    for i = 1, GetNumSubgroupMembers() do table.insert(units, "party" .. i) end
+    for _, unit in ipairs(units) do
+        local role, source = BuffBot.RoleOf(unit)
+        if role and (source == "group" or source == "manual") then
+            table.insert(roles, BuffBot.NameOf(unit) .. " " .. role .. " (" .. source .. ")")
+        end
+    end
+    if #roles == 0 then return "none set, everyone follows their class" end
+    return table.concat(roles, ", ")
+end
+
 -- The most suggestions /bb status names before "and N more"
 local STATUS_SHOWN = 5
 
@@ -508,7 +524,11 @@ function BuffBot.StatusCommand()
     local slot = BuffBot.SlotStatus()
     if slot then add("Blessing slot: " .. slot) end
     if BuffBot.IndexOf("Oath of Light", list) then add("Oath of Light: " .. OathStatus()) end
-    if IsInRaid() then add("Roles: /bb raid") end
+    if IsInRaid() then
+        add("Roles: /bb raid")
+    elseif IsInGroup() then
+        add("Roles: " .. PartyRoles())
+    end
 
     for _, text in ipairs(lines) do print(text) end
 end

@@ -64,7 +64,7 @@ Result:
 
 ### Party blessings by group role (2.6.10)
 
-As a Paladin in a party, set a Warrior's role to tank from the party menu: the button should offer them Kings instead of Might, right away. Set a Paladin or Druid to healer: Wisdom instead of Kings. Members left as damage dealers keep their class's blessing. With Oath of Light, it should go on the member set as tank.
+As a Paladin in a party, set a Warrior's role to tank from the party menu: the button should offer them Kings instead of Might, right away. Set a Paladin or Druid to healer: Wisdom instead of Kings. Members left as damage dealers keep their class's blessing. With Oath of Light, it should go on the member set as tank. `/bb status` shows it in one screenshot: the "Next:" line has each member's blessing. On any class, its "Roles:" line should list the members set as tank or healer, with "(group)".
 
 Result:
 
