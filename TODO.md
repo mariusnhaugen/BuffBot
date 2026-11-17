@@ -174,7 +174,7 @@ commit.
   Shaman imbues and Rogue poisons on Forever, but `HasWeaponEnchant`
   (`BuffBot.lua`) counted any Temporary enchant as the buff.
   - [x] Shaman: an imbue only counts an imbue (`enchantType` 3), and its
-    running low doesn't depend on the oil. Uncommitted, 2.6.9.
+    running low doesn't depend on the oil (2.6.9, `62eca96`).
   - [ ] Rogue: a poison is Temporary (2) like a weightstone, so the type
     can't tell them apart, and a weightstone still hides the poison. Waits
     on the "Poison and weightstone together" probe in `TESTING.md` for how
@@ -202,7 +202,7 @@ commit.
 
 ## Done
 
-- [x] 45. No weapon buffs while a fishing pole is equipped (2.6.9): Shaman imbues and Rogue poisons are skipped while the hand holds an item of weapon class 2, subclass 20 (`C_Item.GetItemInfoInstant`). Checking that Forever reports that subclass is in TESTING.md
+- [x] 45. No weapon buffs while a fishing pole is equipped (2.6.9, `d83cba0`): Shaman imbues and Rogue poisons are skipped while the hand holds an item of weapon class 2, subclass 20 (`C_Item.GetItemInfoInstant`). Checking that Forever reports that subclass is in TESTING.md
 - [x] 41. Skip a buff under a stronger scroll (2.6.3), since the cast fails with "A more powerful spell is active". Arcane Intellect (2, 7, 15, 22, 31) and Power Word: Fortitude (4, 10, 26, 42, 56, 70) against scrolls of 4, 8, 12, 16, from Wowhead's Forever database. Divine Spirit rank 1 (17) beats the best Spirit scroll (15), so it's left out. Ranks that beat every scroll never look at auras. Not covered, until someone reports it: a high-rank caster's buff dropping to a lower rank on a low-level target
 - [x] 42. Remind players to eat while leveling (2.6.2), since Forever's cooked food gives 5% more XP from kills. A reminder only, off by default: no food list or bag check, and any Well Fed counts. Offering the food on the button is a possible next step
 - [x] 35. Usage text on the settings page (2.6.1): one small line at the top on opening the page and Alt+drag, from a plain label template (`SettingsText.xml`); `/bb help` and unknown commands list the commands. The 2.6 Commands section with a button per command was clunky and is gone
