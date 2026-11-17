@@ -1,5 +1,10 @@
 # BuffBot
 
+## 2.6.9
+
+- Shamans and Rogues: No weapon imbue or poison is suggested while a fishing pole is equipped.
+- Shamans: An oil or sharpening stone no longer counts as your weapon imbue, since they now stack.
+
 ## 2.6.8
 
 - Bugfix: In battlegrounds, should no longer show when auras are hidden.
