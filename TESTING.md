@@ -46,6 +46,14 @@ Press the BuffBot button, then right-click the poison icons by your buffs to rem
 
 Result:
 
+### Weapon buffs with a fishing pole (2.6.9)
+
+With a fishing pole equipped, a Shaman shouldn't be offered an imbue and a Rogue shouldn't be offered poisons; `/bb status` lists them under Skipped as "fishing pole equipped". Swapping back to a weapon brings them back. The check reads the item's class and subclass:
+
+`/dump select(6, C_Item.GetItemInfoInstant(GetInventoryItemID("player", 16)))` with the pole on, expected `2, 20`
+
+Result:
+
 ### Oath of Light (Holy Paladin, 2.5.2)
 
 A Holy Paladin with the Oath of Light talent (spell 1328548, from Wowhead) keeps their Oath on one group member, never themselves, and never in a battleground or alone. The button puts it on the main tank, or a member set to `tank` with `/bb role`. With no tank, in a dungeon or raid only, it offers "Oath of Light > Target" last, cast on whoever you have targeted. After that it stays on whoever you put it on: it's offered again on them in its last minute or once it's gone, never on someone else while they're in the group, even if they're dead.

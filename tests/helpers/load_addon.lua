@@ -141,6 +141,11 @@ function Harness:clearWeaponEnchant(slot)
     self:fire("UNIT_INVENTORY_CHANGED", "player")
 end
 
+function Harness:equipMainHand(itemID)
+    self.state.mainHand = itemID
+    self:fire("UNIT_INVENTORY_CHANGED", "player")
+end
+
 function Harness:equipOffHand(itemID)
     self.state.offHand = itemID
     self:fire("UNIT_INVENTORY_CHANGED", "player")

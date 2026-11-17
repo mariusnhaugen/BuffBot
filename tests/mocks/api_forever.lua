@@ -77,6 +77,12 @@ return function(state, env)
     end
 
     env.C_Item = {
+        -- Weapons only: class 2, subclass 20 for a fishing pole (Items.fishingPoles)
+        GetItemInfoInstant = function(itemID)
+            local subclass = Items.fishingPoles[itemID] and 20 or 4
+            return itemID, "Weapon", nil, "INVTYPE_WEAPON", 0, 2, subclass
+        end,
+
         -- Two entries, like the probe. In game the enchant can be in either
         -- (Rockbiter was second, a weightstone first); here it's second unless
         -- state.enchantEntry says 1.

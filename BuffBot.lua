@@ -77,17 +77,34 @@ local function ShouldBloodrageFirst(buffString)
 end
 
 local INVSLOT_MAINHAND = 16
+-- Enum.ItemClass.Weapon and Enum.ItemWeaponSubclass.Fishingpole
+local ITEM_CLASS_WEAPON, WEAPON_SUBCLASS_FISHING_POLE = 2, 20
+
+local function IsFishingPole(itemID)
+    local _, _, _, _, _, classID, subclassID = C_Item.GetItemInfoInstant(itemID)
+    return classID == ITEM_CLASS_WEAPON and subclassID == WEAPON_SUBCLASS_FISHING_POLE
+end
+
+-- Why a weapon buff can't go on the weapon in this slot, or nil when it can.
+-- A fishing pole means the player is fishing, not fighting.
+local function WeaponSkipReason(invSlot, noWeapon)
+    local itemID = GetInventoryItemID("player", invSlot)
+    if not itemID then return noWeapon end
+    if IsFishingPole(itemID) then return "fishing pole equipped" end
+end
 
 -- Why a buff of the player's own is skipped for now, or nil when it isn't
 local function SkipReason(buffString)
     -- An imbue needs a main-hand weapon
-    if BuffBot.WeaponImbues[buffString] and not GetInventoryItemID("player", INVSLOT_MAINHAND) then
-        return "no main-hand weapon"
+    if BuffBot.WeaponImbues[buffString] then
+        local reason = WeaponSkipReason(INVSLOT_MAINHAND, "no main-hand weapon")
+        if reason then return reason end
     end
     -- A poison needs a weapon in that hand and a poison in the bags
     local poison = BuffBot.WeaponPoisons[buffString]
     if poison then
-        if not GetInventoryItemID("player", poison.invSlot) then return "no weapon in that hand" end
+        local reason = WeaponSkipReason(poison.invSlot, "no weapon in that hand")
+        if reason then return reason end
         if not BuffBot.PoisonItem(buffString) then return "none in your bags" end
     end
     if BuffBot.IndexOf(buffString, BuffBot.uniqueBuffs) and not BuffBot.ForcingAura(buffString)

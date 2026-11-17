@@ -57,6 +57,15 @@ describe("Shaman weapon imbue", function()
         assert.is_nil(h:shown())
     end)
 
+    it("is skipped with a fishing pole, and back once a weapon is equipped", function()
+        local h = shaman()
+        h:clearWeaponEnchant()
+        h:equipMainHand(6256)
+        assert.is_nil(h:shown())
+        h:equipMainHand(2361)
+        assert.equal("Rockbiter Weapon", h:shown())
+    end)
+
     it("recommends the chosen imbue once learned", function()
         local h = shaman({
             known = { "Rockbiter Weapon", "Windfury Weapon" },

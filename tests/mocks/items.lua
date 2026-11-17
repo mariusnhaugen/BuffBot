@@ -37,6 +37,9 @@ end
 
 local Items = {}
 
+-- Fishing Pole, Strong Fishing Pole, Big Iron Fishing Pole, Arcanite Fishing Pole
+Items.fishingPoles = { [6256] = true, [6365] = true, [6367] = true, [19970] = true }
+
 function Items.idOf(name)
     return byName[name]
 end
