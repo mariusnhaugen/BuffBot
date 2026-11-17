@@ -45,10 +45,12 @@ local function PointsIn(tab, inspect)
     return fifth or 0
 end
 
--- A class's role from the tree with the most points, or nil without talents
+-- A class's role from the tree with the most points, or nil without talents.
+-- Forever's client has no GetTalentTabInfo (2.6.10, /bb status in a party),
+-- so there it's always nil and the class default stands.
 local function TalentRole(class, inspect)
     local trees = TalentTreeRoles[class]
-    if not trees then return nil end
+    if not trees or not GetTalentTabInfo then return nil end
     local best, bestPoints = nil, 0
     for tab, role in ipairs(trees) do
         local points = PointsIn(tab, inspect)

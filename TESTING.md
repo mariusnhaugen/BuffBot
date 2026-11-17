@@ -63,6 +63,14 @@ For the Rogue half of TODO 43. Both should report `enchantType=2`, so note the `
 
 Result:
 
+### Talent API (any class with talents)
+
+Forever has no `GetTalentTabInfo`: `/bb status` in a party errored on it (2.6.10). Since then, roles from your own talents or from Inspect are skipped, and the class default stands. Which of these exist, and what do they return?
+
+`/dump GetTalentTabInfo, GetNumTalentTabs, GetSpecialization, GetInspectSpecialization, C_SpecializationInfo and C_SpecializationInfo.GetSpecializationInfo, C_ClassTalents`
+
+Result:
+
 ### Party blessings by group role (2.6.10)
 
 As a Paladin in a party, set a Warrior's role to tank from the party menu: the button should offer them Kings instead of Might, right away. Set a Paladin or Druid to healer: Wisdom instead of Kings. Members left as damage dealers keep their class's blessing. With Oath of Light, it should go on the member set as tank. `/bb status` shows it in one screenshot: the "Next:" line has each member's blessing. On any class, its "Roles:" line should list the members set as tank or healer, with "(group)".

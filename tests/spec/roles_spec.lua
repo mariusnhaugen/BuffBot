@@ -299,6 +299,14 @@ describe("roles", function()
             assert.is_nil(h.state.inspecting)
         end)
 
+        it("keeps the class default on a client without the talent API", function()
+            local h = raidOf({ { class = "DRUID", talents = { 0, 31, 20 } } })
+            h.env.GetTalentTabInfo = nil
+            h.state:advance(1.5)
+            ready(h, "raid2")
+            assert.same({ "healer", "class" }, { h.ns.RoleOf("raid2") })
+        end)
+
         it("takes the specialization where the client has one", function()
             local h = raidOf({ { class = "DRUID", talents = { 0, 31, 20 } } })
             h.env.GetInspectSpecialization = function() return 104 end
@@ -437,6 +445,13 @@ describe("roles", function()
             local h = paladin()
             h.state.talents = { 5, 31, 15 }
             assert.same({ "tank", "talents" }, { h.ns.RoleOf("player") })
+        end)
+
+        it("is the class default on a client without the talent API", function()
+            local h = paladin()
+            h.state.talents = { 5, 31, 15 }
+            h.env.GetTalentTabInfo = nil
+            assert.same({ "healer", "class" }, { h.ns.RoleOf("player") })
         end)
 
         it("is the class default without talents", function()

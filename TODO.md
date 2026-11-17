@@ -106,7 +106,9 @@ commit.
     Keep the tank and healer classes in a table, since Forever may change
     them.
 - 40. Role detection for Paladins whose talent points don't match their
-  job. `Roles.lua` `TalentRole` picks the tree with the most points, so a
+  job. First: Forever has no `GetTalentTabInfo` (found 2026-11-17), so
+  talent roles, your own and from Inspect, are off until the "Talent API"
+  probe in TESTING.md finds what replaced it. `Roles.lua` `TalentRole` picks the tree with the most points, so a
   36/0/15 damage Paladin reads as healer, and a 21/30/0 healer as tank.
   Forever reshuffled the Holy, Protection and Retribution talents, so point
   layouts are even less reliable. Only missing a Paladin who wants Might
