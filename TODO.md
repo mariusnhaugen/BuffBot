@@ -92,6 +92,12 @@ commit.
   rarely match the role a character fills in a dungeon. Signals that would:
   the manual list, the group finder role (`TANK`, `HEALER`), and tanking
   auras (Righteous Fury, Defensive Stance).
+  - Group finder role, probed in a party (2026-11-17, PROBE_RESULTS.md):
+    `UnitGroupRolesAssigned` works there, isn't secret, and
+    `PLAYER_ROLES_ASSIGNED` fires on a change, so it's usable. But members
+    are `DAMAGER` unless someone sets a role from the party menu or a role
+    check, so only `TANK`/`HEALER` mean anything. Re-check on
+    `PLAYER_ROLES_ASSIGNED` (not registered yet).
   - Group arithmetic: in a full 5-person party, a role only one member can
     fill goes to them (3 Mages, a Priest and a Druid: the Druid tanks).
     Keep the tank and healer classes in a table, since Forever may change

@@ -645,3 +645,14 @@ Result:
 On the live servers (2026-11-06), in Blackfathom Deeps after a wipe, out of combat with the mobs reset, with fresh buffs on the player and party1: `true`, `true`, `false`. Restrictions 1 (Encounter), 4 (Map) and 5 (Chat) were active (state 2); 0 (Combat), 2 (ChallengeMode) and 3 (PvPMatch) weren't. Both lookups returned nothing. The one-line version, also out of combat inside, printed `true true 2 false`. Outside any dungeon, on another character: `false false 0 true`.
 
 So aura lookups can return nothing out of combat, for the player too. Not known: why the encounter flag stays on there, what clears it, and whether the Map restriction outlasts it. If it does, `BuffBot.AurasUnreadable` has a gap, since it only checks the encounter flag
+
+## Group finder roles in a party (TODO 31)
+
+Whether a party's roles can pick blessings. `/dump UnitGroupRolesAssigned ~= nil`, then `/dump UnitGroupRolesAssigned("player"), UnitGroupRolesAssigned("party1")`, `issecretvalue(UnitGroupRolesAssigned("party1"))` in and out of combat, and a frame printing on `PLAYER_ROLES_ASSIGNED` while a member changes role.
+
+Result:
+On the live servers (2026-11-17), in a party: the API exists (`true`). The dump printed `"TANK"`, `"DAMAGER"`. Roles are plain strings, not secret, in and out of combat. `PLAYER_ROLES_ASSIGNED` fires when a role changes.
+
+New party members are `DAMAGER` by default. A role is set from the party menu or by a role check someone starts by hand, which also fires `PLAYER_ROLES_ASSIGNED`. The group finder only helps players find each other; they still form an ordinary party, unlike Retail's dungeon groups, so many parties never set roles. So `TANK` and `HEALER` can be trusted, but `DAMAGER` can't: it may just mean nobody set a role. `GroupRole` (`Roles.lua`) already falls through on it. Since `UnitGroupRolesAssigned` exists, `GroupRole` never falls back to `GetRaidRosterInfo`'s `combatRole`. In a raid, whether it returns roles is still the open roster probe in TESTING.md.
+
+The wiki also lists `ROLE_CHANGED_INFORM` (who changed a role, from what, to what; it drives the chat message). BuffBot only needs `PLAYER_ROLES_ASSIGNED`, as a cue to re-check.
