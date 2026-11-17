@@ -67,6 +67,13 @@ describe("Oath of Light", function()
         assert.same({ "Oath of Light > party1" }, h:buffUp())
     end)
 
+    it("goes on the group's tank in a party", function()
+        local h = holy()
+        h:joinParty({ { class = "WARRIOR" }, { class = "DRUID", combatRole = "TANK" } })
+        h:settle()
+        assert.same({ "Oath of Light > party2" }, h:buffUp())
+    end)
+
     it("is never offered alone", function()
         local h = holy()
         assert.is_nil(h:shown())

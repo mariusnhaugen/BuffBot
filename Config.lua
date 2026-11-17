@@ -216,7 +216,7 @@ function BuffBot.RegisterSettings()
         "The aura the button puts up, or Devotion until it's learned. Changing this swaps you to it once; after that, any of your own auras counts as up, so you can swap by hand.",
         BuffBot.PaladinAuras, BuffBot.SpellName, BuffBot.PickedAura)
     addDropdown("PALADIN_BLESSING", "Paladin blessing on yourself",
-        "The blessing the button puts on you, or Might until it's learned. If another Paladin has already put it on you, you get the next one on the Paladin list. Changing this swaps you to it once; after that, any of your own blessings counts as up. Party members get one by class, and the next one when another Paladin's is already there. In a raid with other BuffBot Paladins, blessings follow the raid's assignment.",
+        "The blessing the button puts on you, or Might until it's learned. If another Paladin has already put it on you, you get the next one on the Paladin list. Changing this swaps you to it once; after that, any of your own blessings counts as up. Party members get one by class, or by role if they're set as tank or healer in the group, and the next one when another Paladin's is already there. In a raid with other BuffBot Paladins, blessings follow the raid's assignment.",
         BuffBot.SelfBlessings, BuffBot.SpellName, BuffBot.PickedBlessing)
     addDropdown("SHAMAN_IMBUE", "Shaman weapon imbue", "The imbue the button puts on your main hand.",
         { "Rockbiter Weapon", "Flametongue Weapon", "Frostbrand Weapon", "Windfury Weapon" }, BuffBot.SpellName)

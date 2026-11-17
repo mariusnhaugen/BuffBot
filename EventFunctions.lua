@@ -52,6 +52,11 @@ function events:GROUP_ROSTER_UPDATE()
     BuffBot.UpdateClassBuffList()
 end
 
+-- A member's tank or healer role set or changed, which can change their blessing
+function events:PLAYER_ROLES_ASSIGNED()
+    BuffBot.UpdateClassBuffList()
+end
+
 function events:GROUP_LEFT()
     BuffBot.UpdateClassBuffList()
 end
@@ -196,6 +201,7 @@ events:RegisterEvent("UNIT_AURA")
 events:RegisterEvent("CHAT_MSG_ADDON")
 events:RegisterEvent("GROUP_ROSTER_UPDATE")
 events:RegisterEvent("GROUP_LEFT")
+events:RegisterEvent("PLAYER_ROLES_ASSIGNED")
 events:RegisterEvent("UNIT_CONNECTION")
 events:RegisterEvent("INSPECT_READY")
 

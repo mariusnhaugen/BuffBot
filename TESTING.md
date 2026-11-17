@@ -62,6 +62,12 @@ For the Rogue half of TODO 43. Both should report `enchantType=2`, so note the `
 
 Result:
 
+### Party blessings by group role (2.6.10)
+
+As a Paladin in a party, set a Warrior's role to tank from the party menu: the button should offer them Kings instead of Might, right away. Set a Paladin or Druid to healer: Wisdom instead of Kings. Members left as damage dealers keep their class's blessing. With Oath of Light, it should go on the member set as tank.
+
+Result:
+
 ### Weapon buffs with a fishing pole (2.6.9)
 
 With a fishing pole equipped, a Shaman shouldn't be offered an imbue and a Rogue shouldn't be offered poisons; `/bb status` lists them under Skipped as "fishing pole equipped". Swapping back to a weapon brings them back. The check reads the item's class and subclass:

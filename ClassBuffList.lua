@@ -239,7 +239,8 @@ end
 -- again; on the player, just after the setting changes, the one picked takes
 -- over as soon as it's free. A Greater Blessing went on for the class, not the member, so it
 -- only counts when the list still picks it. In a raid, the list is the
--- member's role's. With a slot among other BuffBot
+-- member's role's; in a party, only a tank or healer set in the group's
+-- roles leaves the class list. With a slot among other BuffBot
 -- Paladins, the slot decides, and the player is just another member; a
 -- reserve gives none.
 function BuffBot.BlessingFor(unit)
@@ -248,12 +249,13 @@ function BuffBot.BlessingFor(unit)
     -- A reserve leaves the raid's blessings to the Paladins with slots
     if slotted and BuffBot.MySlot() == "-" then return nil end
     local isPlayer = unit == "player" and not slotted
-    local list = BuffBot.BlessingPriority[select(2, UnitClass(unit))] or {}
-    if inRaid then
+    local class = select(2, UnitClass(unit))
+    local list = BuffBot.BlessingPriority[class] or {}
+    local role = inRaid and BuffBot.RoleOf(unit) or BuffBot.GroupRole(unit)
+    if role then
         -- Any role can go on any class, so leave out what the class can't use
-        local class = select(2, UnitClass(unit))
         list = {}
-        for _, blessing in ipairs(BuffBot.RoleLists[BuffBot.RoleOf(unit)] or {}) do
+        for _, blessing in ipairs(BuffBot.RoleLists[role] or {}) do
             local skip = BuffBot.SkipOnClass[blessing]
             if not (skip and skip[class]) then table.insert(list, blessing) end
         end

@@ -261,6 +261,15 @@ return function(state, env)
         end
     end
 
+    -- The group's roles, like the raid roster's: member.combatRole, or
+    -- state.combatRole for the player. Forever has this API.
+    function env.UnitGroupRolesAssigned(unit)
+        if not (state.group or state.raid) then return "NONE" end
+        if state:resolve(unit) == "player" then return state.combatRole or "NONE" end
+        local m = member(unit)
+        return m and m.combatRole or "NONE"
+    end
+
     -- The raid's main-tank marks: member.mainTank, or state.mainTank for the player
     function env.GetPartyAssignment(assignment, unit)
         if assignment ~= "MAINTANK" then return false end

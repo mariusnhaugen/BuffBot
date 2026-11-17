@@ -1,7 +1,8 @@
 local _, BuffBot = ...
 
 -- Raid members get blessings by role rather than class (docs/plan/SPEC.md).
--- Parties keep the class lists in BuffBot.BlessingPriority.
+-- Parties keep the class lists in BuffBot.BlessingPriority, except for a
+-- tank or healer set in the group's roles (BuffBot.GroupRole).
 local MIGHT, WISDOM, KINGS = "Blessing of Might", "Blessing of Wisdom", "Blessing of Kings"
 
 -- Blessings by role, best first
@@ -60,7 +61,8 @@ end
 local GROUP_ROLES = { TANK = "tank", HEALER = "healer" }
 
 -- A unit's role from the group finder, or from the raid roster's combat role
--- where the client has no group finder API
+-- where the client has no group finder API. Only tank and healer: members
+-- are damage dealers until someone sets a role, so that one means nothing.
 local function GroupRole(unit)
     if UnitGroupRolesAssigned then return GROUP_ROLES[UnitGroupRolesAssigned(unit)] end
     local index = tonumber(unit:match("^raid(%d+)$"))
@@ -71,6 +73,8 @@ local function GroupRole(unit)
         end
     end
 end
+
+BuffBot.GroupRole = GroupRole
 
 -- Roles seen from talent auras or Inspect, by GUID, for the session:
 -- { role, source }. An aura can drop (a Feral leaving cat form), but the
@@ -244,7 +248,7 @@ function BuffBot.RoleOf(unit)
     local manual = BuffBot.config.ROLES and BuffBot.config.ROLES[GetUnitName(unit, true) or ""]
     if manual then return manual, "manual" end
     if GetPartyAssignment("MAINTANK", unit) then return "tank", "mark" end
-    local groupRole = IsInRaid() and GroupRole(unit)
+    local groupRole = GroupRole(unit)
     if groupRole then return groupRole, "group" end
     if IsInRaid() then
         local guid = UnitGUID(unit)
