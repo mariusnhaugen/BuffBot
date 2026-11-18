@@ -1,5 +1,10 @@
 # BuffBot
 
+## 2.6.10
+
+- Paladins: Party members set as tank or healer get that role's blessings, and the party's tank also gets Oath of Light.
+- `/bb status` shows the party's set roles.
+
 ## 2.6.9
 
 - Shamans and Rogues: No weapon imbue or poison is suggested while a fishing pole is equipped.
