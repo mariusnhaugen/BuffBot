@@ -67,8 +67,7 @@ commit.
     (`/console taintLog 1`, `/reload`, play until it happens, then send
     `Logs/taint.log`), or reproduce with only BuffBot and BugSack on.
 
-- 47. Hunter in a battleground gets Trueshot Aura and Aspect of the Hawk
-  offered while both are up (player report, 2026-11-15). Not the PvP guard:
+- 47. Buffbot not properly hiding in battlegrounds/ not hiding when auras are unreadable (player report, 2026-11-15). Not the PvP guard:
   `BuffBot.InPvP()` already limits BGs to self-buffs. Likely aura lookups
   return nothing there (PvPMatch restriction), and `BuffBot.AurasUnreadable`
   (`BuffBot.lua:31`) only checks combat and the encounter flag, so every
@@ -85,7 +84,49 @@ commit.
 
 ## Feature ideas
 
+- 43. Untangle weapon buffs from consumables. Oils and stones stack with
+  Shaman imbues and Rogue poisons on Forever, but `HasWeaponEnchant`
+  (`BuffBot.lua`) counted any Temporary enchant as the buff.
+  - [x] Shaman: an imbue only counts an imbue (`enchantType` 3), and its
+    running low doesn't depend on the oil (2.6.9, `62eca96`).
+  - [ ] Rogue: a poison is Temporary (2) like a weightstone, so the type
+    can't tell them apart, and a weightstone still hides the poison. Waits
+    on the "Poison and weightstone together" probe in `TESTING.md` for how
+    the two show up: likely a table of poison `enchantID`s. Guessing the
+    IDs risks offering a poison over one that's already on.
+### Functionality
+
+- 48. Track camp buffs, and avoid overriding them, behind a setting.
+### User Interface
 - 18. Settings page cleanup. Show only the current class's settings. General UX. Make paladin prio?
+- 25. Size sliders for the icon and the text. The icon scales the 48px
+  button (`SetSize`, out of combat only), and the text changes the font
+  size of the suggestion list. Both use the game's own slider, with no
+  library.
+- 36. Share out other classes' raid buffs, as the Paladins' blessings are
+  (29). Two Mages both offer Arcane Intellect to the whole raid; they could
+  split it by subgroup instead (Mage A groups 1–4, B 5–8), and the same for
+  Priests' Fortitude and Druids' Mark of the Wild. Two ways:
+  - Over add-on messages, like the `BB:v1` slots: each caster announces
+    the groups they cover. Handles casters without BuffBot, but non-Paladin
+    messages need a protocol change (as in 33).
+  - Deterministic, no messages: every BuffBot caster of the class sorts
+    the raid's casters by name and takes its share of the groups. Simpler,
+    but it can't tell who runs BuffBot, so groups assigned to a caster
+    without it go unbuffed unless they're covered after a timeout.
+  - Group versions (Arcane Brilliance etc.) cover one subgroup per cast,
+    so splitting by subgroup fits them.
+- 34. A window for checking the raid's roles and fixing wrong ones.
+  `/bb raid` prints roles and their sources to chat, but a long raid is
+  hard to read there and a fix means typing `/bb role <name> <role>` per
+  member. A window could list members by group or role, with each one's
+  role, source (manual, mark, aura, Inspect, class default) and blessing,
+  and a dropdown or click to set the role (saved to the manual list) or
+  clear it. Maybe also re-inspect a member or drop their cached result
+  (TODO 32).
+
+### Role detection
+
 - 31. Roles in parties. Part 2 (29) gives raid members a role (tank,
   melee, ranged, caster, healer) that picks their blessings; parties keep
   the class lists for now. Inspect doesn't help while leveling: talents
@@ -97,14 +138,26 @@ commit.
     `PLAYER_ROLES_ASSIGNED` fires on a change, so it's usable. But members
     are `DAMAGER` unless someone sets a role from the party menu or a role
     check, so only `TANK`/`HEALER` mean anything.
-  - [x] Party members set as tank or healer get that role's list, and
-    the rest keep the class lists; re-checked on `PLAYER_ROLES_ASSIGNED`.
-    The group's tank also gets Oath of Light (2.6.10). Not covered:
-    melee hybrids set as `DAMAGER` (see 50).
   - Group arithmetic: in a full 5-person party, a role only one member can
     fill goes to them (3 Mages, a Priest and a Druid: the Druid tanks).
     Keep the tank and healer classes in a table, since Forever may change
     them.
+- 50. Inspect for Feral Druids and Enhancement Shamans, in parties and
+  raids. The group role (31) can't tell melee from caster, so these fall to
+  the class lists: an Enhancement Shaman gets Wisdom before Might, and a
+  Feral cat gets Wisdom from a second Paladin. Inspect only runs for
+  Paladins in a raid today, and talents don't always match the job while
+  leveling (31, 40).
+- 37. Paladins can disagree on a member's role. Each BuffBot Paladin works
+  out roles on its own: `/bb role` is saved per player, Inspect results
+  land at different times, and Kings' slot doesn't inspect at all. With
+  three Paladins, Wisdom's and Might's holders each decide who their
+  blessing does nothing for, so if they disagree on a hybrid, both may skip
+  them and the member misses Might or Wisdom; a manual role set by one Paladin never
+  clears up. Most of the fix is sharing roles: 33 (hybrids announce their
+  own), and sending manual roles to the other Paladins. Short of that, a
+  Paladin could give its slot's blessing to a hybrid whatever role it
+  worked out.
 - 40. Role detection for Paladins whose talent points don't match their
   job. First: Forever has no `GetTalentTabInfo` (found 2026-11-17), so
   talent roles, your own and from Inspect, are off until the "Talent API"
@@ -146,62 +199,13 @@ commit.
   - The manual list (layer 1) still wins over an announced role.
   - Needs a message the `BB:v1` rules don't treat as an outsider's, or a
     protocol bump; non-Paladins would send it too.
-- 34. A window for checking the raid's roles and fixing wrong ones.
-  `/bb raid` prints roles and their sources to chat, but a long raid is
-  hard to read there and a fix means typing `/bb role <name> <role>` per
-  member. A window could list members by group or role, with each one's
-  role, source (manual, mark, aura, Inspect, class default) and blessing,
-  and a dropdown or click to set the role (saved to the manual list) or
-  clear it. Maybe also re-inspect a member or drop their cached result
-  (TODO 32).
-- 36. Share out other classes' raid buffs, as the Paladins' blessings are
-  (29). Two Mages both offer Arcane Intellect to the whole raid; they could
-  split it by subgroup instead (Mage A groups 1–4, B 5–8), and the same for
-  Priests' Fortitude and Druids' Mark of the Wild. Two ways:
-  - Over add-on messages, like the `BB:v1` slots: each caster announces
-    the groups they cover. Handles casters without BuffBot, but non-Paladin
-    messages need a protocol change (as in 33).
-  - Deterministic, no messages: every BuffBot caster of the class sorts
-    the raid's casters by name and takes its share of the groups. Simpler,
-    but it can't tell who runs BuffBot, so groups assigned to a caster
-    without it go unbuffed unless they're covered after a timeout.
-  - Group versions (Arcane Brilliance etc.) cover one subgroup per cast,
-    so splitting by subgroup fits them.
-- 25. Size sliders for the icon and the text. The icon scales the 48px
-  button (`SetSize`, out of combat only), and the text changes the font
-  size of the suggestion list. Both use the game's own slider, with no
-  library.
-- 37. Paladins can disagree on a member's role. Each BuffBot Paladin works
-  out roles on its own: `/bb role` is saved per player, Inspect results
-  land at different times, and Kings' slot doesn't inspect at all. With
-  three Paladins, Wisdom's and Might's holders each decide who their
-  blessing does nothing for, so if they disagree on a hybrid, both may skip
-  them and the member misses Might or Wisdom; a manual role set by one Paladin never
-  clears up. Most of the fix is sharing roles: 33 (hybrids announce their
-  own), and sending manual roles to the other Paladins. Short of that, a
-  Paladin could give its slot's blessing to a hybrid whatever role it
-  worked out.
-- 43. Untangle weapon buffs from consumables. Oils and stones stack with
-  Shaman imbues and Rogue poisons on Forever, but `HasWeaponEnchant`
-  (`BuffBot.lua`) counted any Temporary enchant as the buff.
-  - [x] Shaman: an imbue only counts an imbue (`enchantType` 3), and its
-    running low doesn't depend on the oil (2.6.9, `62eca96`).
-  - [ ] Rogue: a poison is Temporary (2) like a weightstone, so the type
-    can't tell them apart, and a weightstone still hides the poison. Waits
-    on the "Poison and weightstone together" probe in `TESTING.md` for how
-    the two show up: likely a table of poison `enchantID`s. Guessing the
-    IDs risks offering a poison over one that's already on.
+
+### Future feature suggestions
+
 - 44. Oil reminders (distant future). Remind players to apply a mana or
   wizard oil, building on 43, along the lines of the eat reminder (42).
-- 48. Track camp buffs, and avoid overriding them, behind a setting.
 - 49. Pick Paladin auras by spell power (distant future), for Retribution
   Aura specifically.
-- 50. Inspect for Feral Druids and Enhancement Shamans, in parties and
-  raids. The group role (31) can't tell melee from caster, so these fall to
-  the class lists: an Enhancement Shaman gets Wisdom before Might, and a
-  Feral cat gets Wisdom from a second Paladin. Inspect only runs for
-  Paladins in a raid today, and talents don't always match the job while
-  leveling (31, 40).
 
 ## Decided against
 
@@ -261,3 +265,7 @@ commit.
 - [x] Suggestion list follows the button's skip rules (`8ba46a6`)
 - [x] Use the client's spell names, looked up by ID (`f279f20`)
 - [x] Shaman weapon imbues, with a setting to pick the imbue (`8254999`)
+- [x] Party members set as tank or healer get that role's list, and
+    the rest keep the class lists; re-checked on `PLAYER_ROLES_ASSIGNED`.
+    The group's tank also gets Oath of Light (2.6.10). Not covered:
+    melee hybrids set as `DAMAGER` (see 50).
