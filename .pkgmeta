@@ -11,3 +11,4 @@ ignore:
   - TODO.md
   - SKIP_LIST.md
   - deploy.sh
+  - .claude
