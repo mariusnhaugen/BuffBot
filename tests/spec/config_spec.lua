@@ -12,11 +12,6 @@ describe("saved config", function()
             PALADIN_AURA = "Devotion Aura",
             MAGE_ARMOR = "Ice Armor",
             MAGE_ARMOR_RAID = "Mage Armor",
-            RIGHTEOUS_FURY = false,
-            IGNORE_THORNS = false,
-            IGNORE_DAMPEN = false,
-            IGNORE_LIGHTNING_SHIELD = false,
-            IGNORE_INNER_FIRE = false,
             EAT_REMINDER = false,
             CHEETAH_REMINDER = true,
             SHAMAN_IMBUE = "Rockbiter Weapon",
@@ -25,6 +20,9 @@ describe("saved config", function()
             TRACK_TREASURE = true,
             GROUP_BUFFING = true,
             ROLES = {},
+            CAST_ORDER = {},
+            BLESSING_ORDER = {},
+            ROLE_ORDER = {},
         }, h.ns.config)
         assert.equal(h.ns.config, h.env.BuffBotConfig)
     end)
@@ -86,7 +84,7 @@ describe("saved config", function()
         local h = Addon.load({ saved = { HIDE_TEXT = true, CHEETAH_REMINDER = false } })
         assert.is_true(h.ns.config.HIDE_TEXT)
         assert.is_false(h.ns.config.CHEETAH_REMINDER)
-        assert.is_false(h.ns.config.IGNORE_THORNS)
+        assert.is_true(h.ns.config.GROUP_BUFFING)
         assert.is_false(h.ns.config.BLOODRAGE)
     end)
 
@@ -179,16 +177,9 @@ describe("settings panel", function()
             function(h) return h.button:GetNormalTexture():GetAlpha() end },
         { "Hide Text", "HIDE_TEXT", { class = "PRIEST", known = { "Power Word: Fortitude" } },
             function(h) return h:suggestions() end },
-        { "Skip Dampen Magic", "IGNORE_DAMPEN", { class = "MAGE", known = { "Arcane Intellect", "Dampen Magic" } },
-            shown, function(h) h:give("Arcane Intellect") end },
         { "Always try Bloodrage out of combat", "BLOODRAGE", { class = "WARRIOR", known = { "Battle Shout", "Bloodrage" } },
             function(h) return h.button:GetAttribute("macrotext1") end,
             function(h) h:setOutOfPower("Battle Shout", true) end },
-        { "Recommend Righteous Fury", "RIGHTEOUS_FURY", { class = "PALADIN", known = { "Blessing of Might", "Righteous Fury" } },
-            shown, function(h) h:give("Blessing of Might") end },
-        { "Skip Thorns", "IGNORE_THORNS", { class = "DRUID", known = { "Thorns" } }, shown },
-        { "Skip Lightning Shield", "IGNORE_LIGHTNING_SHIELD", { class = "SHAMAN", known = { "Lightning Shield" } }, shown },
-        { "Skip Inner Fire", "IGNORE_INNER_FIRE", { class = "PRIEST", known = { "Inner Fire" } }, shown },
         { "Remind me to eat while leveling", "EAT_REMINDER", { level = 30 }, function(h) return h.button:IsShown() end },
         { "Reminder to leave Cheetah", "CHEETAH_REMINDER", { class = "HUNTER", known = { "Aspect of the Hawk" } },
             shown, function(h) h:give("Aspect of the Cheetah") end },
@@ -217,16 +208,17 @@ describe("settings panel", function()
     end
 
     it("registers the page once, after the saved config loads", function()
-        local h = Addon.load({ saved = { IGNORE_THORNS = true } })
+        local h = Addon.load({ saved = { HIDE_TEXT = true } })
         assert.is_true(h.state.categories.BuffBot.registered)
-        assert.is_true(h:settingNamed("Skip Thorns"):GetValue())
+        assert.is_true(h:settingNamed("Hide Text"):GetValue())
     end)
 
-    it("toggling a class setting takes effect immediately", function()
-        local h = Addon.load({ class = "DRUID", known = { "Thorns" } })
-        assert.equal("Thorns", h:shown())
-        h:settingNamed("Skip Thorns"):SetValue(true)
-        assert.is_nil(h:shown())
+    it("no longer has the checkboxes the Class Buff Order page replaced", function()
+        local h = Addon.load()
+        for _, label in ipairs({ "Skip Dampen Magic", "Recommend Righteous Fury", "Skip Thorns",
+            "Skip Lightning Shield", "Skip Inner Fire" }) do
+            assert.is_nil(h.state.settings[label])
+        end
     end)
 
     it("'Hide Text' hides the suggestion list straight away", function()

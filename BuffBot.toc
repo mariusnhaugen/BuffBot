@@ -14,8 +14,10 @@ EventFunctions.lua
 Roles.lua
 Coordination.lua
 ClassBuffList.lua
+Lists.lua
 Interface.lua
 BuffBot.lua
 Tracking.lua
 SettingsText.xml
+ListsPage.lua
 Config.lua

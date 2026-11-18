@@ -72,11 +72,6 @@ function BuffBot.GetDefaultConfig()
     defaultConfig.PALADIN_AURA = "Devotion Aura"
     defaultConfig.MAGE_ARMOR = "Ice Armor"
     defaultConfig.MAGE_ARMOR_RAID = "Mage Armor"
-    defaultConfig.RIGHTEOUS_FURY = false
-    defaultConfig.IGNORE_THORNS = false
-    defaultConfig.IGNORE_DAMPEN = false
-    defaultConfig.IGNORE_LIGHTNING_SHIELD = false
-    defaultConfig.IGNORE_INNER_FIRE = false
     defaultConfig.CHEETAH_REMINDER = true
     defaultConfig.SHAMAN_IMBUE = "Rockbiter Weapon"
     defaultConfig.ROGUE_POISON_MAINHAND = "Instant Poison"
@@ -84,6 +79,10 @@ function BuffBot.GetDefaultConfig()
     defaultConfig.TRACK_TREASURE = true
     defaultConfig.GROUP_BUFFING = true
     defaultConfig.ROLES = {} -- full name -> role, set with /bb role
+    -- Edited lists from the Class Buff Order and Paladin Blessings pages (Lists.lua)
+    defaultConfig.CAST_ORDER = {}
+    defaultConfig.BLESSING_ORDER = {}
+    defaultConfig.ROLE_ORDER = {}
 
     return defaultConfig
 end
@@ -191,13 +190,8 @@ function BuffBot.RegisterSettings()
 
     layout:AddInitializer(CreateSettingsListSectionHeaderInitializer("Class Settings"))
 
-    addCheckbox("IGNORE_DAMPEN", "Skip Dampen Magic", "Skip recommending Dampen Magic.")
     addCheckbox("BLOODRAGE", "Always try Bloodrage out of combat",
         "Cast Bloodrage before Battle Shout out of combat. \n\nCan cause error spam while Bloodrage is on cooldown.")
-    addCheckbox("RIGHTEOUS_FURY", "Recommend Righteous Fury", "Cast Righteous Fury, for tanking.")
-    addCheckbox("IGNORE_THORNS", "Skip Thorns", "Skip recommending Thorns.")
-    addCheckbox("IGNORE_LIGHTNING_SHIELD", "Skip Lightning Shield", "Skip recommending Lightning Shield.")
-    addCheckbox("IGNORE_INNER_FIRE", "Skip Inner Fire", "Skip recommending Inner Fire.")
     addCheckbox("CHEETAH_REMINDER", "Reminder to leave Cheetah",
         "Shows Aspect of the Hawk if you are in Aspect of the Cheetah/Pack")
 
@@ -226,4 +220,5 @@ function BuffBot.RegisterSettings()
         "The poison for your off hand. Another poison is used if you run out.", BuffBot.PoisonTypes, BuffBot.PoisonName)
 
     Settings.RegisterAddOnCategory(category)
+    BuffBot.RegisterListPages(category)
 end

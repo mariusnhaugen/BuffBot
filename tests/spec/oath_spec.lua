@@ -81,7 +81,7 @@ describe("Oath of Light", function()
 
     it("is never offered on the player, even as a tank", function()
         local h = holy({ known = { "Devotion Aura", "Blessing of Might", "Oath of Light", "Righteous Fury" } })
-        h:setting("RIGHTEOUS_FURY", true)
+        h:listEntry("cast", "PALADIN", "Righteous Fury", true)
         h:give("Righteous Fury")
         h.state.talents = { 0, 31, 0 }
         assert.equal("tank", h.ns.RoleOf("player"))

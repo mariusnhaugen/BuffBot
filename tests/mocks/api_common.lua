@@ -9,6 +9,8 @@ local NOOP_METHODS = {
     "SetSize", "SetWidth", "SetHeight", "SetClampedToScreen", "SetMovable",
     "StartMoving", "StopMovingOrSizing", "SetAllPoints", "SetColorTexture",
     "RegisterForClicks", "RegisterForDrag", "SetFrameStrata",
+    "SetPushedTexture", "SetDisabledTexture", "SetHighlightTexture", "SetJustifyH", "SetWordWrap",
+    "SetHighlightAtlas", "SetMotionScriptsWhileDisabled", "LockHighlight", "UnlockHighlight", "SetTexCoord", "SetScrollChild",
 }
 
 local Region = {}
@@ -68,6 +70,10 @@ function Region:GetNormalTexture() return self.normalTexture end
 
 function Region:GetTexture() return self.file end
 
+function Region:SetTexture(file) self.file, self.atlas = file, nil end
+
+function Region:SetAtlas(atlas) self.atlas, self.file = atlas, nil end
+
 function Region:SetVertexColor(r, g, b) self.vertexColor = { r, g, b } end
 
 function Region:EnableMouse(enabled) self.mouseDisabled = not enabled end
@@ -79,6 +85,25 @@ function Region:SetAlpha(alpha) self.alpha = alpha end
 function Region:GetAlpha() return self.alpha or 1 end
 
 function Region:GetVertexColor() return unpack(self.vertexColor or { 1, 1, 1 }) end
+
+-- state.mouseOver is the region under the mouse; a region counts as under
+-- it when it or one of its children is
+function Region:IsMouseOver()
+    local region = self.env and self.env.__state and self.env.__state.mouseOver
+    while region do
+        if region == self then return true end
+        region = region.parent
+    end
+    return false
+end
+
+function Region:SetShown(shown) self.shown = shown and true or false end
+
+function Region:SetEnabled(enabled) self.disabled = not enabled end
+
+function Region:IsEnabled() return not self.disabled end
+
+function Region:SetTextColor(r, g, b) self.textColor = { r, g, b } end
 
 function Region:SetText(text) self.text_ = text end
 
@@ -128,8 +153,12 @@ end
 
 return function(state, env)
     state.newRegion = function(kind, name, parent) return newRegion(env, kind, name, parent) end
+    env.__state = state
     state.templates.SecureActionButtonTemplate = function() end
     state.templates.UIPanelButtonTemplate = function() end
+    state.templates.UICheckButtonTemplate = function() end
+    state.templates.InsetFrameTemplate = function() end
+    state.templates.UIPanelScrollFrameTemplate = function() end
 
     function env.CreateFrame(kind, name, parent, template)
         local frame = newRegion(env, kind, name, parent)
@@ -312,6 +341,17 @@ return function(state, env)
 
     function env.IsAltKeyDown() return state.altDown == true end
 
+    function env.IsShiftKeyDown() return state.shiftDown == true end
+
+    -- Popups accept straight away, unless state.declinePopups is set
+    env.StaticPopupDialogs = {}
+    function env.StaticPopup_Show(name, _, _, data)
+        state.popups = state.popups or {}
+        table.insert(state.popups, name)
+        local dialog = env.StaticPopupDialogs[name]
+        if dialog and not state.declinePopups then dialog.OnAccept(nil, data) end
+    end
+
     function env.GetTime() return state.time end
 
     env.LE_PARTY_CATEGORY_HOME = 1
@@ -387,6 +427,12 @@ return function(state, env)
             return container
         end,
         RegisterAddOnCategory = function(category) category.registered = true end,
+        -- Canvas pages under a category, kept by name in state.canvasPages
+        RegisterCanvasLayoutSubcategory = function(parent, frame, name)
+            state.canvasPages = state.canvasPages or {}
+            state.canvasPages[name] = { parent = parent, frame = frame }
+            return { name = name, ID = name }
+        end,
         OpenToCategory = function(id) state.openedCategory = id end,
         CreateElementInitializer = function(template) return { kind = "element", template = template } end,
     }

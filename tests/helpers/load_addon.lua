@@ -234,6 +234,12 @@ function Harness:setting(key, value)
     self.ns.UpdateClassBuffList()
 end
 
+-- Turns an entry on a Class Buff Order or Paladin Blessings list on or off, as the
+-- page's checkbox does
+function Harness:listEntry(kind, key, name, on)
+    self.ns.SetListEntry(kind, key, name, on)
+end
+
 -- Observations
 -- The spell the button casts, or "<item> on <slot>" for an item it uses on
 -- a weapon, by English item name
@@ -405,6 +411,10 @@ function M.load(opts)
     h:fire("ADDON_LOADED", ADDON_NAME)
     for key, value in pairs(opts.config or {}) do
         ns.config[key] = value
+    end
+    -- { kind, key, entry, on } for each list entry to set
+    for _, entry in ipairs(opts.lists or {}) do
+        ns.SetListEntry(unpack(entry))
     end
     h:fire("SPELLS_CHANGED")
     return h

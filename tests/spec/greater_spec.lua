@@ -78,7 +78,7 @@ describe("Greater Blessings", function()
         end)
 
         it("casts the player's own buffs before the Greater Blessings", function()
-            local h = raidPaladin({ config = { RIGHTEOUS_FURY = true } })
+            local h = raidPaladin({ lists = { { "cast", "PALADIN", "Righteous Fury", true } } })
             h:learn("Righteous Fury")
             h:joinRaid(many("PRIEST", 3))
             h:settle()

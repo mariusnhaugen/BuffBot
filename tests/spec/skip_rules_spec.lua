@@ -47,38 +47,38 @@ describe("skip rules", function()
         assert.equal("Arcane Intellect", h:shown())
     end)
 
-    it("IGNORE_THORNS skips Thorns", function()
+    it("turning off Thorns in the cast order skips Thorns", function()
         local h = Addon.load({
             class = "DRUID",
             known = { "Mark of the Wild", "Thorns" },
-            config = { IGNORE_THORNS = true },
+            lists = { { "cast", "DRUID", "Thorns", false } },
         })
         assert.same({ "Mark of the Wild" }, h:buffUp())
     end)
 
-    it("IGNORE_DAMPEN skips Dampen Magic", function()
+    it("turning off Dampen Magic in the cast order skips Dampen Magic", function()
         local h = Addon.load({
             class = "MAGE",
             known = { "Arcane Intellect", "Dampen Magic" },
-            config = { IGNORE_DAMPEN = true },
+            lists = { { "cast", "MAGE", "Dampen Magic", false } },
         })
         assert.same({ "Arcane Intellect" }, h:buffUp())
     end)
 
-    it("IGNORE_LIGHTNING_SHIELD skips Lightning Shield but not the imbue", function()
+    it("turning off Lightning Shield in the cast order skips Lightning Shield but not the imbue", function()
         local h = Addon.load({
             class = "SHAMAN",
             known = { "Lightning Shield", "Rockbiter Weapon" },
-            config = { IGNORE_LIGHTNING_SHIELD = true },
+            lists = { { "cast", "SHAMAN", "Lightning Shield", false } },
         })
         assert.same({ "Rockbiter Weapon" }, h:buffUp())
     end)
 
-    it("IGNORE_INNER_FIRE skips Inner Fire but not the other buffs", function()
+    it("turning off Inner Fire in the cast order skips Inner Fire but not the other buffs", function()
         local h = Addon.load({
             class = "PRIEST",
             known = { "Power Word: Fortitude", "Inner Fire" },
-            config = { IGNORE_INNER_FIRE = true },
+            lists = { { "cast", "PRIEST", "Inner Fire", false } },
         })
         assert.same({ "Power Word: Fortitude" }, h:buffUp())
     end)

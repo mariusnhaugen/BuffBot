@@ -131,10 +131,11 @@ end
 
 -- A member the buff would help, alive and in view. The class check comes
 -- first, so classes the buff does nothing for never cost an aura or range
--- check.
+-- check. Blessings are left to the lists (BuffBot.BlessingFor), where a
+-- class's own list can turn one on anyway.
 local function CanSeeUnit(unit, buffString)
     if unit == "player" then return true end
-    local skip = BuffBot.SkipOnClass[buffString]
+    local skip = not BuffBot.Blessings[buffString] and BuffBot.SkipOnClass[buffString]
     if skip and skip[select(2, UnitClass(unit))] then return false end
     return UnitExists(unit) and UnitIsConnected(unit) and UnitIsVisible(unit)
         and not UnitIsDeadOrGhost(unit)
@@ -293,7 +294,7 @@ local CLASS_ORDER = { "WARRIOR", "ROGUE", "HUNTER", "MAGE", "WARLOCK", "PRIEST",
 local function ClassBlessing(class, members)
     local counts = {}
     for _, member in ipairs(members) do counts[member.pick] = (counts[member.pick] or 0) + 1 end
-    local list = BuffBot.RoleLists[BuffBot.ClassDefaultRole[class]] or {}
+    local list = BuffBot.ListOn("role", BuffBot.ClassDefaultRole[class])
     local function rank(blessing) return BuffBot.IndexOf(blessing, list) or #list + 1 end
     local best
     for blessing, count in pairs(counts) do

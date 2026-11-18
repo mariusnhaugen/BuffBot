@@ -2,7 +2,12 @@ local _, BuffBot = ...
 local class = BuffBot.playerclass
 local debug = BuffBot.debug
 
-local InitalClassBuffLists = {}
+-- Each class's own buffs, in the order the button casts them. These are the
+-- defaults; the Class Buff Order page can reorder them and turn them off
+-- (Lists.lua). "Unique", "Imbue" and "Blessing" stand for the armor, aura,
+-- imbue or blessing picked in the settings.
+BuffBot.CastOrder = {}
+local InitalClassBuffLists = BuffBot.CastOrder
 InitalClassBuffLists.DRUID = { "Mark of the Wild", "Thorns" }
 InitalClassBuffLists.HUNTER = { "Trueshot Aura", "Aspect of the Hawk" }
 InitalClassBuffLists.MAGE = { "Unique", "Arcane Intellect", "Dampen Magic" }
@@ -68,6 +73,12 @@ end
 -- missing until the item is cached, so it falls back to the English name.
 function BuffBot.PoisonName(poison)
     return C_Item.GetItemNameByID(poisonItemIDs[poison][1]) or poison
+end
+
+-- A poison's icon, from its rank 1 item
+function BuffBot.PoisonIcon(poison)
+    local ranks = poisonItemIDs[poison]
+    return ranks and C_Item.GetItemIconByID(ranks[1])
 end
 
 -- The item ID for a hand: the highest rank of the chosen poison in the bags,
@@ -162,16 +173,19 @@ BuffBot.Blessings = {
     ["Blessing of Kings"] = true,
 }
 local MIGHT, WISDOM, KINGS = "Blessing of Might", "Blessing of Wisdom", "Blessing of Kings"
+-- The defaults, which the Paladin Blessings page can change (Lists.lua). A
+-- blessing the class can't use (BuffBot.SkipOnClass) comes last and starts
+-- off.
 BuffBot.BlessingPriority = {
-    WARRIOR = { MIGHT, KINGS },
-    ROGUE = { MIGHT, KINGS },
+    WARRIOR = { MIGHT, KINGS, WISDOM },
+    ROGUE = { MIGHT, KINGS, WISDOM },
     HUNTER = { KINGS, WISDOM, MIGHT },
     PALADIN = { KINGS, WISDOM, MIGHT },
     DRUID = { KINGS, WISDOM, MIGHT },
     SHAMAN = { WISDOM, KINGS, MIGHT },
-    PRIEST = { WISDOM, KINGS },
-    MAGE = { WISDOM, KINGS },
-    WARLOCK = { WISDOM, KINGS },
+    PRIEST = { WISDOM, KINGS, MIGHT },
+    MAGE = { WISDOM, KINGS, MIGHT },
+    WARLOCK = { WISDOM, KINGS, MIGHT },
 }
 
 -- The aura of a blessing on a unit, or of its Greater Blessing, from anyone
@@ -250,19 +264,19 @@ function BuffBot.BlessingFor(unit)
     if slotted and BuffBot.MySlot() == "-" then return nil end
     local isPlayer = unit == "player" and not slotted
     local class = select(2, UnitClass(unit))
-    local list = BuffBot.BlessingPriority[class] or {}
+    local list = class and BuffBot.ListOn("blessing", class) or {}
     local role = inRaid and BuffBot.RoleOf(unit) or BuffBot.GroupRole(unit)
     if role then
         -- Any role can go on any class, so leave out what the class can't use
         list = {}
-        for _, blessing in ipairs(BuffBot.RoleLists[role] or {}) do
+        for _, blessing in ipairs(BuffBot.ListOn("role", role)) do
             local skip = BuffBot.SkipOnClass[blessing]
             if not (skip and skip[class]) then table.insert(list, blessing) end
         end
     end
     if isPlayer then
         list = { BuffBot.config.PALADIN_BLESSING }
-        for _, blessing in ipairs(BuffBot.BlessingPriority.PALADIN) do table.insert(list, blessing) end
+        for _, blessing in ipairs(BuffBot.ListOn("blessing", "PALADIN")) do table.insert(list, blessing) end
     end
     for blessing in pairs(BuffBot.Blessings) do
         local aura, greater = BlessingAura(unit, blessing)
@@ -490,41 +504,6 @@ local function RecommendUniqueBuff()
     end
 end
 
-local function GetSpellSkip(spellString)
-    if class == "DRUID" then
-        if spellString == "Thorns" and BuffBot.config.IGNORE_THORNS then
-            return true
-        end
-    end
-
-    if class == "MAGE" then
-        if spellString == "Dampen Magic" and BuffBot.config.IGNORE_DAMPEN then
-            return true
-        end
-    end
-
-    if class == "PRIEST" then
-        if spellString == "Inner Fire" and BuffBot.config.IGNORE_INNER_FIRE then
-            return true
-        end
-    end
-
-    if class == "SHAMAN" then
-        if spellString == "Lightning Shield" and BuffBot.config.IGNORE_LIGHTNING_SHIELD then
-            return true
-        end
-    end
-
-    -- Only tanks want the extra threat
-    if class == "PALADIN" then
-        if spellString == "Righteous Fury" and not BuffBot.config.RIGHTEOUS_FURY then
-            return true
-        end
-    end
-
-    return false
-end
-
 -- The entries left off the list at the last rebuild, as "Buff (reason)", for
 -- /bb status and the debug log
 BuffBot.leftOff = {}
@@ -532,8 +511,8 @@ BuffBot.leftOff = {}
 function BuffBot.FilterInitialList()
     FilterUniqueBuffs()
     local FilteredClassBuffList, leftOff = {}, {}
-    for i = 1, #InitalClassBuffLists[BuffBot.playerclass], 1 do
-        local spellString = InitalClassBuffLists[BuffBot.playerclass][i]
+    for _, row in ipairs(BuffBot.ListRows("cast", BuffBot.playerclass)) do
+        local spellString = row.name
         if spellString == "Unique" then
             spellString = RecommendUniqueBuff()
         end
@@ -552,7 +531,8 @@ function BuffBot.FilterInitialList()
             end
         end
 
-        local skipSpell = GetSpellSkip(spellString)
+        -- Turned off on the Class Buff Order page
+        local skipSpell = not row.on
         -- Poisons are items, so whether there are any is checked on each update
         local available = BuffBot.WeaponPoisons[spellString] or BuffBot.CheckSpellAvailable(spellString)
 

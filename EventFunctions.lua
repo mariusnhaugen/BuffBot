@@ -165,6 +165,8 @@ function events:ADDON_LOADED(arg1)
         end
     end
     BuffBot.config = BuffBotConfig
+    -- Before 2.7.0, five checkboxes turned cast-order entries on or off
+    BuffBot.MigrateListToggles()
     if BuffBotCharConfig == nil then
         BuffBotCharConfig = {}
     end

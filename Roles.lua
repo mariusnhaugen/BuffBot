@@ -5,13 +5,22 @@ local _, BuffBot = ...
 -- tank or healer set in the group's roles (BuffBot.GroupRole).
 local MIGHT, WISDOM, KINGS = "Blessing of Might", "Blessing of Wisdom", "Blessing of Kings"
 
--- Blessings by role, best first
+-- Blessings by role, best first. These are the defaults, which the Paladin
+-- Blessings page can change (Lists.lua).
 BuffBot.RoleLists = {
-    tank = { KINGS, MIGHT },
-    melee = { MIGHT, KINGS },
+    tank = { KINGS, MIGHT, WISDOM },
+    melee = { MIGHT, KINGS, WISDOM },
     ranged = { KINGS, WISDOM, MIGHT },
-    caster = { WISDOM, KINGS },
-    healer = { WISDOM, KINGS },
+    caster = { WISDOM, KINGS, MIGHT },
+    healer = { WISDOM, KINGS, MIGHT },
+}
+
+-- The blessings each role's list starts with off
+BuffBot.RoleListsOff = {
+    tank = { [WISDOM] = true },
+    melee = { [WISDOM] = true },
+    caster = { [MIGHT] = true },
+    healer = { [MIGHT] = true },
 }
 
 -- The role a class has until something says otherwise. Hybrids default to

@@ -14,6 +14,7 @@ globals = {
     "SLASH_BUFFBOTSETTINGS2",
     "BuffBotConfig",
     "BuffBotCharConfig",
+    "StaticPopupDialogs", -- the add-on adds its reset popup
 }
 
 -- WoW API available on the Forever client. GetSpellInfo, GetSpellTexture and
@@ -50,6 +51,12 @@ read_globals = {
     "InCombatLockdown",
     "InspectFrame",
     "IsAltKeyDown",
+    "IsShiftKeyDown",
+    "GameTooltip",
+    "RAID_CLASS_COLORS",
+    "StaticPopup_Show",
+    "YES",
+    "NO",
     "IsInGroup",
     "IsInInstance",
     "IsInRaid",

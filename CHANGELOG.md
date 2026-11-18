@@ -1,5 +1,17 @@
 # BuffBot
 
+## Unreleased
+
+- New settings pages: Class Buff Order and Paladin Blessings. Every class has a
+  list you can reorder with the arrows (Shift-click for top or bottom) and
+  ignore to leave a buff out. Paladin Blessings also has lists by raid role.
+  Each list has its own reset button, and each page has Reset all.
+- Paladins: A class's blessing list can now give a blessing it skipped
+  before, such as Wisdom on Warriors.
+- The Skip Thorns, Skip Dampen Magic, Skip Lightning Shield, Skip Inner Fire
+  and Recommend Righteous Fury checkboxes moved to the Class Buff Order page. Your
+  choices carry over.
+
 ## 2.6.10
 
 - Paladins: Party members set as tank or healer get that role's blessings, and the party's tank also gets Oath of Light.

@@ -75,7 +75,6 @@ a poison running low on charges counts as missing.
 - **Mage armor / Mage armor in a raid:** Ice Armor (Frost Armor until Ice is
   learned) or Mage Armor, for outside a raid and in one. Ice Armor and Mage
   Armor by default. Only the armor picked for where you are counts.
-- **Skip Dampen Magic / Skip Thorns / Skip Lightning Shield / Skip Inner Fire.**
 - **Always try Bloodrage out of combat:** casts Bloodrage before Battle Shout.
 - **Paladin aura:** Retribution, Devotion, Fire, Frost or Shadow Resistance.
   Devotion until the one you pick is learned. Changing it swaps you to the
@@ -86,11 +85,23 @@ a poison running low on charges counts as missing.
   get the next one on the Paladin list. Changing it swaps you to the new
   blessing once; after that, any blessing of your own on yourself counts as
   up.
-- **Recommend Righteous Fury:** for Paladin tanks. Off by default.
 - **Reminder to leave Cheetah:** shows Aspect of the Hawk while you're in
   Cheetah or Pack.
 - **Shaman weapon imbue:** Rockbiter, Flametongue, Frostbrand or Windfury.
 - **Rogue poisons:** one for each hand.
+
+Two more pages sit under BuffBot in the settings list. Each has a list per
+class: the arrows reorder it (Shift-click moves to the top or bottom),
+hovering an entry and clicking its icon ignores it (a green + suggests it
+again), and the small reset button beside a list puts it back. Reset all resets the whole page.
+
+- **Class Buff Order:** the order the button casts your own buffs. Ignore one to
+  leave it out, such as Thorns or Dampen Magic. Righteous Fury, for Paladin
+  tanks, starts off.
+- **Paladin Blessings:** which blessing a Paladin gives each class, best
+  first, in parties and solo. In a raid, the lists by role below decide
+  instead. Keep those the same as the other BuffBot Paladins in your raid, or
+  some members can miss a blessing.
 
 `/bb help` lists the commands.
 

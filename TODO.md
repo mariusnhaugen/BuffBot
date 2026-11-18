@@ -51,7 +51,7 @@ commit.
 
 - 48. Track camp buffs, and avoid overriding them, behind a setting.
 ### User Interface
-- 18. Settings page cleanup. Show only the current class's settings. General UX. Make paladin prio?
+- 18. Settings page cleanup. Show only the current class's settings. General UX. (Paladin prio is done: the Paladin Blessings page.)
 - 25. Size sliders for the icon and the text. The icon scales the 48px
   button (`SetSize`, out of combat only), and the text changes the font
   size of the suggestion list. Both use the game's own slider, with no
