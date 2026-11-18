@@ -1,15 +1,10 @@
 # BuffBot
 
-## Unreleased
+## 2.7.0 
 
-- New settings pages: Class Buff Order and Paladin Blessings. Every class has a
-  list you can reorder with the arrows (Shift-click for top or bottom) and
-  ignore to leave a buff out. Paladin Blessings also has lists by raid role.
-  Each list has its own reset button, and each page has Reset all.
-- Paladins: A class's blessing list can now give a blessing it skipped
-  before, such as Wisdom on Warriors.
-- The Skip Thorns, Skip Dampen Magic, Skip Lightning Shield, Skip Inner Fire
-  and Recommend Righteous Fury checkboxes moved to the Class Buff Order page. Your
+- New settings page: Class Buff Order. A GUI to see and edit the buff priority lists used to buff yourself. 
+- New settings page: Paladin Blessings. A GUI to see and edit the blessing priority lists used to buff allies. 
+- The Skip Thorns, Skip Dampen Magic, Skip Lightning Shield, Skip Inner Fire and Recommend Righteous Fury checkboxes moved to the Class Buff Order page. Your
   choices carry over.
 
 ## 2.6.10
